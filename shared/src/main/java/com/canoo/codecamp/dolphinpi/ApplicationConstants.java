@@ -6,7 +6,9 @@ package com.canoo.codecamp.dolphinpi;
 public class ApplicationConstants {
     public static final String PM_APP = unique("APP");
     public static final String COMMAND_ID = unique("DO");
-    public static final String ATT_ATTR_ID = "ATTRID";
+    public static final String COMMAND_INCREASE = unique("increaseCmd");
+    public static final String ATT_ID = "Id";
+    public static final String ATT_Value = "value";
 
 
     /**

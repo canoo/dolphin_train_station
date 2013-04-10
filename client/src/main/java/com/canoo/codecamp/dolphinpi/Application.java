@@ -5,17 +5,16 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBuilder;
+import javafx.scene.control.Label;
+import javafx.scene.control.LabelBuilder;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.PaneBuilder;
 import javafx.scene.layout.VBoxBuilder;
 import javafx.stage.Stage;
+import org.opendolphin.binding.JFXBinder;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientAttribute;
 import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.client.ClientPresentationModel;
-import org.opendolphin.core.client.comm.OnFinishedHandlerAdapter;
-
-import java.util.List;
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*;
 
@@ -26,9 +25,12 @@ public class Application extends javafx.application.Application {
     private PresentationModel textAttributeModel;
 
     private Button button;
+	private Label label;
 
     public Application() {
-        textAttributeModel = clientDolphin.presentationModel(PM_APP, new ClientAttribute(ATT_ATTR_ID, null));
+        textAttributeModel = clientDolphin.presentationModel(PM_APP,
+			new ClientAttribute(ATT_ID, null),
+			new ClientAttribute(ATT_Value, 1));
     }
 
     @Override
@@ -50,27 +52,30 @@ public class Application extends javafx.application.Application {
     private Pane setupStage() {
         return PaneBuilder.create().children(
                 VBoxBuilder.create().children(
-                        button = ButtonBuilder.create()
+					button = ButtonBuilder.create()
                                 .text("click me")
-                                .build()).build()
+                                .build(),
+					label = LabelBuilder.create().build()
+				).build()
         ).build();
     }
 
     private void setupBinding() {
-
+		JFXBinder.bind(ATT_Value).of(textAttributeModel).to("text").of(label);
     }
 
     private void addClientSideAction() {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                clientDolphin.send(COMMAND_ID, new OnFinishedHandlerAdapter() {
-                    @Override
-                    public void onFinished(List<ClientPresentationModel> presentationModels) {
-                        textAttributeModel.getAt(ATT_ATTR_ID).rebase();
-                    }
-                });
+				clientDolphin.send(COMMAND_INCREASE);
+//                clientDolphin.send(COMMAND_ID, new OnFinishedHandlerAdapter() {
+//                    @Override
+//                    public void onFinished(List<ClientPresentationModel> presentationModels) {
+//                        textAttributeModel.getAt(ATT_ID).rebase();
+//                    }
+//                });
             }
-        });
+      });
     }
 }

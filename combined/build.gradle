@@ -17,10 +17,3 @@ gradle.taskGraph.whenReady { tg ->
 		project.setProperty('mainClassName', 'com.canoo.codecamp.dolphinpi.start')
 	}
 }
-
-
-//if (taskGraph.hasTask(run)) {
-//	logger.lifecycle("Running main class : $sampleClass")
-//	mainClassName = sampleClass
-//}
-//}
