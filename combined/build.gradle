@@ -10,7 +10,17 @@ dependencies {
 mainClassName = 'com.canoo.codecamp.dolphinpi.ApplicationInMemoryStarter'
 
 gradle.taskGraph.whenReady { tg ->
+	run {
+		systemProperties=['javafx.platform':'eglfb']
+	}
 	if (tg.hasTask(':runWithGroovy')) {
 		project.setProperty('mainClassName', 'com.canoo.codecamp.dolphinpi.start')
 	}
 }
+
+
+//if (taskGraph.hasTask(run)) {
+//	logger.lifecycle("Running main class : $sampleClass")
+//	mainClassName = sampleClass
+//}
+//}
