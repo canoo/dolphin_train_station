@@ -9,3 +9,9 @@ dependencies {
 }
 
 mainClassName = 'com.canoo.codecamp.dolphinpi.ApplicationStarter'
+
+gradle.taskGraph.whenReady { tg ->
+	run {
+		systemProperties=['javafx.platform':'eglfb']
+	}
+}
