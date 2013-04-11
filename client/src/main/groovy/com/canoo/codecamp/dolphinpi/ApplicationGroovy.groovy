@@ -38,11 +38,12 @@ public class ApplicationGroovy extends javafx.application.Application {
         stage.setTitle(getClass().getName());
         stage.show();
 
-//		clientDolphin send COMMAND_GET_ALL_DEPARTURES  { pms ->
-//			for (pm in pms) {
-//				allDepartures << pm
-//			}
-//		}
+		clientDolphin.send COMMAND_GET_ALL_DEPARTURES,  { pms ->
+			for (pm in pms) {
+				println "pm: $pm"
+				allDepartures << pm
+			}
+		}
 
 
     }
