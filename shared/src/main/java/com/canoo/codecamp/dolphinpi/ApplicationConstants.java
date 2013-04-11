@@ -23,4 +23,7 @@ public class ApplicationConstants {
         return ApplicationConstants.class.getName() + "." + key;
     }
 
+	static String pmId(String type, int index) {
+		return type + "-" + index;
+	}
 }
