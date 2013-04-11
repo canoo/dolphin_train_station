@@ -15,6 +15,11 @@ import org.opendolphin.binding.JFXBinder;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientAttribute;
 import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.client.ClientPresentationModel;
+import org.opendolphin.core.client.comm.OnFinishedHandler;
+
+import java.util.List;
+import java.util.Map;
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*;
 
@@ -28,9 +33,11 @@ public class Application extends javafx.application.Application {
 	private Label label;
 
     public Application() {
-        textAttributeModel = clientDolphin.presentationModel(PM_APP,
+        textAttributeModel = clientDolphin.presentationModel(
+			PM_APP,
 			new ClientAttribute(ATT_ID, null),
-			new ClientAttribute(ATT_Value, 1));
+			new ClientAttribute(ATT_Value, 1, "sharedValue")
+		);
     }
 
     @Override
@@ -46,6 +53,21 @@ public class Application extends javafx.application.Application {
         stage.setScene(new Scene(root, 300, 300));
         stage.setTitle(getClass().getName());
         stage.show();
+
+
+		OnFinishedHandler onFinished = new OnFinishedHandler() {
+			@Override
+			public void onFinished(final List<ClientPresentationModel> presentationModels) {
+				clientDolphin.send("poll.value", this);
+			}
+
+			@Override
+			public void onFinishedData(final List<Map> data) {
+			}
+		};
+
+
+		clientDolphin.send("poll.value", onFinished);
 
     }
 
