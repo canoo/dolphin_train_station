@@ -74,6 +74,7 @@ public class ApplicationAction extends DolphinServerAction {
 
 
 
+/*
 		actionRegistry.register(COMMAND_ID, new CommandHandler<Command>() {
 			public void handleCommand(Command command, List<Command> response) {
 				System.out.println("Server reached.");
@@ -85,6 +86,7 @@ public class ApplicationAction extends DolphinServerAction {
 				changeValue(valueAttr, ((Integer) valueAttr.getValue()) + 1);
 			}
 		});
+*/
 
 	}
 }
