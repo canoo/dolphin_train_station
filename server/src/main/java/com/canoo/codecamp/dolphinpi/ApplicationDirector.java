@@ -7,6 +7,6 @@ public class ApplicationDirector extends DolphinServerAction {
 
     public void registerIn(ActionRegistry registry) {
         // register all your actions here.
-        getServerDolphin().register(new ApplicationAction());
+        getServerDolphin().register(new ApplicationRegistrationAction());
     }
 }
