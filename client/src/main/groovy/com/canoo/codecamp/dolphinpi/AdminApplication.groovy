@@ -40,7 +40,7 @@ public class AdminApplication extends javafx.application.Application {
 		setupBinding();
 
 
-		stage.setScene(new Scene(root, 500, 400));
+		stage.setScene(new Scene(root, 800, 400));
 		stage.setTitle(getClass().getName());
 		stage.show();
 
