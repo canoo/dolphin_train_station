@@ -25,22 +25,6 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 		actionRegistry.register(COMMAND_GET_ALL_DEPARTURES, new CommandHandler<Command>() {
 			public void handleCommand(Command command, List<Command> response) {
-//				DTO dto = new DTO(
-//					new Slot(ATT_DEPARTURE_TIME, "07:20", TYPE_DEPARTURE+ATT_DEPARTURE_TIME),
-//					new Slot(ATT_TRAIN_NUMBER, "IC 809", TYPE_DEPARTURE+ATT_TRAIN_NUMBER),
-//					new Slot(ATT_DESTINATION, "Romanshorn", TYPE_DEPARTURE+ATT_DESTINATION),
-//					new Slot(ATT_STATUS, "abgefahren", TYPE_DEPARTURE+ATT_STATUS)
-//				);
-//				presentationModel("1", TYPE_DEPARTURE, dto);
-
-
-/*
-				List<DTO> dtos =
-					[
-						[(ATT_DEPARTURE_TIME): "07:20", (ATT_TRAIN_NUMBER): "IC 809", (ATT_DESTINATION): "Romanshorn", (ATT_STATUS): "abgefahren"],
-					].collect { new DTO(Slot.slots(it))  }
-*/
-
 					List<DTO> dtos = []
 					populateDTOs(dtos)
 
@@ -53,8 +37,8 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 	}
 
-	DTO createDeparture(departureTime, trainNumber, destination, stopOvers, status) {
-		new DTO(Slot.slots([(ATT_DEPARTURE_TIME): departureTime, (ATT_TRAIN_NUMBER): trainNumber, (ATT_DESTINATION): destination, (ATT_STATUS): status]))
+	DTO createDeparture(departureTime, trainNumber, destination, stopOvers, track) {
+		new DTO(Slot.slots([(ATT_DEPARTURE_TIME): departureTime, (ATT_TRAIN_NUMBER): trainNumber, (ATT_DESTINATION): destination, (ATT_TRACK): track, (ATT_STATUS): "unbekannt"]))
 	}
 
 	def populateDTOs(dtos) {
