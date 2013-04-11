@@ -18,7 +18,7 @@ import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*;
 
 public class ApplicationAction extends DolphinServerAction {
 
-	private EventBus eventBus;
+	private static EventBus eventBus = new EventBus();
 	private final DataflowQueue valueQueue = new DataflowQueue();
 
 	private final int EVENT_PROVIDER_WAIT_MS = 500;
