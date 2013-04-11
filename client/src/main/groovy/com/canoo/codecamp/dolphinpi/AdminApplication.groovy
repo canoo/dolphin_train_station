@@ -21,8 +21,7 @@ public class AdminApplication extends javafx.application.Application {
 
 	javafx.collections.ObservableList<ClientPresentationModel> allDepartures = FXCollections.observableArrayList()
 
-	//def selectedBook = clientDolphin.presentationModel(SELECTED, ALL_ATTRIBUTES)
-
+	def selectedDeparture = clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL_ATTRIBUTES)
 
 	public AdminApplication() {
 	}
@@ -56,8 +55,8 @@ public class AdminApplication extends javafx.application.Application {
 	private javafx.scene.Node setupStage() {
 		SplitPaneBuilder.create()
 		.items(
-			MasterViewFactory.newMasterView(allDepartures),
-			DetailViewFactory.newView()
+			MasterViewFactory.newMasterView(allDepartures, selectedDeparture, clientDolphin),
+			DetailViewFactory.newView(selectedDeparture)
 		)
 		.build()
 

@@ -89,6 +89,7 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 			createSlot(ATT_TRAIN_NUMBER, trainNumber, id),
 			createSlot(ATT_DESTINATION, destination,id),
 			createSlot(ATT_TRACK, track,id),
+			createSlot(ATT_STOPOVERS, stopOvers,id),
 			createSlot(ATT_STATUS, "unbekannt", id))
 	}
 

@@ -1,6 +1,7 @@
 package com.canoo.codecamp.dolphinpi
 
 import javafx.beans.property.SimpleStringProperty
+import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
@@ -11,6 +12,7 @@ import javafx.scene.control.TableViewBuilder
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.util.Callback
 import org.opendolphin.core.client.ClientAttributeWrapper
+import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
@@ -18,7 +20,11 @@ import static org.opendolphin.binding.JavaFxUtil.cellEdit
 
 class MasterViewFactory {
 
-	static javafx.scene.Node newMasterView(ObservableList<ClientPresentationModel> data){
+	static javafx.scene.Node newMasterView(
+		ObservableList<ClientPresentationModel> data,
+		ClientPresentationModel selectedDeparture,
+		ClientDolphin inClientDolphin
+	){
 
 		TableView result = TableViewBuilder.create()
 			.items(data)
@@ -31,6 +37,21 @@ class MasterViewFactory {
 			)
 		.columnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY).build()
 		result.setEditable(true)
+
+
+		// used as both, event handler and change listener
+		def changeSelectionHandler = { pm ->
+			return {
+				inClientDolphin.apply pm to selectedDeparture
+			}
+		}
+
+		result.selectionModel.selectedItemProperty().addListener( { o, oldVal, selectedPM ->
+//			boolean gotDeselected = !selectedPM
+			changeSelectionHandler(selectedPM).call()
+		} as ChangeListener)
+
+
 		return result
 
 	}
