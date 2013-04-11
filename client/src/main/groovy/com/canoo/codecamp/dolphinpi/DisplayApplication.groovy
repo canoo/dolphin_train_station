@@ -2,31 +2,29 @@ package com.canoo.codecamp.dolphinpi
 
 import javafx.collections.FXCollections
 import javafx.scene.Scene
-import javafx.scene.layout.BorderPaneBuilder
-import javafx.scene.layout.Pane
-import javafx.scene.layout.PaneBuilder
-import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
-import javafx.scene.layout.VBoxBuilder
+import javafx.scene.control.SplitPaneBuilder
 import javafx.stage.Stage
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 
-import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
+import static com.canoo.codecamp.dolphinpi.ApplicationConstants.COMMAND_GET_ALL_DEPARTURES
 
-public class ApplicationGroovy extends javafx.application.Application {
+public class DisplayApplication extends javafx.application.Application {
 	public static ClientDolphin clientDolphin;
 
 	javafx.collections.ObservableList<ClientPresentationModel> allDepartures = FXCollections.observableArrayList()
 
-	//def selectedBook = clientDolphin.presentationModel(SELECTED, ALL_ATTRIBUTES)
 
 
-	public ApplicationGroovy() {
+	public DisplayApplication() {
 	}
 
 	@Override
 	public void start(Stage stage) throws Exception {
+		def longPoll = null
+		longPoll = {
+			println "calling long poll"
+			clientDolphin.send ApplicationConstants.COMMAND_LONG_POLL, longPoll }
 
 		stage.setTitle("Departures of Olten");
 
@@ -48,11 +46,14 @@ public class ApplicationGroovy extends javafx.application.Application {
 			}
 		}
 
+		longPoll()
+
+		clientDolphin.addModelStoreListener { println it }
 
 	}
 
 	private javafx.scene.Node setupStage() {
-		BorderPaneBuilder.create().center(MasterViewFactory.newMasterView(allDepartures)).build()
+		MasterViewFactory.newMasterView(allDepartures)
 	}
 
 	private void setupBinding() {

@@ -14,6 +14,7 @@ public class ApplicationConstants {
 	public static final String ATT_STATUS = "status";
 
 	public static final String COMMAND_GET_ALL_DEPARTURES = "getAllDepartures";
+	public static final String COMMAND_LONG_POLL = "longPoll";
 
 
     /**

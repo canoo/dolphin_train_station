@@ -11,9 +11,9 @@ public class ApplicationInMemoryStarter {
 			config.registerDefaultActions();
 			config.getClientDolphin().getClientConnector().setUiThreadHandler(new JavaFXUiThreadHandler());
 			registerApplicationActions(config);
-			com.canoo.codecamp.dolphinpi.ApplicationGroovy.clientDolphin = config.getClientDolphin();
+			AdminApplication.clientDolphin = config.getClientDolphin();
 		}
-        javafx.application.Application.launch(ApplicationGroovy.class);
+        javafx.application.Application.launch(AdminApplication.class);
     }
 
     private static void registerApplicationActions(DefaultInMemoryConfig config) {
