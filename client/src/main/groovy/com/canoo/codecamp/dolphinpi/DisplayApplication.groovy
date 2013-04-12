@@ -33,7 +33,6 @@ public class DisplayApplication extends javafx.application.Application {
 
 		def longPoll = null
 		longPoll = {
-			println "calling long poll"
 			clientDolphin.send ApplicationConstants.COMMAND_LONG_POLL, longPoll }
 
 		stage.setTitle("Departures of Olten");
@@ -50,7 +49,7 @@ public class DisplayApplication extends javafx.application.Application {
 			new Stop(0.25, Color.rgb(38, 37, 32)),
 			new Stop(1.0, Color.rgb(28, 27, 22)));
 
-		stage.setScene(new Scene(root, 1024, 768, gradient));
+		stage.setScene(new Scene(root, 700, 200, gradient));
 		stage.setTitle(getClass().getName());
 		stage.show();
 
@@ -61,9 +60,6 @@ public class DisplayApplication extends javafx.application.Application {
 		}
 
 		longPoll()
-
-		clientDolphin.addModelStoreListener { println it }
-
 	}
 
 	private javafx.scene.Node setupStage() {
@@ -72,8 +68,6 @@ public class DisplayApplication extends javafx.application.Application {
 
 	private javafx.scene.Node setupStageGerrit() {
 //		DepartureBoardViewFactory.newView(departuresModel)
-
-		SplitFlap.EXTENDED.each {println it}
 
 		DepartureBoard departureBoard = new DepartureBoard()
 		departureBoard.addRow(new Row());

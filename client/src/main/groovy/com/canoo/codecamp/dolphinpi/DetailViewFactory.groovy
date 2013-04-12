@@ -90,12 +90,10 @@ class DetailViewFactory {
 
 		bind ATT_DOMAIN_ID of topDeparture to 'disabled' of moveToTop, {
 			def selectedPosition = selectedDeparture.getAt(ATT_POSITION).value
-			println "ontop: $it, selected: $selectedPosition"
 			it == selectedPosition
 		}
 		bind ATT_POSITION of selectedDeparture to 'disabled' of moveToTop, {
 			def domainId = topDeparture.getAt(ATT_DOMAIN_ID).value
-			println "selected: $it, domainId: $domainId"
 			it == domainId
 		}
 

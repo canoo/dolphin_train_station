@@ -30,7 +30,6 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 	ApplicationRegistrationAction() {
 		valueQueue = new DataflowQueue()
 		eventBus.subscribe(valueQueue)
-		println "registered new event queue"
 	}
 
 	private void sendDepartureBoardRecord(PresentationModel pm, int inPosition) {
@@ -87,7 +86,6 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		actionRegistry.register(ValueChangedCommand.class, new CommandHandler<ValueChangedCommand>() {
 			@Override
 			public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
-				println "value change"
 				PresentationModel topDeparturePM = getServerDolphin().findPresentationModelById(TOP_DEPARTURE)
 				if (!topDeparturePM) return
 
@@ -114,7 +112,6 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		actionRegistry.register(COMMAND_LONG_POLL, new NamedCommandHandler() {
 			@Override
 			void handleCommand(final NamedCommand command, final List<Command> response) {
-				println "in server long poll"
 				DTO dto = valueQueue.getVal(60, TimeUnit.SECONDS);
 				if (dto == null) return
 				int positionOnBoard = dto.slots.find { it.propertyName == ATT_POSITION }.value

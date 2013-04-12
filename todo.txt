@@ -10,15 +10,14 @@ TODO:
 - save/load to/from file
 - Service implementation
 - Display App: show more custom controls on swipe, e.g. Clock etc.
-- remove hard dependency on /home/sven/canoo/codecamp_2013_1/dolphin_pi/_localrepository/jfxtras-labs.jar
 
 WIP:
 =====
-- enabling/disabling buttons
 
 
 DONE:
 =====
+- enabling/disabling buttons
 - DTO transfer Admin GUI -> DisplayBoard
 - Admin GUI: DepartureBoard ein/ausblenden
 
@@ -29,3 +28,5 @@ DONE:
     - mv client admin
     - cp admin board
     - in board (letzte zeile) com.canoo.codecamp.dolphinpi.DisplayApplicationStarter eintragen
+
+- remove hard dependency on /home/sven/canoo/codecamp_2013_1/dolphin_pi/_localrepository/jfxtras-labs.jar
