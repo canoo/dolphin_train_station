@@ -8,6 +8,7 @@ import java.util.List;
 public class ApplicationConstants {
 
 	public static final String TYPE_DEPARTURE = unique("Departure");
+	public static final String TYPE_DEPARTURE_ON_BOARD = unique("DepartureOnBoard");
 
 	public static final String ATT_POSITION = "POSITION";
 	public static final String ATT_DEPARTURE_TIME = "departureTime";

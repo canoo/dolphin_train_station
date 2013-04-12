@@ -12,11 +12,9 @@ class DeparturesBoardApplicationModel {
 	javafx.collections.ObservableList<ClientPresentationModel> departuresOnBoard = FXCollections.observableArrayList()
 
 	DeparturesBoardApplicationModel initialize() {
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_1, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_2, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_3, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_4, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_5, ALL_ATTRIBUTES)
+		(1..5).each {
+			departuresOnBoard << clientDolphin.presentationModel(pmId(TYPE_DEPARTURE_ON_BOARD, it), ALL_ATTRIBUTES)
+		}
 
 		this
 	}

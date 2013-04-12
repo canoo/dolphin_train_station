@@ -1,14 +1,14 @@
 package com.canoo.codecamp.dolphinpi
 
 import groovyx.gpars.dataflow.DataflowQueue
+import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.comm.Command
 import org.opendolphin.core.comm.NamedCommand
-import org.opendolphin.core.comm.SwitchPresentationModelCommand
 import org.opendolphin.core.comm.ValueChangedCommand;
 import org.opendolphin.core.server.DTO;
 import org.opendolphin.core.server.EventBus
-import org.opendolphin.core.server.ServerAttribute;
+import org.opendolphin.core.server.ServerPresentationModel;
 import org.opendolphin.core.server.Slot;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.comm.ActionRegistry;
@@ -23,12 +23,26 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 	private static EventBus eventBus = new EventBus()
 	private final DataflowQueue valueQueue
+	private int lastSentPosition = -1
 
 
 	ApplicationRegistrationAction() {
 		valueQueue = new DataflowQueue()
 		eventBus.subscribe(valueQueue)
 		println "registered new event queue"
+	}
+
+	private void sendDepartureBoardRecord(ServerPresentationModel pm, int inPosition) {
+		List<Slot> slots = []
+		ALL_ATTRIBUTES.each { propertyName ->
+			if (propertyName != ATT_POSITION) {
+				slots << new Slot(propertyName, pm.findAttributeByPropertyName(propertyName).value)
+			}
+		}
+		slots << new Slot(ATT_POSITION, inPosition)
+
+		DTO dto = new DTO(slots)
+		eventBus.publish(valueQueue, dto);
 	}
 
 	public void registerIn(ActionRegistry actionRegistry) {
@@ -45,33 +59,45 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 			}
 		})
 
+
 		actionRegistry.register(COMMAND_MOVE_TO_TOP, new CommandHandler<Command>() {
 			public void handleCommand(Command command, List<Command> response) {
 				def selectedPm = getServerDolphin().findPresentationModelById( SELECTED_DEPARTURE)
 				int start = selectedPm.findAttributeByPropertyName(ATT_POSITION).value
+				if (start == lastSentPosition) {
+					return
+				}
 
-				response << new SwitchPresentationModelCommand(pmId: DEPARTURE_ON_BOARD_1, sourcePmId: pmId(TYPE_DEPARTURE, start))
-				response << new SwitchPresentationModelCommand(pmId: DEPARTURE_ON_BOARD_2, sourcePmId: pmId(TYPE_DEPARTURE, start + 1))
-				response << new SwitchPresentationModelCommand(pmId: DEPARTURE_ON_BOARD_3, sourcePmId: pmId(TYPE_DEPARTURE, start + 2))
-				response << new SwitchPresentationModelCommand(pmId: DEPARTURE_ON_BOARD_4, sourcePmId: pmId(TYPE_DEPARTURE, start + 3))
-				response << new SwitchPresentationModelCommand(pmId: DEPARTURE_ON_BOARD_5, sourcePmId: pmId(TYPE_DEPARTURE, start + 4))
+				for (int idx = start; idx < start + 5; idx++) {
+					ServerPresentationModel pm = getServerDolphin().findPresentationModelById(pmId(TYPE_DEPARTURE, idx))
+					sendDepartureBoardRecord(pm, idx - start + 1)
+				}
+				lastSentPosition = start
+
+
 			}
+
 		})
 
 		actionRegistry.register(ValueChangedCommand.class, new CommandHandler<ValueChangedCommand>() {
 			@Override
 			public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
 				println "value change"
+				if (lastSentPosition == -1) return
 				def attribute = getServerDolphin().getServerModelStore().findAttributeById(command.getAttributeId())
 				if (!attribute?.qualifier?.startsWith(TYPE_DEPARTURE)) return
 				if (attribute.tag != Tag.VALUE) return
 
-				DTO dto = new DTO(
-					new Slot("qualifier", attribute.qualifier),
-					new Slot("value", command.getNewValue())
-				)
-				eventBus.publish(valueQueue, dto);
-				println "sent value on bus: $command.newValue"
+				String pmId = pmIdFromQualifier(attribute.qualifier)
+
+				ServerPresentationModel modifiedPm = getServerDolphin().findPresentationModelById(pmId)
+
+				int modifiedPmPosition = modifiedPm.findAttributeByPropertyName(ATT_POSITION).value
+				if (modifiedPmPosition >= lastSentPosition &&  modifiedPmPosition <= lastSentPosition + 5) {
+					sendDepartureBoardRecord(modifiedPm, modifiedPmPosition - lastSentPosition + 1)
+				}
+
+
 			}
 		})
 
@@ -81,12 +107,12 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 				println "in server long poll"
 				DTO dto = valueQueue.getVal(60, TimeUnit.SECONDS);
 				if (dto == null) return
-				String qualifier = dto.slots.find { it.propertyName == "qualifier" }.value
-				String value = dto.slots.find { it.propertyName == "value" }.value
-				def atts = getServerDolphin().getModelStore().findAllAttributesByQualifier(qualifier)
-				atts.each { attribute ->
-					changeValue(attribute, value)
-					println "sent value change command with value $value"
+				int positionOnBoard = dto.slots.find { it.propertyName == ATT_POSITION }.value
+
+
+				ServerPresentationModel pm = getServerDolphin().findPresentationModelById(pmId(TYPE_DEPARTURE_ON_BOARD, positionOnBoard))
+				pm.attributes.each {attr ->
+					changeValue(attr, dto.slots.find { it.propertyName == attr.propertyName }.value)
 				}
 
 
@@ -110,7 +136,12 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 	}
 
 	Slot createSlot(String propertyName, Object value, int id){
-		new Slot(propertyName, value, "$TYPE_DEPARTURE-$id-$propertyName" )
+		new Slot(propertyName, value, pmId(TYPE_DEPARTURE, id) + '/' + propertyName )
+	}
+
+	String pmIdFromQualifier(String qualifier) {
+		int idx = qualifier.indexOf('/')
+		qualifier.substring(0, idx)
 	}
 
 	def populateDTOs(dtos) {
