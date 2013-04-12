@@ -49,7 +49,7 @@ public class AdminApplication extends javafx.application.Application {
 		.dividerPositions(divs)
 		.items(
 			MasterViewFactory.newMasterView(allDepartures, selectedDeparture, clientDolphin),
-			DetailViewFactory.newView(selectedDeparture, clientDolphin),
+			DetailViewFactory.newView(selectedDeparture, topDeparture, clientDolphin),
 		)
 		.build()
 	}

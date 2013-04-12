@@ -18,7 +18,7 @@ import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 import static org.opendolphin.binding.JFXBinder.bind
 
 class DetailViewFactory {
-	static javafx.scene.Node newView(ClientPresentationModel selectedDeparture, ClientDolphin inClientDolphin){
+	static javafx.scene.Node newView(ClientPresentationModel selectedDeparture, ClientPresentationModel topDeparture, ClientDolphin inClientDolphin){
 
 
 
@@ -74,6 +74,7 @@ class DetailViewFactory {
 				selectedDeparture.getAt(ATT_STATUS).setValue(STATUS_IN_STATION)
 			}
 		});
+
 		bind ATT_STATUS of selectedDeparture to 'disabled' of einfahren, {
 			!STATUS_APPROACHING.equals(it)
 		}
@@ -87,8 +88,20 @@ class DetailViewFactory {
 			!STATUS_IN_STATION.equals(it)
 		}
 
+		bind ATT_DOMAIN_ID of topDeparture to 'disabled' of moveToTop, {
+			def selectedPosition = selectedDeparture.getAt(ATT_POSITION).value
+			println "ontop: $it, selected: $selectedPosition"
+			it == selectedPosition
+		}
+		bind ATT_POSITION of selectedDeparture to 'disabled' of moveToTop, {
+			def domainId = topDeparture.getAt(ATT_DOMAIN_ID).value
+			println "selected: $it, domainId: $domainId"
+			it == domainId
+		}
+
 		migPane
 	}
+
 
 	static void bindBidirectional(String propertyName, javafx.scene.Node textNode, ClientPresentationModel pm) {
 		bind propertyName of pm to 'text' of textNode
