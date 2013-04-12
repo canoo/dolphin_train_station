@@ -1,0 +1,19 @@
+TODO:
+=====
+- Validierung
+- BusinessControls
+- enabling/disabling buttons
+- Admin GUI: DepartureBoard ein/ausblenden
+- executable client jars (gradle application plugin: dist?)
+- Animations
+- Styling
+- save/load to/from file
+- Service implementation
+- Gerrit's DepartureBoard Control/Widget
+- Display App: show more custom controls on swipe, e.g. Clock etc.
+
+WIP:
+=====
+
+DONE:
+=====
