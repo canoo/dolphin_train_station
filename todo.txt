@@ -1,7 +1,6 @@
 TODO:
 =====
 - Gerrit's DepartureBoard Control/Widget
-- Validierung
 - BusinessControls
 
 - Animations
@@ -17,6 +16,7 @@ WIP:
 
 DONE:
 =====
+- Validierung
 - enabling/disabling buttons
 - DTO transfer Admin GUI -> DisplayBoard
 - Admin GUI: DepartureBoard ein/ausblenden

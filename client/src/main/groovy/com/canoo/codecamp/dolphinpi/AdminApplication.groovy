@@ -32,6 +32,10 @@ public class AdminApplication extends javafx.application.Application {
 		javafx.scene.Node root = setupStage();
 		addClientSideAction();
 
+		clientDolphin.send COMMAND_INIT_SELECTED_DEPARTURE, { pms ->
+			println "INITIALIZE"
+		}
+
 		setupBinding();
 
 		Scene scene = new Scene(root, 1000, 400)

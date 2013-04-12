@@ -47,6 +47,16 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 	public void registerIn(ActionRegistry actionRegistry) {
 
+		actionRegistry.register(COMMAND_INIT_SELECTED_DEPARTURE, new CommandHandler<Command>() {
+			public void handleCommand(Command command, List<Command> response) {
+				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, '[0-9][0-9]:[0-9][0-9]',  Tag.REGEX
+				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_DESTINATION, null, '.*',  Tag.REGEX
+				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_TRAIN_NUMBER, null, '[A-Z]{2,3} [0-9]{1,4}',  Tag.REGEX
+				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_TRACK, null, '[0-9]{1,2}',  Tag.REGEX
+				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_STOPOVERS, null, '.*',  Tag.REGEX
+			}
+		})
+
 		actionRegistry.register(COMMAND_GET_ALL_DEPARTURES, new CommandHandler<Command>() {
 			public void handleCommand(Command command, List<Command> response) {
 				List<DTO> dtos = []

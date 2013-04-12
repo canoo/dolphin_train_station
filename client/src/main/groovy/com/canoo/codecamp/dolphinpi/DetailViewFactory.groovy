@@ -59,11 +59,11 @@ class DetailViewFactory {
 		migPane.add(moveToTop = ButtonBuilder.create().text("erster Eintrag auf Abfahrtstafel").build(), "span, grow")
 
 		// binding:
-		bindBidirectional(ATT_DEPARTURE_TIME, departureTime, selectedDeparture, '[0-9][0-9]:[0-9][0-9]')
-		bindBidirectional(ATT_DESTINATION, destination, selectedDeparture, '.*')
-		bindBidirectional(ATT_TRAIN_NUMBER, trainNumber, selectedDeparture, '[A-Z]{2,3} [0-9]{1,4}')
-		bindBidirectional(ATT_TRACK, track, selectedDeparture, '[0-9]{1,2}')
-		bindBidirectional(ATT_STOPOVERS, stopOvers, selectedDeparture, '.*')
+		bindBidirectional(ATT_DEPARTURE_TIME, departureTime, selectedDeparture)
+		bindBidirectional(ATT_DESTINATION, destination, selectedDeparture)
+		bindBidirectional(ATT_TRAIN_NUMBER, trainNumber, selectedDeparture)
+		bindBidirectional(ATT_TRACK, track, selectedDeparture)
+		bindBidirectional(ATT_STOPOVERS, stopOvers, selectedDeparture)
 
 		moveToTop.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -117,10 +117,13 @@ class DetailViewFactory {
 	}
 
 
-	static void bindBidirectional(String propertyName, javafx.scene.Node textNode, ClientPresentationModel pm, String regex) {
+	static void bindBidirectional(String propertyName, javafx.scene.Node textNode, ClientPresentationModel pm) {
 		bind propertyName of pm to 'text' of textNode
 		bind 'text' of textNode to propertyName of pm, {  newVal ->
 			// boolean matches = newVal ==~ '[A-Z]{2,3} [0-9]{1,4}'
+			String regex = pm.getAt(propertyName, Tag.REGEX)?.value
+			if (!regex) return newVal
+
 			boolean matches = newVal ==~ regex
 			putStyle(textNode, !matches, 'invalid')
 

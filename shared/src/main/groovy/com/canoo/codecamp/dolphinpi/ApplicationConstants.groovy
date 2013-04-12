@@ -33,6 +33,7 @@ public class ApplicationConstants {
 		ATT_TRACK, ATT_TRAIN_NUMBER, ATT_STATUS]
 
 
+	public static final String COMMAND_INIT_SELECTED_DEPARTURE = "COMMAND_INIT_SELECTED_DEPARTURE";
 	public static final String COMMAND_GET_ALL_DEPARTURES = "getAllDepartures";
 	public static final String COMMAND_MOVE_TO_TOP = "COMMAND_MOVE_TO_TOP";
 
