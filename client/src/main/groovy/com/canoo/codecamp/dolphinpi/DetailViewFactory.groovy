@@ -1,5 +1,8 @@
 package com.canoo.codecamp.dolphinpi
 
+import javafx.animation.Interpolator
+import javafx.animation.KeyFrame
+import javafx.animation.*
 import groovy.inspect.TextNode
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
@@ -10,6 +13,9 @@ import javafx.scene.control.TextArea
 import javafx.scene.control.TextAreaBuilder
 import javafx.scene.control.TextField
 import javafx.scene.control.TextFieldBuilder
+import javafx.util.Duration
+import jfxtras.labs.scene.control.gauge.Linear
+import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 import org.tbee.javafx.scene.layout.MigPane
@@ -53,11 +59,11 @@ class DetailViewFactory {
 		migPane.add(moveToTop = ButtonBuilder.create().text("erster Eintrag auf Abfahrtstafel").build(), "span, grow")
 
 		// binding:
-		bindBidirectional(ATT_DEPARTURE_TIME, departureTime, selectedDeparture)
-		bindBidirectional(ATT_DESTINATION, destination, selectedDeparture)
-		bindBidirectional(ATT_TRAIN_NUMBER, trainNumber, selectedDeparture)
-		bindBidirectional(ATT_TRACK, track, selectedDeparture)
-		bindBidirectional(ATT_STOPOVERS, stopOvers, selectedDeparture)
+		bindBidirectional(ATT_DEPARTURE_TIME, departureTime, selectedDeparture, '[0-9][0-9]:[0-9][0-9]')
+		bindBidirectional(ATT_DESTINATION, destination, selectedDeparture, '.*')
+		bindBidirectional(ATT_TRAIN_NUMBER, trainNumber, selectedDeparture, '[A-Z]{2,3} [0-9]{1,4}')
+		bindBidirectional(ATT_TRACK, track, selectedDeparture, '[0-9]{1,2}')
+		bindBidirectional(ATT_STOPOVERS, stopOvers, selectedDeparture, '.*')
 
 		moveToTop.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -97,13 +103,48 @@ class DetailViewFactory {
 			it == domainId
 		}
 
+/*
+		bind 'text'  of trainNumber to ATT_TRAIN_NUMBER of selectedDeparture, { newVal ->
+			boolean matches = newVal ==~ '[A-Z]{2,3} [0-9]{1,4}'
+			putStyle(trainNumber, !matches, 'invalid')
+			return !matches ? selectedDeparture.getAt(ATT_TRAIN_NUMBER).value : newVal
+		}
+*/
+
+		putStyle(migPane, true, 'pane')
+
 		migPane
 	}
 
 
-	static void bindBidirectional(String propertyName, javafx.scene.Node textNode, ClientPresentationModel pm) {
+	static void bindBidirectional(String propertyName, javafx.scene.Node textNode, ClientPresentationModel pm, String regex) {
 		bind propertyName of pm to 'text' of textNode
-		bind 'text' of textNode to propertyName of pm
+		bind 'text' of textNode to propertyName of pm, {  newVal ->
+			// boolean matches = newVal ==~ '[A-Z]{2,3} [0-9]{1,4}'
+			boolean matches = newVal ==~ regex
+			putStyle(textNode, !matches, 'invalid')
+
+			if (!matches) {
+				int c = 1
+				int duration = 100
+				Timeline tl = TimelineBuilder.create().cycleCount(2).autoReverse(false).keyFrames(
+					new KeyFrame(Duration.millis(c*25), new KeyValue(textNode.translateXProperty(), 3)),
+					new KeyFrame(Duration.millis(c*75), new KeyValue(textNode.translateXProperty(), -3)),
+					new KeyFrame(Duration.millis(c*100), new KeyValue(textNode.translateXProperty(), 0)),
+				).build()
+				tl.play()
+			}
+
+			return matches ? newVal : pm.getAt(propertyName).value
+		}
+
 	}
 
+	static void putStyle(node, boolean addOrRemove, String styleClassName) {
+		if (addOrRemove) {
+			node.styleClass.add(styleClassName)
+		} else {
+			node.styleClass.remove(styleClassName)
+		}
+	}
 }

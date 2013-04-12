@@ -3,6 +3,10 @@ package com.canoo.codecamp.dolphinpi
 import javafx.collections.FXCollections
 import javafx.scene.Scene
 import javafx.scene.control.SplitPaneBuilder
+import javafx.scene.paint.Color
+import javafx.scene.paint.RadialGradient
+import javafx.scene.paint.RadialGradientBuilder
+import javafx.scene.paint.Stop
 import javafx.stage.Stage
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
@@ -30,7 +34,13 @@ public class AdminApplication extends javafx.application.Application {
 
 		setupBinding();
 
-		stage.setScene(new Scene(root, 1000, 400));
+		Scene scene = new Scene(root, 1000, 400)
+		scene.stylesheets << 'demo.css'
+		RadialGradient gradient = RadialGradientBuilder.create()
+			.stops(new Stop(0.0, Color.BLUE.brighter()), new Stop(0.0, Color.BLUE.darker())).build()
+		scene.fill = gradient
+
+		stage.setScene(scene);
 		stage.setTitle(getClass().getName());
 		stage.show();
 
