@@ -68,6 +68,25 @@ class DetailViewFactory {
 			}
 		});
 
+		einfahren.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				selectedDeparture.getAt(ATT_STATUS).setValue(STATUS_IN_STATION)
+			}
+		});
+		bind ATT_STATUS of selectedDeparture to 'disabled' of einfahren, {
+			!STATUS_APPROACHING.equals(it)
+		}
+		ausfahren.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				selectedDeparture.getAt(ATT_STATUS).setValue(STATUS_HAS_LEFT)
+			}
+		});
+		bind ATT_STATUS of selectedDeparture to 'disabled' of ausfahren, {
+			!STATUS_IN_STATION.equals(it)
+		}
+
 		migPane
 	}
 

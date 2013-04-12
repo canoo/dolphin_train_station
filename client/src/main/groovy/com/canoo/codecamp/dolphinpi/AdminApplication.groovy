@@ -2,14 +2,7 @@ package com.canoo.codecamp.dolphinpi
 
 import javafx.collections.FXCollections
 import javafx.scene.Scene
-import javafx.scene.control.LabelBuilder
 import javafx.scene.control.SplitPaneBuilder
-import javafx.scene.layout.BorderPaneBuilder
-import javafx.scene.layout.Pane
-import javafx.scene.layout.PaneBuilder
-import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
-import javafx.scene.layout.VBoxBuilder
 import javafx.stage.Stage
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
@@ -22,8 +15,7 @@ public class AdminApplication extends javafx.application.Application {
 	javafx.collections.ObservableList<ClientPresentationModel> allDepartures = FXCollections.observableArrayList()
 
 	def selectedDeparture = clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL_ATTRIBUTES)
-
-	private DeparturesBoardApplicationModel departuresModel
+	def topDeparture = clientDolphin.presentationModel(TOP_DEPARTURE, [ATT_DOMAIN_ID: -1])
 
 	public AdminApplication() {
 	}
@@ -32,8 +24,6 @@ public class AdminApplication extends javafx.application.Application {
 	public void start(Stage stage) throws Exception {
 
 		stage.setTitle("Departures of Olten");
-
-		departuresModel = new DeparturesBoardApplicationModel(clientDolphin: clientDolphin).initialize()
 
 		javafx.scene.Node root = setupStage();
 		addClientSideAction();

@@ -1,6 +1,8 @@
 package com.canoo.codecamp.dolphinpi
 
 import groovyx.gpars.dataflow.DataflowQueue
+import org.opendolphin.core.Attribute
+import org.opendolphin.core.BasePresentationModel
 import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.comm.Command
@@ -8,6 +10,7 @@ import org.opendolphin.core.comm.NamedCommand
 import org.opendolphin.core.comm.ValueChangedCommand;
 import org.opendolphin.core.server.DTO;
 import org.opendolphin.core.server.EventBus
+import org.opendolphin.core.server.ServerAttribute
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.opendolphin.core.server.Slot;
 import org.opendolphin.core.server.action.DolphinServerAction;
@@ -23,8 +26,6 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 	private static EventBus eventBus = new EventBus()
 	private final DataflowQueue valueQueue
-	private int lastSentPosition = -1
-
 
 	ApplicationRegistrationAction() {
 		valueQueue = new DataflowQueue()
@@ -32,7 +33,7 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		println "registered new event queue"
 	}
 
-	private void sendDepartureBoardRecord(ServerPresentationModel pm, int inPosition) {
+	private void sendDepartureBoardRecord(PresentationModel pm, int inPosition) {
 		List<Slot> slots = []
 		ALL_ATTRIBUTES.each { propertyName ->
 			if (propertyName != ATT_POSITION) {
@@ -62,18 +63,22 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 		actionRegistry.register(COMMAND_MOVE_TO_TOP, new CommandHandler<Command>() {
 			public void handleCommand(Command command, List<Command> response) {
-				def selectedPm = getServerDolphin().findPresentationModelById( SELECTED_DEPARTURE)
-				int start = selectedPm.findAttributeByPropertyName(ATT_POSITION).value
+				def selectedPm = getServerDolphin().findPresentationModelById(SELECTED_DEPARTURE)
+
+				Attribute domainIdAttribute = getServerDolphin().findPresentationModelById(TOP_DEPARTURE).getAt(ATT_DOMAIN_ID)
+				int lastSentPosition = domainIdAttribute.getValue() as int
+
+
+				int start = selectedPm.findAttributeByPropertyName(ATT_POSITION).value as int
 				if (start == lastSentPosition) {
 					return
 				}
 
 				for (int idx = start; idx < start + 5; idx++) {
-					ServerPresentationModel pm = getServerDolphin().findPresentationModelById(pmId(TYPE_DEPARTURE, idx))
+					PresentationModel pm = getServerDolphin().findPresentationModelById(pmId(TYPE_DEPARTURE, idx))
 					sendDepartureBoardRecord(pm, idx - start + 1)
 				}
-				lastSentPosition = start
-
+				changeValue(domainIdAttribute as ServerAttribute, start)
 
 			}
 
@@ -83,6 +88,11 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 			@Override
 			public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
 				println "value change"
+				PresentationModel topDeparturePM = getServerDolphin().findPresentationModelById(TOP_DEPARTURE)
+				if (!topDeparturePM) return
+
+				Attribute domainIdAttribute = topDeparturePM.getAt(ATT_DOMAIN_ID)
+				int lastSentPosition = domainIdAttribute.getValue() as int
 				if (lastSentPosition == -1) return
 				def attribute = getServerDolphin().getServerModelStore().findAttributeById(command.getAttributeId())
 				if (!attribute?.qualifier?.startsWith(TYPE_DEPARTURE)) return
@@ -132,7 +142,7 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 			createSlot(ATT_DESTINATION, destination,id),
 			createSlot(ATT_TRACK, track,id),
 			createSlot(ATT_STOPOVERS, stopOvers,id),
-			createSlot(ATT_STATUS, "unbekannt", id))
+			createSlot(ATT_STATUS, STATUS_APPROACHING, id))
 	}
 
 	Slot createSlot(String propertyName, Object value, int id){

@@ -1,24 +1,26 @@
 TODO:
 =====
-- remove hard dependency on /home/sven/canoo/codecamp_2013_1/dolphin_pi/_localrepository/jfxtras-labs.jar
+- Gerrit's DepartureBoard Control/Widget
 - Validierung
 - BusinessControls
-- enabling/disabling buttons
-- Admin GUI: DepartureBoard ein/ausblenden
+
 - Animations
 - Styling
+
 - save/load to/from file
 - Service implementation
 - Display App: show more custom controls on swipe, e.g. Clock etc.
+- remove hard dependency on /home/sven/canoo/codecamp_2013_1/dolphin_pi/_localrepository/jfxtras-labs.jar
 
 WIP:
 =====
-- Gerrit's DepartureBoard Control/Widget
+- enabling/disabling buttons
 
 
 DONE:
 =====
 - DTO transfer Admin GUI -> DisplayBoard
+- Admin GUI: DepartureBoard ein/ausblenden
 
 - executable client jars (gradle application plugin: dist?):
   im client modul auf der commandline:
