@@ -1,5 +1,6 @@
 TODO:
 =====
+- remove hard dependency on /home/sven/canoo/codecamp_2013_1/dolphin_pi/_localrepository/jfxtras-labs.jar
 - Validierung
 - BusinessControls
 - enabling/disabling buttons
@@ -9,11 +10,11 @@ TODO:
 - Styling
 - save/load to/from file
 - Service implementation
-- Gerrit's DepartureBoard Control/Widget
 - Display App: show more custom controls on swipe, e.g. Clock etc.
 
 WIP:
 =====
+- Gerrit's DepartureBoard Control/Widget
 
 
 DONE:

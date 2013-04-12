@@ -14,9 +14,9 @@ subprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-		flatDir {
-			dirs '_localrepository'
-		}
+//		flatDir {
+//			dirs '/home/sven/canoo/codecamp_2013_1/dolphin_pi/_localrepository'
+//		}
     }
 	dependencies {
 		compile "org.codehaus.groovy:groovy-all:$groovyAllVersion"

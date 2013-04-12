@@ -2,6 +2,10 @@ package com.canoo.codecamp.dolphinpi
 
 import javafx.collections.FXCollections
 import javafx.scene.Scene
+import javafx.scene.paint.Color
+import javafx.scene.paint.CycleMethod
+import javafx.scene.paint.LinearGradient
+import javafx.scene.paint.Stop
 import javafx.stage.Stage
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
@@ -38,8 +42,12 @@ public class DisplayApplication extends javafx.application.Application {
 
 		setupBinding();
 
+		LinearGradient gradient = new LinearGradient(0, 0, 0, 600, false, CycleMethod.NO_CYCLE,
+			new Stop(0.0, Color.rgb(28, 27, 22)),
+			new Stop(0.25, Color.rgb(38, 37, 32)),
+			new Stop(1.0, Color.rgb(28, 27, 22)));
 
-		stage.setScene(new Scene(root, 500, 400));
+		stage.setScene(new Scene(root, 1024, 768, gradient));
 		stage.setTitle(getClass().getName());
 		stage.show();
 
@@ -56,7 +64,8 @@ public class DisplayApplication extends javafx.application.Application {
 	}
 
 	private javafx.scene.Node setupStage() {
-		DepartureBoardViewFactory.newView(departuresModel)
+//		DepartureBoardViewFactory.newView(departuresModel)
+		DepartureBoardViewFactory.newGerritView(departuresModel)
 	}
 
 	private void setupBinding() {
