@@ -18,39 +18,9 @@ import java.util.List;
  * Date: 23.04.12
  * Time: 09:05
  */
-public class DepartureBoard {
+public class MyDepartureBoard {
     private static final boolean  SOUND_ON     = true;
-    private static final String[] DESTINATIONS = {
-        " ",
-        "NEW YORK",
-        "LONDON",
-        "BASEL",
-        "FRANKFURT",
-        "SYDNEY",
-        "PARIS",
-        "SAN FRANCISCO",
-        "BOSTON",
-        "MUNICH",
-        "BERLIN",
-        "FRANKFURT",
-        "BARCELONA",
-        "BEIJING",
-        "SHANGHAI",
-        "HONG KONG",
-        "TOKYO",
-        "YOKOHAMA",
-        "BRISBANE",
-        "STOCKHOLM",
-        "OSLO",
-        "MOSCOW",
-        "PRAGUE",
-        "LION",
-        "ZURICH",
-        "MADRID",
-        "LISBOA",
-        "CHICAGO",
-        "HELSINKI"
-    };
+
 
     private VBox                pane;
     private List<Row>           queue;
@@ -66,7 +36,7 @@ public class DepartureBoard {
     private int                 queueCounter;
     private boolean             isUpdating;
 
-    public DepartureBoard() {
+    public MyDepartureBoard() {
         super();
         pane = new VBox();
         pane.setSpacing(3);
@@ -75,9 +45,7 @@ public class DepartureBoard {
         lastTimerCall  = 10000000000l;
         lastUpdateCall = 6000000000l;
         lastLedCall    = 750000000l;
-        for (int i = 0 ; i < 8 ; i++) {
-            rows.add(new Row(SOUND_ON, DESTINATIONS));
-        }
+
 
         rows.addListener(new ListChangeListener<Row>(){
             @Override

@@ -5,7 +5,6 @@ TODO:
 - BusinessControls
 - enabling/disabling buttons
 - Admin GUI: DepartureBoard ein/ausblenden
-- executable client jars (gradle application plugin: dist?)
 - Animations
 - Styling
 - save/load to/from file
@@ -20,3 +19,11 @@ WIP:
 DONE:
 =====
 - DTO transfer Admin GUI -> DisplayBoard
+
+- executable client jars (gradle application plugin: dist?):
+  im client modul auf der commandline:
+  - gradle installApp
+  - in client/build/install/client/bin:
+    - mv client admin
+    - cp admin board
+    - in board (letzte zeile) com.canoo.codecamp.dolphinpi.DisplayApplicationStarter eintragen

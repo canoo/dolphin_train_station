@@ -24,7 +24,7 @@ public class Row {
 
 
     public Row() {
-        this(false, "  ", "  ", "", "", "", false, SplitFlap.ALPHANUMERIC);
+        this(true, "  ", "  ", "  ", "  ", "  ", false, SplitFlap.EXTENDED);
     }
 
     public Row(final boolean SOUND_ON, final String[] DESTINATIONS) {

@@ -6,7 +6,6 @@ import eu.hansolo.fx.departureboard.Row
 import javafx.geometry.HPos
 import javafx.geometry.Insets
 import javafx.geometry.VPos
-import javafx.scene.Group
 import javafx.scene.control.TableColumnBuilder
 import javafx.scene.control.TableView
 import javafx.scene.control.TableViewBuilder
@@ -45,7 +44,7 @@ class DepartureBoardViewFactory {
 	}
 
 
-	static javafx.scene.Node newGerritView(DeparturesBoardApplicationModel inModel) {
+	static javafx.scene.Node newGerritView(DepartureBoard departureBoard) {
 		GridPane grid = new GridPane();
 
 		Clock clock = new Clock();
@@ -75,14 +74,6 @@ class DepartureBoardViewFactory {
 		grid.add(headerPane, 1, 1);
 
 		grid.add(labels.getPane(), 1, 2);
-
-		DepartureBoard departureBoard = new DepartureBoard();
-
-		departureBoard.addRow(new Row("12", "05", "ZURICH", "LH1969", "A01"));
-		departureBoard.addRow(new Row("12", "05", "ZURICH", "LH1969", "A01"));
-		departureBoard.addRow(new Row("12", "05", "ZURICH", "LH1969", "A01"));
-		departureBoard.addRow(new Row("12", "05", "ZURICH", "LH1969", "A01"));
-		departureBoard.addRow(new Row("12", "05", "ZURICH", "LH1969", "A01"));
 
 		grid.add(departureBoard.getPane(), 1, 3);
 		GridPane.setHalignment(departureBoard.getPane(), HPos.CENTER);

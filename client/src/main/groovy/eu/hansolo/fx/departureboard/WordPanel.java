@@ -51,7 +51,7 @@ public class WordPanel {
                                          .textColor(textColor)
                                          .soundOn(soundOn)
                                          .sound(SOUND)
-                                         .build();
+										 .build();
         splitFlap.setPrefSize(NO_OF_CHARACTERS * 25, 60);
         text = new SimpleStringProperty();
         textPane.getChildren().addAll(splitFlap);

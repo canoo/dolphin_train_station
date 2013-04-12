@@ -1,5 +1,7 @@
 package com.canoo.codecamp.dolphinpi
 
+import eu.hansolo.fx.departureboard.DepartureBoard
+import eu.hansolo.fx.departureboard.Row
 import javafx.collections.FXCollections
 import javafx.scene.Scene
 import javafx.scene.paint.Color
@@ -7,6 +9,7 @@ import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import javafx.stage.Stage
+import jfxtras.labs.scene.control.gauge.SplitFlap
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 
@@ -64,8 +67,24 @@ public class DisplayApplication extends javafx.application.Application {
 	}
 
 	private javafx.scene.Node setupStage() {
+		DepartureBoardViewFactory.newView(departuresModel)
+	}
+
+	private javafx.scene.Node setupStageGerrit() {
 //		DepartureBoardViewFactory.newView(departuresModel)
-		DepartureBoardViewFactory.newGerritView(departuresModel)
+
+		SplitFlap.EXTENDED.each {println it}
+
+		DepartureBoard departureBoard = new DepartureBoard()
+		departureBoard.addRow(new Row());
+		departureBoard.addRow(new Row());
+		departureBoard.addRow(new Row());
+		departureBoard.addRow(new Row());
+		departureBoard.addRow(new Row());
+//		departureBoard.addRow(new Row("12", "05", "ZURICH", "LH1969", "A01"));
+
+		departureBoard.getRows().get(0)
+
 	}
 
 	private void setupBinding() {
