@@ -14,8 +14,8 @@ TODO:
 
 WIP:
 =====
-- DTO transfer Admin GUI -> DisplayBoard
 
 
 DONE:
 =====
+- DTO transfer Admin GUI -> DisplayBoard

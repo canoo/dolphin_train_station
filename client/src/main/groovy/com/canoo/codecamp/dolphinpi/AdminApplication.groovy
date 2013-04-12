@@ -40,7 +40,7 @@ public class AdminApplication extends javafx.application.Application {
 
 		setupBinding();
 
-		stage.setScene(new Scene(root, 1600, 400));
+		stage.setScene(new Scene(root, 1000, 400));
 		stage.setTitle(getClass().getName());
 		stage.show();
 
@@ -54,17 +54,14 @@ public class AdminApplication extends javafx.application.Application {
 	}
 
 	private javafx.scene.Node setupStage() {
-		double[] divs = [0.4, 0.6].toArray()
+		double[] divs = [0.5].toArray()
 		SplitPaneBuilder.create()
 		.dividerPositions(divs)
 		.items(
 			MasterViewFactory.newMasterView(allDepartures, selectedDeparture, clientDolphin),
 			DetailViewFactory.newView(selectedDeparture, clientDolphin),
-			DepartureBoardViewFactory.newView(departuresModel),
 		)
 		.build()
-
-//		BorderPaneBuilder.create().center(MasterViewFactory.newMasterView(allDepartures)).build()
 	}
 
 	private void setupBinding() {
