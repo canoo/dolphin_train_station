@@ -23,6 +23,8 @@ public class AdminApplication extends javafx.application.Application {
 
 	def selectedDeparture = clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL_ATTRIBUTES)
 
+	javafx.collections.ObservableList<ClientPresentationModel> departuresOnBoard = FXCollections.observableArrayList()
+
 	public AdminApplication() {
 	}
 
@@ -34,6 +36,11 @@ public class AdminApplication extends javafx.application.Application {
 		javafx.scene.Node root = setupStage();
 		addClientSideAction();
 
+		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_1, ALL_ATTRIBUTES)
+		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_2, ALL_ATTRIBUTES)
+		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_3, ALL_ATTRIBUTES)
+		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_4, ALL_ATTRIBUTES)
+		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_5, ALL_ATTRIBUTES)
 
 
 		setupBinding();
@@ -56,7 +63,8 @@ public class AdminApplication extends javafx.application.Application {
 		SplitPaneBuilder.create()
 		.items(
 			MasterViewFactory.newMasterView(allDepartures, selectedDeparture, clientDolphin),
-			DetailViewFactory.newView(selectedDeparture)
+			DetailViewFactory.newView(selectedDeparture, clientDolphin),
+			DepartureBoardViewFactory.newView(departuresOnBoard),
 		)
 		.build()
 

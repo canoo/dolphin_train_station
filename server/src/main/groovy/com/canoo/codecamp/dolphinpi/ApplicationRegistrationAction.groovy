@@ -4,6 +4,7 @@ import groovyx.gpars.dataflow.DataflowQueue
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.comm.Command
 import org.opendolphin.core.comm.NamedCommand
+import org.opendolphin.core.comm.SwitchPresentationModelCommand
 import org.opendolphin.core.comm.ValueChangedCommand;
 import org.opendolphin.core.server.DTO;
 import org.opendolphin.core.server.EventBus
@@ -41,6 +42,19 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 					presentationModel pmId(TYPE_DEPARTURE, index), TYPE_DEPARTURE, dto
 				}
 
+			}
+		})
+
+		actionRegistry.register(COMMAND_MOVE_TO_TOP, new CommandHandler<Command>() {
+			public void handleCommand(Command command, List<Command> response) {
+				def selectedPm = getServerDolphin().findPresentationModelById( SELECTED_DEPARTURE)
+				int start = selectedPm.findAttributeByPropertyName(ATT_POSITION).value
+
+				response << new SwitchPresentationModelCommand(pmId: DEPARTURE_ON_BOARD_1, sourcePmId: pmId(TYPE_DEPARTURE, start))
+				response << new SwitchPresentationModelCommand(pmId: DEPARTURE_ON_BOARD_2, sourcePmId: pmId(TYPE_DEPARTURE, start + 1))
+				response << new SwitchPresentationModelCommand(pmId: DEPARTURE_ON_BOARD_3, sourcePmId: pmId(TYPE_DEPARTURE, start + 2))
+				response << new SwitchPresentationModelCommand(pmId: DEPARTURE_ON_BOARD_4, sourcePmId: pmId(TYPE_DEPARTURE, start + 3))
+				response << new SwitchPresentationModelCommand(pmId: DEPARTURE_ON_BOARD_5, sourcePmId: pmId(TYPE_DEPARTURE, start + 4))
 			}
 		})
 
@@ -85,7 +99,9 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 
 	DTO createDeparture(id, departureTime, trainNumber, destination, stopOvers, track) {
-		new DTO(createSlot(ATT_DEPARTURE_TIME, departureTime, id),
+		new DTO(
+			createSlot(ATT_POSITION, id, id),
+			createSlot(ATT_DEPARTURE_TIME, departureTime, id),
 			createSlot(ATT_TRAIN_NUMBER, trainNumber, id),
 			createSlot(ATT_DESTINATION, destination,id),
 			createSlot(ATT_TRACK, track,id),

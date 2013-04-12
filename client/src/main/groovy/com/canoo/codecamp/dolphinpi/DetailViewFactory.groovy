@@ -1,6 +1,8 @@
 package com.canoo.codecamp.dolphinpi
 
 import groovy.inspect.TextNode
+import javafx.event.ActionEvent
+import javafx.event.EventHandler
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonBuilder
 import javafx.scene.control.LabelBuilder
@@ -8,6 +10,7 @@ import javafx.scene.control.TextArea
 import javafx.scene.control.TextAreaBuilder
 import javafx.scene.control.TextField
 import javafx.scene.control.TextFieldBuilder
+import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 import org.tbee.javafx.scene.layout.MigPane
 
@@ -15,7 +18,7 @@ import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 import static org.opendolphin.binding.JFXBinder.bind
 
 class DetailViewFactory {
-	static javafx.scene.Node newView(ClientPresentationModel selectedDeparture){
+	static javafx.scene.Node newView(ClientPresentationModel selectedDeparture, ClientDolphin inClientDolphin){
 
 
 
@@ -56,7 +59,14 @@ class DetailViewFactory {
 		bindBidirectional(ATT_TRACK, track, selectedDeparture)
 		bindBidirectional(ATT_STOPOVERS, stopOvers, selectedDeparture)
 
+		moveToTop.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				inClientDolphin.send COMMAND_MOVE_TO_TOP, { pms ->
 
+				}
+			}
+		});
 
 		migPane
 	}
