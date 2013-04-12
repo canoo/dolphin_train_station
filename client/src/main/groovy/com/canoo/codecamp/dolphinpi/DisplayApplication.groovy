@@ -2,7 +2,6 @@ package com.canoo.codecamp.dolphinpi
 
 import javafx.collections.FXCollections
 import javafx.scene.Scene
-import javafx.scene.control.SplitPaneBuilder
 import javafx.stage.Stage
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
@@ -13,20 +12,17 @@ public class DisplayApplication extends javafx.application.Application {
 	public static ClientDolphin clientDolphin;
 
 	javafx.collections.ObservableList<ClientPresentationModel> allDepartures = FXCollections.observableArrayList()
-	javafx.collections.ObservableList<ClientPresentationModel> departuresOnBoard = FXCollections.observableArrayList()
 
-
+	private DeparturesBoardApplicationModel departuresModel
 
 	public DisplayApplication() {
 	}
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_1, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_2, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_3, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_4, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_5, ALL_ATTRIBUTES)
+
+		departuresModel = new DeparturesBoardApplicationModel(clientDolphin: clientDolphin)
+		departuresModel.initialize()
 
 		def longPoll = null
 		longPoll = {
@@ -60,7 +56,7 @@ public class DisplayApplication extends javafx.application.Application {
 	}
 
 	private javafx.scene.Node setupStage() {
-		DepartureBoardViewFactory.newView(departuresOnBoard)
+		DepartureBoardViewFactory.newView(departuresModel)
 	}
 
 	private void setupBinding() {

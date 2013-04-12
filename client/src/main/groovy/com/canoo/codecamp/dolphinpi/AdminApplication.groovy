@@ -23,7 +23,7 @@ public class AdminApplication extends javafx.application.Application {
 
 	def selectedDeparture = clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL_ATTRIBUTES)
 
-	javafx.collections.ObservableList<ClientPresentationModel> departuresOnBoard = FXCollections.observableArrayList()
+	private DeparturesBoardApplicationModel departuresModel
 
 	public AdminApplication() {
 	}
@@ -33,20 +33,14 @@ public class AdminApplication extends javafx.application.Application {
 
 		stage.setTitle("Departures of Olten");
 
+		departuresModel = new DeparturesBoardApplicationModel(clientDolphin: clientDolphin).initialize()
+
 		javafx.scene.Node root = setupStage();
 		addClientSideAction();
 
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_1, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_2, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_3, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_4, ALL_ATTRIBUTES)
-		departuresOnBoard << clientDolphin.presentationModel(DEPARTURE_ON_BOARD_5, ALL_ATTRIBUTES)
-
-
 		setupBinding();
 
-
-		stage.setScene(new Scene(root, 800, 400));
+		stage.setScene(new Scene(root, 1600, 400));
 		stage.setTitle(getClass().getName());
 		stage.show();
 
@@ -60,11 +54,13 @@ public class AdminApplication extends javafx.application.Application {
 	}
 
 	private javafx.scene.Node setupStage() {
+		double[] divs = [0.4, 0.6].toArray()
 		SplitPaneBuilder.create()
+		.dividerPositions(divs)
 		.items(
 			MasterViewFactory.newMasterView(allDepartures, selectedDeparture, clientDolphin),
 			DetailViewFactory.newView(selectedDeparture, clientDolphin),
-			DepartureBoardViewFactory.newView(departuresOnBoard),
+			DepartureBoardViewFactory.newView(departuresModel),
 		)
 		.build()
 
