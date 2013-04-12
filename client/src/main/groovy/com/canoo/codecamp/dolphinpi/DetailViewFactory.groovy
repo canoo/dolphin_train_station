@@ -18,7 +18,7 @@ import static org.opendolphin.binding.JFXBinder.bind
 
 class DetailViewFactory {
 
-	static bla(MigPane migPane, javafx.scene.Node inNode, String propertyName, ClientPresentationModel pm) {
+	static addAttributeEditor(MigPane migPane, javafx.scene.Node inNode, String propertyName, ClientPresentationModel pm) {
 		def label
 		migPane.add(label = LabelBuilder.create().build())
 		migPane.add(inNode)
@@ -45,9 +45,9 @@ class DetailViewFactory {
 			Button einfahren, ausfahren, moveToTop
 
 			[ATT_DEPARTURE_TIME, ATT_DESTINATION, ATT_TRAIN_NUMBER, ATT_TRACK].each { String pn ->
-				bla(migPane, TextFieldBuilder.create().build(), pn, selectedDeparture)
+				addAttributeEditor(migPane, TextFieldBuilder.create().build(), pn, selectedDeparture)
 			}
-			bla(migPane, TextAreaBuilder.create().wrapText(true).build(), ATT_STOPOVERS, selectedDeparture)
+			addAttributeEditor(migPane, TextAreaBuilder.create().wrapText(true).build(), ATT_STOPOVERS, selectedDeparture)
 
 			migPane.add(einfahren = ButtonBuilder.create().text("Fährt ein").build())
 			migPane.add(ausfahren = ButtonBuilder.create().text("Fährt aus").build(), "right, grow 0")
