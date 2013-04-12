@@ -54,6 +54,13 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_TRAIN_NUMBER, null, '[A-Z]{2,3} [0-9]{1,4}',  Tag.REGEX
 				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_TRACK, null, '[0-9]{1,2}',  Tag.REGEX
 				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_STOPOVERS, null, '.*',  Tag.REGEX
+
+				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, 'Uhrzeit',  Tag.LABEL
+				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_DESTINATION, null, 'in Richtung',  Tag.LABEL
+				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_TRAIN_NUMBER, null, 'Fahrt',  Tag.LABEL
+				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_TRACK, null, 'Gleis',  Tag.LABEL
+				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_STOPOVERS, null, 'Über',  Tag.LABEL
+
 			}
 		})
 

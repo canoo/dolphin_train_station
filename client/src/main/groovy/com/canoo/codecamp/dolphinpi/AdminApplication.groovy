@@ -8,10 +8,15 @@ import javafx.scene.paint.RadialGradient
 import javafx.scene.paint.RadialGradientBuilder
 import javafx.scene.paint.Stop
 import javafx.stage.Stage
+import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
+import static org.opendolphin.binding.JFXBinder.bind
+import static org.opendolphin.binding.JFXBinder.bind
+import static org.opendolphin.binding.JFXBinder.bind
+import static org.opendolphin.binding.JFXBinder.bind
 
 public class AdminApplication extends javafx.application.Application {
 	public static ClientDolphin clientDolphin;
@@ -31,10 +36,6 @@ public class AdminApplication extends javafx.application.Application {
 
 		javafx.scene.Node root = setupStage();
 		addClientSideAction();
-
-		clientDolphin.send COMMAND_INIT_SELECTED_DEPARTURE, { pms ->
-			println "INITIALIZE"
-		}
 
 		setupBinding();
 
