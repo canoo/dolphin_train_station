@@ -10,6 +10,9 @@ public class ApplicationConstants {
 	public static final String TYPE_DEPARTURE = unique("Departure");
 	public static final String TYPE_DEPARTURE_ON_BOARD = unique("DepartureOnBoard");
 
+	public static final String ATT_ID = "ATT_ID";
+	public static final String SELECTED_DEPARTURE_ID = "ATT_SELECTED_DEPARTURE_ID";
+
 	// Departure PM:
 	public static final String TOP_DEPARTURE = "TOP_DEPARTURE";
 	public static final String ATT_DOMAIN_ID = "ATT_DOMAIN_ID";
@@ -34,6 +37,7 @@ public class ApplicationConstants {
 
 	public static final String COMMAND_UNDO = "COMMAND_UNDO";
 	public static final String COMMAND_REDO = "COMMAND_REDO";
+	public static final String COMMAND_CLEAR_UNDO_REDO_STACK = "COMMAND_CLEAR_UNDO_REDO_STACK";
 
 	public static final String COMMAND_INIT_SELECTED_DEPARTURE = "COMMAND_INIT_SELECTED_DEPARTURE";
 	public static final String COMMAND_GET_ALL_DEPARTURES = "getAllDepartures";

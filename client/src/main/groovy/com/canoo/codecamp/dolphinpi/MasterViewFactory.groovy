@@ -11,9 +11,13 @@ import javafx.scene.control.TableView
 import javafx.scene.control.TableViewBuilder
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.util.Callback
+import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.client.ClientAttributeWrapper
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
+
+import java.beans.PropertyChangeEvent
+import java.beans.PropertyChangeListener
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 import static org.opendolphin.binding.JavaFxUtil.cellEdit
@@ -22,7 +26,7 @@ class MasterViewFactory {
 
 	static javafx.scene.Node newMasterView(
 		ObservableList<ClientPresentationModel> data,
-		ClientPresentationModel selectedDeparture,
+		ClientPresentationModel selectedDepartureId,
 		ClientDolphin inClientDolphin
 	){
 
@@ -40,17 +44,26 @@ class MasterViewFactory {
 
 
 		// used as both, event handler and change listener
-		def changeSelectionHandler = { pm ->
+		def changeSelectionHandler = { PresentationModel pm ->
 			return {
-				inClientDolphin.apply pm to selectedDeparture
+				selectedDepartureId[ATT_ID].setValue(pm.getId())
+//				inClientDolphin.apply pm to selectedDeparture
 			}
 		}
 
 		result.selectionModel.selectedItemProperty().addListener( { o, oldVal, selectedPM ->
-//			boolean gotDeselected = !selectedPM
 			changeSelectionHandler(selectedPM).call()
 		} as ChangeListener)
 
+
+		selectedDepartureId[ATT_ID].addPropertyChangeListener('value', new PropertyChangeListener() {
+			@Override
+			void propertyChange(final PropertyChangeEvent evt) {
+				String pmId = evt.newValue
+				PresentationModel pm = inClientDolphin.modelStore.findPresentationModelById(pmId)
+				result.getSelectionModel().select(pm[ATT_POSITION].value)
+			}
+		})
 
 		return result
 

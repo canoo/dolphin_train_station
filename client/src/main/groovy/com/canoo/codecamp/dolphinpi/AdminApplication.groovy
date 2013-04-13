@@ -12,6 +12,9 @@ import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 
+import java.beans.PropertyChangeEvent
+import java.beans.PropertyChangeListener
+
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 import static org.opendolphin.binding.JFXBinder.bind
 import static org.opendolphin.binding.JFXBinder.bind
@@ -23,6 +26,7 @@ public class AdminApplication extends javafx.application.Application {
 
 	javafx.collections.ObservableList<ClientPresentationModel> allDepartures = FXCollections.observableArrayList()
 
+	def selectedDepartureId = clientDolphin.presentationModel(SELECTED_DEPARTURE_ID, [ATT_ID])
 	def selectedDeparture = clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL_ATTRIBUTES)
 	def topDeparture = clientDolphin.presentationModel(TOP_DEPARTURE, [ATT_DOMAIN_ID: -1])
 
@@ -31,6 +35,16 @@ public class AdminApplication extends javafx.application.Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
+
+		selectedDepartureId[ATT_ID].addPropertyChangeListener('value', new PropertyChangeListener() {
+			@Override
+			void propertyChange(final PropertyChangeEvent evt) {
+				def id = evt.newValue
+
+				def pm = clientDolphin.modelStore.findPresentationModelById(id)
+				clientDolphin.apply pm to selectedDeparture
+			}
+		})
 
 		stage.setTitle("Departures of Olten");
 
@@ -54,8 +68,6 @@ public class AdminApplication extends javafx.application.Application {
 				allDepartures << pm
 			}
 		}
-
-
 	}
 
 	private javafx.scene.Node setupStage() {
@@ -63,7 +75,7 @@ public class AdminApplication extends javafx.application.Application {
 		SplitPaneBuilder.create()
 		.dividerPositions(divs)
 		.items(
-			MasterViewFactory.newMasterView(allDepartures, selectedDeparture, clientDolphin),
+			MasterViewFactory.newMasterView(allDepartures, selectedDepartureId, clientDolphin),
 			DetailViewFactory.newView(selectedDeparture, topDeparture, clientDolphin),
 		)
 		.build()

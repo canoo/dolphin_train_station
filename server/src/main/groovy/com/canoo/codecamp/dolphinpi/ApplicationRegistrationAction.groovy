@@ -112,7 +112,6 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 			@Override
 			public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
-
 				PresentationModel selectedPM = getServerDolphin()[SELECTED_DEPARTURE]
 				if (!selectedPM.findAttributeById(command.attributeId)) {
 					if (hasToBeIgnored(nextTripleToIgnore, command)) {
@@ -171,6 +170,15 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 				nextTripleToIgnore = new ValueChangedCommand(attributeId: valueChangedCommand.attributeId, oldValue: valueChangedCommand.oldValue, newValue: valueChangedCommand.newValue)
 				undoStack.push(valueChangedCommand)
 				changeValue(getServerDolphin().serverModelStore.findAttributeById(valueChangedCommand.attributeId) as ServerAttribute, valueChangedCommand.newValue)
+			}
+		})
+
+		actionRegistry.register(COMMAND_CLEAR_UNDO_REDO_STACK, new NamedCommandHandler() {
+
+			@Override
+			void handleCommand(final NamedCommand command, final List<Command> response) {
+				redoStack.clear()
+				undoStack.clear()
 			}
 		})
 
