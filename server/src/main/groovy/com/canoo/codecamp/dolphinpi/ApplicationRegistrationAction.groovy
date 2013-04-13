@@ -113,16 +113,14 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 			@Override
 			public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
 				PresentationModel selectedPM = getServerDolphin()[SELECTED_DEPARTURE]
-				if (!selectedPM.findAttributeById(command.attributeId)) {
+				if (selectedPM && !selectedPM.findAttributeById(command.attributeId)) {
 					if (hasToBeIgnored(nextTripleToIgnore, command)) {
 						nextTripleToIgnore = null
-					}
-					else {
+					} else {
 						undoStack.push(command)
 						redoStack.clear()
 					}
 				}
-
 
 				PresentationModel topDeparturePM = getServerDolphin()[TOP_DEPARTURE]
 				if (!topDeparturePM) return
