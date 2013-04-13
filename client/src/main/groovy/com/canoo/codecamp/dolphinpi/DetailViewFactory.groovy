@@ -33,9 +33,9 @@ class DetailViewFactory {
 
 
 		MigPane migPane = new MigPane(
-			"wrap 2, inset 10 10 10 10",                         // Layout Constraints
+			"wrap 2, inset 30 30 30 30",                         // Layout Constraints
 			"[pref!]10[fill, grow]",  // Column constraints
-			"[]10[]10[]10[]10[fill, top, grow]10[]10[]",  // Column constraints
+			"[pref!]10[pref!]10[pref!]10[pref!]10[fill, top, grow]30[]10[]",  // Row constraints
 		)
 
 		// binding:
@@ -57,9 +57,7 @@ class DetailViewFactory {
 			moveToTop.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent actionEvent) {
-					inClientDolphin.send COMMAND_MOVE_TO_TOP, { pms2 ->
-
-					}
+					inClientDolphin.send COMMAND_MOVE_TO_TOP
 				}
 			});
 

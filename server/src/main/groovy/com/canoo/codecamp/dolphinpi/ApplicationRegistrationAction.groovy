@@ -36,31 +36,30 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		List<Slot> slots = []
 		ALL_ATTRIBUTES.each { propertyName ->
 			if (propertyName != ATT_POSITION) {
-				slots << new Slot(propertyName, pm.findAttributeByPropertyName(propertyName).value)
+				slots << new Slot(propertyName, pm[propertyName].value)
 			}
 		}
 		slots << new Slot(ATT_POSITION, inPosition)
 
 		DTO dto = new DTO(slots)
-		eventBus.publish(valueQueue, dto);
+		eventBus.publish valueQueue, dto
 	}
 
 	public void registerIn(ActionRegistry actionRegistry) {
 
 		actionRegistry.register(COMMAND_INIT_SELECTED_DEPARTURE, new CommandHandler<Command>() {
 			public void handleCommand(Command command, List<Command> response) {
-				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, '[0-9][0-9]:[0-9][0-9]',  Tag.REGEX
-				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_DESTINATION, null, '.*',  Tag.REGEX
-				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_TRAIN_NUMBER, null, '[A-Z]{2,3} [0-9]{1,4}',  Tag.REGEX
-				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_TRACK, null, '[0-9]{1,2}',  Tag.REGEX
-				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_STOPOVERS, null, '.*',  Tag.REGEX
+				initAt SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, 	null, '[0-9][0-9]:[0-9][0-9]',  Tag.REGEX
+				initAt SELECTED_DEPARTURE, ATT_DESTINATION, 	null, '.*',  					Tag.REGEX
+				initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER, 	null, '[A-Z]{2,3} [0-9]{1,4}',  Tag.REGEX
+				initAt SELECTED_DEPARTURE, ATT_TRACK, 			null, '[0-9]{1,2}',  			Tag.REGEX
+				initAt SELECTED_DEPARTURE, ATT_STOPOVERS, 		null, '.*',  					Tag.REGEX
 
-				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, 'Uhrzeit',  Tag.LABEL
-				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_DESTINATION, null, 'in Richtung',  Tag.LABEL
-				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_TRAIN_NUMBER, null, 'Fahrt',  Tag.LABEL
-				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_TRACK, null, 'Gleis',  Tag.LABEL
-				getServerDolphin().initAt response, SELECTED_DEPARTURE, ATT_STOPOVERS, null, 'Über',  Tag.LABEL
-
+				initAt SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, 	null, 'Uhrzeit',  				Tag.LABEL
+				initAt SELECTED_DEPARTURE, ATT_DESTINATION, 	null, 'In Richtung',  			Tag.LABEL
+				initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER, 	null, 'Fahrt',  				Tag.LABEL
+				initAt SELECTED_DEPARTURE, ATT_TRACK, 			null, 'Gleis',  				Tag.LABEL
+				initAt SELECTED_DEPARTURE, ATT_STOPOVERS, 		null, 'Über', 					Tag.LABEL
 			}
 		})
 
@@ -72,91 +71,81 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 				dtos.eachWithIndex { dto, index ->
 					presentationModel pmId(TYPE_DEPARTURE, index), TYPE_DEPARTURE, dto
 				}
-
 			}
 		})
 
 
 		actionRegistry.register(COMMAND_MOVE_TO_TOP, new CommandHandler<Command>() {
 			public void handleCommand(Command command, List<Command> response) {
-				def selectedPm = getServerDolphin().findPresentationModelById(SELECTED_DEPARTURE)
+				def selectedPm = getServerDolphin()[SELECTED_DEPARTURE]
 
-				Attribute domainIdAttribute = getServerDolphin().findPresentationModelById(TOP_DEPARTURE).getAt(ATT_DOMAIN_ID)
-				int lastSentPosition = domainIdAttribute.getValue() as int
+				Attribute domainIdAttribute = getServerDolphin()[TOP_DEPARTURE][ATT_DOMAIN_ID]
+				int lastSentPosition = domainIdAttribute.value as int
 
 
-				int start = selectedPm.findAttributeByPropertyName(ATT_POSITION).value as int
+				int start = selectedPm[ATT_POSITION].value as int
 				if (start == lastSentPosition) {
 					return
 				}
 
 				for (int idx = start; idx < start + 5; idx++) {
-					PresentationModel pm = getServerDolphin().findPresentationModelById(pmId(TYPE_DEPARTURE, idx))
+					PresentationModel pm = getServerDolphin()[pmId(TYPE_DEPARTURE, idx)]
 					sendDepartureBoardRecord(pm, idx - start + 1)
 				}
-				changeValue(domainIdAttribute as ServerAttribute, start)
-
+				changeValue domainIdAttribute as ServerAttribute, start
 			}
-
 		})
 
 		actionRegistry.register(ValueChangedCommand.class, new CommandHandler<ValueChangedCommand>() {
 			@Override
 			public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
-				PresentationModel topDeparturePM = getServerDolphin().findPresentationModelById(TOP_DEPARTURE)
+				PresentationModel topDeparturePM = getServerDolphin()[TOP_DEPARTURE]
 				if (!topDeparturePM) return
 
-				Attribute domainIdAttribute = topDeparturePM.getAt(ATT_DOMAIN_ID)
-				int lastSentPosition = domainIdAttribute.getValue() as int
+				Attribute domainIdAttribute = topDeparturePM[ATT_DOMAIN_ID]
+				int lastSentPosition = domainIdAttribute.value as int
 				if (lastSentPosition == -1) return
-				def attribute = getServerDolphin().getServerModelStore().findAttributeById(command.getAttributeId())
+				def attribute = getServerDolphin().serverModelStore.findAttributeById(command.attributeId)
 				if (!attribute?.qualifier?.startsWith(TYPE_DEPARTURE)) return
 				if (attribute.tag != Tag.VALUE) return
 
 				String pmId = pmIdFromQualifier(attribute.qualifier)
 
-				ServerPresentationModel modifiedPm = getServerDolphin().findPresentationModelById(pmId)
+				ServerPresentationModel modifiedPm = getServerDolphin()[pmId]
 
-				int modifiedPmPosition = modifiedPm.findAttributeByPropertyName(ATT_POSITION).value
+				int modifiedPmPosition = modifiedPm[ATT_POSITION].value as int
 				if (modifiedPmPosition >= lastSentPosition &&  modifiedPmPosition <= lastSentPosition + 5) {
 					sendDepartureBoardRecord(modifiedPm, modifiedPmPosition - lastSentPosition + 1)
 				}
-
-
 			}
 		})
 
 		actionRegistry.register(COMMAND_LONG_POLL, new NamedCommandHandler() {
 			@Override
 			void handleCommand(final NamedCommand command, final List<Command> response) {
-				DTO dto = valueQueue.getVal(60, TimeUnit.SECONDS);
+				DTO dto = valueQueue.getVal(60, TimeUnit.SECONDS)
 				if (dto == null) return
 				int positionOnBoard = dto.slots.find { it.propertyName == ATT_POSITION }.value
 
-
-				ServerPresentationModel pm = getServerDolphin().findPresentationModelById(pmId(TYPE_DEPARTURE_ON_BOARD, positionOnBoard))
+				ServerPresentationModel pm = getServerDolphin()[pmId(TYPE_DEPARTURE_ON_BOARD, positionOnBoard)]
 				pm.attributes.each {attr ->
 					changeValue(attr, dto.slots.find { it.propertyName == attr.propertyName }.value)
 				}
-
-
 			}
 		})
-
-
 	}
 
 
 
 	DTO createDeparture(id, departureTime, trainNumber, destination, stopOvers, track) {
 		new DTO(
-			createSlot(ATT_POSITION, id, id),
-			createSlot(ATT_DEPARTURE_TIME, departureTime, id),
-			createSlot(ATT_TRAIN_NUMBER, trainNumber, id),
-			createSlot(ATT_DESTINATION, destination,id),
-			createSlot(ATT_TRACK, track,id),
-			createSlot(ATT_STOPOVERS, stopOvers,id),
-			createSlot(ATT_STATUS, STATUS_APPROACHING, id))
+			createSlot(ATT_POSITION, 		id, id),
+			createSlot(ATT_DEPARTURE_TIME, 	departureTime, id),
+			createSlot(ATT_TRAIN_NUMBER, 	trainNumber, id),
+			createSlot(ATT_DESTINATION, 	destination,id),
+			createSlot(ATT_TRACK, 			track,id),
+			createSlot(ATT_STOPOVERS, 		stopOvers,id),
+			createSlot(ATT_STATUS, 			STATUS_APPROACHING, id))
 	}
 
 	Slot createSlot(String propertyName, Object value, int id){
@@ -164,8 +153,7 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 	}
 
 	String pmIdFromQualifier(String qualifier) {
-		int idx = qualifier.indexOf('/')
-		qualifier.substring(0, idx)
+		qualifier.split('/').first()
 	}
 
 	def populateDTOs(dtos) {

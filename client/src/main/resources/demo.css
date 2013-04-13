@@ -1,5 +1,8 @@
 .label {
-    -fx-text-fill: black;
+    -fx-text-fill: saddlebrown;
+}
+.table-view .label {
+	-fx-text-fill: black;
 }
 .tooltip {
     -fx-background-color:firebrick;
@@ -23,10 +26,7 @@
 
 /*.tab-pane *.tab-header-background {*/
 .pane {
-    -fx-background-color: linear-gradient( to bottom,
-        transparent       30%,
-        rgba(0,0,0,0.15) 100%
-    );
+    -fx-background-color: rgba(255, 239, 213, 0.69);
 }
 
 .invalid {
@@ -36,3 +36,14 @@
 .dirty {
     -fx-text-fill:yellow;
 }
+.text-field {
+	-fx-background-color: papayawhip,white;
+}
+.text-field:focused {
+	-fx-background-color: orange,white;
+}
+.text-area {
+	-fx-background-color: papayawhip,white;
+}.text-area:focused {
+	 -fx-background-color: orange,white;
+ }
