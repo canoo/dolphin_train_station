@@ -32,6 +32,8 @@ public class ApplicationConstants {
 	static final List<String> ALL_ATTRIBUTES = [ATT_POSITION, ATT_DEPARTURE_TIME, ATT_DESTINATION, ATT_STOPOVERS,
 		ATT_TRACK, ATT_TRAIN_NUMBER, ATT_STATUS]
 
+	public static final String COMMAND_UNDO = "COMMAND_UNDO";
+	public static final String COMMAND_REDO = "COMMAND_REDO";
 
 	public static final String COMMAND_INIT_SELECTED_DEPARTURE = "COMMAND_INIT_SELECTED_DEPARTURE";
 	public static final String COMMAND_GET_ALL_DEPARTURES = "getAllDepartures";

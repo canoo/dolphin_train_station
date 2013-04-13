@@ -3,8 +3,6 @@ TODO:
 - Gerrit's DepartureBoard Control/Widget
 - BusinessControls
 
-- Animations
-- Styling
 
 - save/load to/from file
 - Service implementation
@@ -12,10 +10,12 @@ TODO:
 
 WIP:
 =====
-
+- undo
 
 DONE:
 =====
+- Animations
+- Styling
 - Validierung
 - enabling/disabling buttons
 - DTO transfer Admin GUI -> DisplayBoard

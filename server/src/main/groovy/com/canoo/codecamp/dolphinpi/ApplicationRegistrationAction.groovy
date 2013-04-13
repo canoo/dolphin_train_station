@@ -2,7 +2,6 @@ package com.canoo.codecamp.dolphinpi
 
 import groovyx.gpars.dataflow.DataflowQueue
 import org.opendolphin.core.Attribute
-import org.opendolphin.core.BasePresentationModel
 import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.comm.Command
@@ -27,6 +26,11 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 	private static EventBus eventBus = new EventBus()
 	private final DataflowQueue valueQueue
 
+	Deque<ValueChangedCommand> undoStack = new ArrayDeque<>();
+	Deque<ValueChangedCommand> redoStack = new ArrayDeque<>();
+
+	ValueChangedCommand nextTripleToIgnore
+
 	ApplicationRegistrationAction() {
 		valueQueue = new DataflowQueue()
 		eventBus.subscribe(valueQueue)
@@ -43,6 +47,13 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 		DTO dto = new DTO(slots)
 		eventBus.publish valueQueue, dto
+	}
+
+	boolean hasToBeIgnored(final ValueChangedCommand inNextTripleToIgnore, final ValueChangedCommand inValueChangedCommand) {
+		return inNextTripleToIgnore != null &&
+			inNextTripleToIgnore.attributeId == inValueChangedCommand.attributeId &&
+			inNextTripleToIgnore.oldValue == inValueChangedCommand.oldValue &&
+			inNextTripleToIgnore.newValue == inValueChangedCommand.newValue
 	}
 
 	public void registerIn(ActionRegistry actionRegistry) {
@@ -97,8 +108,23 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		})
 
 		actionRegistry.register(ValueChangedCommand.class, new CommandHandler<ValueChangedCommand>() {
+
+
 			@Override
 			public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
+
+				PresentationModel selectedPM = getServerDolphin()[SELECTED_DEPARTURE]
+				if (!selectedPM.findAttributeById(command.attributeId)) {
+					if (hasToBeIgnored(nextTripleToIgnore, command)) {
+						nextTripleToIgnore = null
+					}
+					else {
+						undoStack.push(command)
+						redoStack.clear()
+					}
+				}
+
+
 				PresentationModel topDeparturePM = getServerDolphin()[TOP_DEPARTURE]
 				if (!topDeparturePM) return
 
@@ -117,6 +143,34 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 				if (modifiedPmPosition >= lastSentPosition &&  modifiedPmPosition <= lastSentPosition + 5) {
 					sendDepartureBoardRecord(modifiedPm, modifiedPmPosition - lastSentPosition + 1)
 				}
+			}
+
+		})
+
+		actionRegistry.register(COMMAND_UNDO, new NamedCommandHandler() {
+
+			@Override
+			void handleCommand(final NamedCommand command, final List<Command> response) {
+				if (undoStack.isEmpty()) {
+					return
+				}
+				ValueChangedCommand valueChangedCommand = undoStack.pop()
+				nextTripleToIgnore = new ValueChangedCommand(attributeId: valueChangedCommand.attributeId, oldValue: valueChangedCommand.newValue, newValue: valueChangedCommand.oldValue)
+				redoStack.push(valueChangedCommand)
+				changeValue(getServerDolphin().serverModelStore.findAttributeById(valueChangedCommand.attributeId) as ServerAttribute, valueChangedCommand.oldValue)
+			}
+		})
+		actionRegistry.register(COMMAND_REDO, new NamedCommandHandler() {
+
+			@Override
+			void handleCommand(final NamedCommand command, final List<Command> response) {
+				if (redoStack.isEmpty()) {
+					return
+				}
+				ValueChangedCommand valueChangedCommand = redoStack.pop()
+				nextTripleToIgnore = new ValueChangedCommand(attributeId: valueChangedCommand.attributeId, oldValue: valueChangedCommand.oldValue, newValue: valueChangedCommand.newValue)
+				undoStack.push(valueChangedCommand)
+				changeValue(getServerDolphin().serverModelStore.findAttributeById(valueChangedCommand.attributeId) as ServerAttribute, valueChangedCommand.newValue)
 			}
 		})
 
