@@ -24,8 +24,7 @@ public class AdminApplicationStarter {
 
 	private static ClientConnector createConnector(ClientDolphin clientDolphin) {
 		//running real client server mode.
-//        HttpClientConnector connector = new HttpClientConnector(clientDolphin, "http://localhost:8080/appContext/applicationServlet/");
-		HttpClientConnector connector = new HttpClientConnector(clientDolphin, "http://10.0.1.18:8080/appContext/applicationServlet/");
+        HttpClientConnector connector = new HttpClientConnector(clientDolphin, "http://localhost:8080/appContext/applicationServlet/");
 		connector.setCodec(new JsonCodec());
 		return connector;
 	}
