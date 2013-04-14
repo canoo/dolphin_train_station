@@ -1,5 +1,7 @@
 #Open Dolphin Demo: arrival/departure board and admin gui for a train station
 
+Created at Canoo Code Camp, Spring of 2013
+
 This application is about a train station, say Olten in Switzerland.
 On the platforms of the station there are many departure boards informing people about
 trains starting from this station in the near future.
@@ -24,17 +26,11 @@ simulate arrival and departures of trains.
 * start a seconde instance of the board in the same way to simulate 2 boards on the station's platform
 * now start the admin GUI: ./startadmin &
 
+The admin GUI is a master/detail view which displays all trains in a table. Selecting one entry shows the details
+of it in an editor in the right part of the window. When editing details not how the data in the table changes as well.
 
-
-
-##Build and run from IntelliJ Idea
-
-
-##Build
-
-##Run
-
-
-
-
+Now select an entry in the table and press the button 'erster Eintrag auf Abfahrtstafel' which will send five records
+starting from the selected one to the boards. Note that they appear on the boards. And now if you change data
+of one of those 5 records in the editor the data changes immediately not only in the table of the admin GUI but
+also on the departure boards.
 
