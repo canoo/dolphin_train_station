@@ -1,4 +1,4 @@
-package departureboardswingbased.board;
+package com.canoo.codecamp.dolphinpi.swingbaseddisplay.departureboardswingbased.board;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;

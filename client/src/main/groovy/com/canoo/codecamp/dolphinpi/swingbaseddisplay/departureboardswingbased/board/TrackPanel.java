@@ -1,9 +1,9 @@
-package departureboardswingbased.board;
+package com.canoo.codecamp.dolphinpi.swingbaseddisplay.departureboardswingbased.board;
 
 import javax.swing.JPanel;
 
-import departureboardswingbased.splitflap.GlobalTimer;
-import departureboardswingbased.splitflap.SplitFlap;
+import com.canoo.codecamp.dolphinpi.swingbaseddisplay.departureboardswingbased.splitflap.GlobalTimer;
+import com.canoo.codecamp.dolphinpi.swingbaseddisplay.departureboardswingbased.splitflap.SplitFlap;
 
 public class TrackPanel extends JPanel {
 	private SplitFlap trackLeft;

@@ -1,4 +1,4 @@
-package departureboardswingbased.splitflap;
+package com.canoo.codecamp.dolphinpi.swingbaseddisplay.departureboardswingbased.splitflap;
 
 import java.awt.Color;
 import java.awt.Font;
