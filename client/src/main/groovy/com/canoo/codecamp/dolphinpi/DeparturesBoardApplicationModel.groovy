@@ -3,13 +3,14 @@ package com.canoo.codecamp.dolphinpi
 import javafx.collections.FXCollections
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
+
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 
 class DeparturesBoardApplicationModel {
 
 	ClientDolphin clientDolphin;
 
-	javafx.collections.ObservableList<ClientPresentationModel> departuresOnBoard = FXCollections.observableArrayList()
+	final javafx.collections.ObservableList<ClientPresentationModel> departuresOnBoard = FXCollections.observableArrayList()
 
 	DeparturesBoardApplicationModel initialize() {
 		(1..5).each {
