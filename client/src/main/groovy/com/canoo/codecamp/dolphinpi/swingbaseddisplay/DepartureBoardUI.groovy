@@ -46,9 +46,9 @@ public class DepartureBoardUI extends JFrame {
 	}
 
 	void doAllBindings() {
-		for (it in (1..5)) {
-			PresentationModel pm = clientDolphin.modelStore.findPresentationModelById(pmId(TYPE_DEPARTURE_ON_BOARD, it))
-			final row = board.getRows().get(it - 1)
+		for (i in (1..5)) {
+			PresentationModel pm = clientDolphin.modelStore.findPresentationModelById(pmId(TYPE_DEPARTURE_ON_BOARD, i))
+			final row = board.getRows().get(i - 1)
 			bind(pm[ATT_DEPARTURE_TIME],  { Collection<String> newValue = ((String)it.newValue).split(":")
 									 	    row.setHour newValue.first()
 										    row.setMinute newValue.last()

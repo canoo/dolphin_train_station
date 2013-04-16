@@ -19,7 +19,8 @@ import org.opendolphin.core.server.comm.NamedCommandHandler
 
 import java.util.concurrent.TimeUnit
 
-import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*;
+import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
+import static com.canoo.codecamp.dolphinpi.ApplicationConstants.pmId;
 
 class ApplicationRegistrationAction extends DolphinServerAction {
 
@@ -56,6 +57,22 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 			inNextTripleToIgnore.newValue == inValueChangedCommand.newValue
 	}
 
+	PresentationModel pmAtPos (int pos){
+		getServerDolphin()[pmId(TYPE_DEPARTURE, pos)]
+	}
+
+	PresentationModel nextModelOnBoard(int startPos){
+		int pos = startPos
+		PresentationModel pm = pmAtPos(pos)
+		//todo doesn't work at the end of the table
+		while(pm[ATT_STATUS].value == STATUS_HAS_LEFT){
+			pos++
+			pm = pmAtPos(pos)
+		}
+
+		pm
+	}
+
 	public void registerIn(ActionRegistry actionRegistry) {
 
 		actionRegistry.register(COMMAND_INIT_SELECTED_DEPARTURE, new CommandHandler<Command>() {
@@ -90,20 +107,19 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 			public void handleCommand(Command command, List<Command> response) {
 				def selectedPm = getServerDolphin()[SELECTED_DEPARTURE]
 
+				int top = selectedPm[ATT_POSITION].value as int
+				PresentationModel pmOnTopOfBoard = nextModelOnBoard(top)
+				top = pmOnTopOfBoard[ATT_POSITION].value as Integer
+				sendDepartureBoardRecord(pmOnTopOfBoard, 1)
+				int pos = top + 1
+				for (int idx = 2; idx < 6; idx++) {
+					PresentationModel pm = nextModelOnBoard(pos)
+					pos = (pm[ATT_POSITION].value as Integer) + 1
+					sendDepartureBoardRecord(pm, idx)
+				}
+
 				Attribute domainIdAttribute = getServerDolphin()[TOP_DEPARTURE][ATT_DOMAIN_ID]
-				int lastSentPosition = domainIdAttribute.value as int
-
-
-				int start = selectedPm[ATT_POSITION].value as int
-				if (start == lastSentPosition) {
-					return
-				}
-
-				for (int idx = start; idx < start + 5; idx++) {
-					PresentationModel pm = getServerDolphin()[pmId(TYPE_DEPARTURE, idx)]
-					sendDepartureBoardRecord(pm, idx - start + 1)
-				}
-				changeValue domainIdAttribute as ServerAttribute, start
+				changeValue domainIdAttribute as ServerAttribute, top
 			}
 		})
 
@@ -125,20 +141,23 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 				PresentationModel topDeparturePM = getServerDolphin()[TOP_DEPARTURE]
 				if (!topDeparturePM) return
 
-				Attribute domainIdAttribute = topDeparturePM[ATT_DOMAIN_ID]
-				int lastSentPosition = domainIdAttribute.value as int
+				int lastSentPosition = topDeparturePM[ATT_DOMAIN_ID].value as int
 				if (lastSentPosition == -1) return
-				def attribute = getServerDolphin().serverModelStore.findAttributeById(command.attributeId)
-				if (!attribute?.qualifier?.startsWith(TYPE_DEPARTURE)) return
-				if (attribute.tag != Tag.VALUE) return
+				def changedAttribute = getServerDolphin().serverModelStore.findAttributeById(command.attributeId)
+				if (!changedAttribute?.qualifier?.startsWith(TYPE_DEPARTURE)) return
+				if (changedAttribute.tag != Tag.VALUE) return
 
-				String pmId = pmIdFromQualifier(attribute.qualifier)
+				String pmId = pmIdFromQualifier(changedAttribute.qualifier)
 
 				ServerPresentationModel modifiedPm = getServerDolphin()[pmId]
 
 				int modifiedPmPosition = modifiedPm[ATT_POSITION].value as int
-				if (modifiedPmPosition >= lastSentPosition &&  modifiedPmPosition <= lastSentPosition + 5) {
+				if (modifiedPmPosition >= lastSentPosition && modifiedPmPosition <= lastSentPosition + 5) {
 					sendDepartureBoardRecord(modifiedPm, modifiedPmPosition - lastSentPosition + 1)
+					if (changedAttribute.propertyName == ATT_STATUS && command.newValue == STATUS_HAS_LEFT) {
+
+
+					}
 				}
 			}
 
