@@ -2,13 +2,13 @@ package com.canoo.codecamp.dolphinpi
 
 import org.opendolphin.core.client.comm.JavaFXUiThreadHandler
 import org.opendolphin.core.comm.DefaultInMemoryConfig
-import com.canoo.codecamp.dolphinpi.MainRegistrarAction
-import com.canoo.codecamp.dolphinpi.MainView
 
 def config = new DefaultInMemoryConfig()
 config.clientDolphin.clientConnector.uiThreadHandler = new JavaFXUiThreadHandler()
 config.serverDolphin.registerDefaultActions()
+config.getServerDolphin().register(new ApplicationDirector());
 
-config.serverDolphin.register(new MainRegistrarAction())
+AdminApplication.clientDolphin = config.getClientDolphin();
+javafx.application.Application.launch(AdminApplication.class);
 
-MainView.show(config.clientDolphin)
+
