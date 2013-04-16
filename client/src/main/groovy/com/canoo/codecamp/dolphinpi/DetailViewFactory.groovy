@@ -35,7 +35,7 @@ class DetailViewFactory {
 		MigPane migPane = new MigPane(
 			"wrap 2, inset 30 30 30 30",                         // Layout Constraints
 			"[pref!]10[fill, grow]",  // Column constraints
-			"[pref!]10[pref!]10[pref!]10[pref!]10[fill, top, grow]30[]10[]10[]",  // Row constraints
+			"[pref!]10[pref!]10[pref!]10[pref!]10[top, grow, fill]30[]10[]10[]",  // Row constraints
 		)
 
 		// binding:

@@ -12,21 +12,21 @@ import java.beans.PropertyChangeListener
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 
-public class DepartureBoardUI extends JFrame {
+public class DepartureBoardFrame extends JFrame {
 	private final ClientDolphin clientDolphin;
 
 	private final DeparturesBoardApplicationModel departuresModel
 
 	private DepartureBoard board
 
-	public DepartureBoardUI(ClientDolphin clientDolphin, DeparturesBoardApplicationModel departuresModel) {
+	public DepartureBoardFrame(ClientDolphin clientDolphin, DeparturesBoardApplicationModel departuresModel) {
 		super("Abfahrten ab Olten")
 		this.clientDolphin = clientDolphin
 		this.departuresModel = departuresModel
 	}
 
 
-	public void start() {
+	public void createAndShow() {
 		def longPoll = null
 		longPoll = {
 			clientDolphin.send COMMAND_LONG_POLL, longPoll

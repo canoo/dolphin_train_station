@@ -26,7 +26,7 @@ public class SwingStarter {
 		SwingUtilities.invokeAndWait(new Runnable() {
 			@Override
 			public void run() {
-				new DepartureBoardUI(clientDolphin, departuresModel).start()
+				new DepartureBoardFrame(clientDolphin, departuresModel).createAndShow()
 			}
 		});
 
