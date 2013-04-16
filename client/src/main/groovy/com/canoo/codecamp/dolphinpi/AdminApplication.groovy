@@ -1,25 +1,22 @@
 package com.canoo.codecamp.dolphinpi
 
 import javafx.collections.FXCollections
+import javafx.event.EventHandler
 import javafx.scene.Scene
+import javafx.scene.control.ButtonBuilder
 import javafx.scene.control.SplitPaneBuilder
-import javafx.scene.paint.Color
-import javafx.scene.paint.RadialGradient
-import javafx.scene.paint.RadialGradientBuilder
-import javafx.scene.paint.Stop
+import javafx.scene.control.TextFieldBuilder
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.stage.Stage
-import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
+import org.tbee.javafx.scene.layout.MigPane
 
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
-import static org.opendolphin.binding.JFXBinder.bind
-import static org.opendolphin.binding.JFXBinder.bind
-import static org.opendolphin.binding.JFXBinder.bind
-import static org.opendolphin.binding.JFXBinder.bind
 
 public class AdminApplication extends javafx.application.Application {
 	public static ClientDolphin clientDolphin;
@@ -55,9 +52,6 @@ public class AdminApplication extends javafx.application.Application {
 
 		Scene scene = new Scene(root, 1000, 400)
 		scene.stylesheets << 'demo.css'
-		RadialGradient gradient = RadialGradientBuilder.create()
-			.stops(new Stop(0.0, Color.BLUE.brighter()), new Stop(0.0, Color.BLUE.darker())).build()
-		scene.fill = gradient
 
 		stage.setScene(scene);
 		stage.setTitle(getClass().getName());
@@ -71,14 +65,40 @@ public class AdminApplication extends javafx.application.Application {
 	}
 
 	private javafx.scene.Node setupStage() {
+		MigPane migPane = new MigPane("wrap 4", "", "[][fill, grow]")
+
+		migPane.add(ButtonBuilder.create()
+				.graphic(createImageView("/save-icon.png"))
+				.styleClass("toolbar-button")
+				.onAction({println "not implemented"} as EventHandler)
+				.build())
+		migPane.add(ButtonBuilder.create()
+				.graphic(createImageView("/undo-icon.png"))
+				.styleClass("toolbar-button")
+				.onAction({clientDolphin.send(COMMAND_UNDO)} as EventHandler)
+				.build())
+		migPane.add(ButtonBuilder.create()
+				.graphic(createImageView("/redo-icon.png"))
+				.styleClass("toolbar-button")
+				.onAction({clientDolphin.send(COMMAND_REDO)} as EventHandler)
+				.build(), "push")
+		migPane.add(TextFieldBuilder.create().build(), "right")
+
+
 		double[] divs = [0.5].toArray()
-		SplitPaneBuilder.create()
-		.dividerPositions(divs)
-		.items(
-			MasterViewFactory.newMasterView(allDepartures, selectedDepartureId, clientDolphin),
-			DetailViewFactory.newView(selectedDeparture, topDeparture, clientDolphin),
-		)
-		.build()
+		final splitPane = SplitPaneBuilder.create()
+				.dividerPositions(divs)
+				.items(
+				MasterViewFactory.newMasterView(allDepartures, selectedDepartureId, clientDolphin),
+				DetailViewFactory.newView(selectedDeparture, topDeparture, clientDolphin)
+		         )
+		        .build()
+		migPane.add(splitPane, "span, grow")
+		migPane
+	}
+
+	private ImageView createImageView(String filename) {
+		return new ImageView(new Image(getClass().getResourceAsStream(filename)))
 	}
 
 	private void setupBinding() {

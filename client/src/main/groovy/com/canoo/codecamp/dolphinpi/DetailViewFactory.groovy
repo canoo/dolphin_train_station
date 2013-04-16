@@ -35,7 +35,7 @@ class DetailViewFactory {
 		MigPane migPane = new MigPane(
 			"wrap 2, inset 30 30 30 30",                         // Layout Constraints
 			"[pref!]10[fill, grow]",  // Column constraints
-			"[pref!]10[pref!]10[pref!]10[pref!]10[top, grow, fill]30[]10[]10[]",  // Row constraints
+			"[pref!]10[pref!]10[pref!]10[pref!]10[top, grow, fill]30[]10[]",  // Row constraints
 		)
 
 		// binding:
@@ -46,9 +46,6 @@ class DetailViewFactory {
 				addAttributeEditor(migPane, TextFieldBuilder.create().build(), pn, selectedDeparture)
 			}
 			addAttributeEditor(migPane, TextAreaBuilder.create().wrapText(true).build(), ATT_STOPOVERS, selectedDeparture)
-
-			migPane.add(undo = ButtonBuilder.create().text("undo").build())
-			migPane.add(redo = ButtonBuilder.create().text("redo").build(), "right, grow 0")
 
 			migPane.add(einfahren = ButtonBuilder.create().text("Fährt ein").build())
 			migPane.add(ausfahren = ButtonBuilder.create().text("Fährt aus").build(), "right, grow 0")
@@ -68,23 +65,11 @@ class DetailViewFactory {
 					selectedDeparture.getAt(ATT_STATUS).setValue(STATUS_IN_STATION)
 				}
 			});
-			undo.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent actionEvent) {
-					inClientDolphin.send(COMMAND_UNDO)
-				}
-			});
 
 			bind ATT_STATUS of selectedDeparture to 'disabled' of einfahren, {
 				!STATUS_APPROACHING.equals(it)
 			}
 
-			redo.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent actionEvent) {
-					inClientDolphin.send(COMMAND_REDO)
-				}
-			});
 			ausfahren.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent actionEvent) {

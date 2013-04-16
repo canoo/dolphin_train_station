@@ -29,6 +29,10 @@
     -fx-background-color: rgba(255, 239, 213, 0.69);
 }
 
+.root{
+    -fx-background-color: gainsboro;
+}
+
 .invalid {
     -fx-text-fill:red;
 }
@@ -44,6 +48,10 @@
 }
 .text-area {
 	-fx-background-color: papayawhip,white;
-}.text-area:focused {
+}
+.text-area:focused {
 	 -fx-background-color: orange,white;
  }
+.toolbar-button {
+    -fx-padding: 1
+}
