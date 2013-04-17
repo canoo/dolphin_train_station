@@ -1,5 +1,6 @@
-package com.canoo.codecamp.dolphinpi
+package com.canoo.codecamp.dolphinpi.fxbaseddisplay
 
+import com.canoo.codecamp.dolphinpi.DeparturesBoardApplicationModel
 import javafx.scene.control.TableColumnBuilder
 import javafx.scene.control.TableView
 import javafx.scene.control.TableViewBuilder

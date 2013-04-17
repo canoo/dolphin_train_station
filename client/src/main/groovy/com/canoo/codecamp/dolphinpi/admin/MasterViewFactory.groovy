@@ -1,4 +1,4 @@
-package com.canoo.codecamp.dolphinpi
+package com.canoo.codecamp.dolphinpi.admin
 
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.value.ChangeListener

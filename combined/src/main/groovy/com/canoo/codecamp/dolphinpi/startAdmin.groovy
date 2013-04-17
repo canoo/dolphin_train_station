@@ -1,5 +1,6 @@
 package com.canoo.codecamp.dolphinpi
 
+import com.canoo.codecamp.dolphinpi.admin.AdminApplication
 import javafx.application.Application
 import org.opendolphin.core.client.comm.JavaFXUiThreadHandler
 import org.opendolphin.core.comm.DefaultInMemoryConfig

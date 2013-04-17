@@ -10,7 +10,7 @@ import org.opendolphin.core.comm.JsonCodec
 
 import javax.swing.*
 
-public class SwingStarter {
+public class SwingBoardStarter {
 	public static void main(String[] args) {
 		ClientDolphin clientDolphin = new ClientDolphin();
 		clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));

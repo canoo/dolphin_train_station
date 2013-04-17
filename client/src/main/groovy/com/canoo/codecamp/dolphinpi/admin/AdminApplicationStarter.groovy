@@ -1,14 +1,14 @@
-package com.canoo.codecamp.dolphinpi
+package com.canoo.codecamp.dolphinpi.admin
 
 import javafx.application.Application
-import org.opendolphin.core.client.ClientDolphin
-import org.opendolphin.core.client.ClientModelStore
-import org.opendolphin.core.client.comm.ClientConnector
-import org.opendolphin.core.client.comm.HttpClientConnector
-import org.opendolphin.core.client.comm.JavaFXUiThreadHandler
-import org.opendolphin.core.comm.JsonCodec
+import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.client.ClientModelStore;
+import org.opendolphin.core.client.comm.ClientConnector;
+import org.opendolphin.core.client.comm.HttpClientConnector;
+import org.opendolphin.core.client.comm.JavaFXUiThreadHandler;
+import org.opendolphin.core.comm.JsonCodec;
 
-public class DisplayApplicationStarter {
+public class AdminApplicationStarter {
 	public static void main(String[] args) {
 		ClientDolphin clientDolphin = new ClientDolphin();
 		clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
@@ -18,8 +18,8 @@ public class DisplayApplicationStarter {
 		clientDolphin.setClientConnector(connector);
 
 
-		DisplayApplication.clientDolphin = clientDolphin;
-		Application.launch(DisplayApplication.class);
+		AdminApplication.clientDolphin = clientDolphin;
+		Application.launch(AdminApplication.class);
 	}
 
 	private static ClientConnector createConnector(ClientDolphin clientDolphin) {

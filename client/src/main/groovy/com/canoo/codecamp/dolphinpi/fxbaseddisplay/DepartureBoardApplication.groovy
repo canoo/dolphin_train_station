@@ -1,5 +1,9 @@
-package com.canoo.codecamp.dolphinpi
+package com.canoo.codecamp.dolphinpi.fxbaseddisplay
 
+import com.canoo.codecamp.dolphinpi.ApplicationConstants
+import com.canoo.codecamp.dolphinpi.DeparturesBoardApplicationModel
+import com.canoo.codecamp.dolphinpi.fxbaseddisplay.DepartureBoardViewFactory
+import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.paint.Color
 import javafx.scene.paint.CycleMethod
@@ -8,12 +12,12 @@ import javafx.scene.paint.Stop
 import javafx.stage.Stage
 import org.opendolphin.core.client.ClientDolphin
 
-public class DisplayApplication extends javafx.application.Application {
+public class DepartureBoardApplication extends Application {
 	public static ClientDolphin clientDolphin;
 
 	private DeparturesBoardApplicationModel departuresModel
 
-	public DisplayApplication() {
+	public DepartureBoardApplication() {
 	}
 
 	@Override
@@ -26,7 +30,7 @@ public class DisplayApplication extends javafx.application.Application {
 		longPoll = {
 			clientDolphin.send ApplicationConstants.COMMAND_LONG_POLL, longPoll }
 
-		stage.setTitle("Departures of Olten");
+		stage.setTitle("JavaFX - Departures of Olten");
 
 		javafx.scene.Node root = setupStage();
 		addClientSideAction();

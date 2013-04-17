@@ -1,4 +1,4 @@
-package com.canoo.codecamp.dolphinpi
+package com.canoo.codecamp.dolphinpi.admin
 
 import javafx.animation.KeyFrame
 import javafx.animation.KeyValue

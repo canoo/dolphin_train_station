@@ -1,4 +1,4 @@
-package com.canoo.codecamp.dolphinpi
+package com.canoo.codecamp.dolphinpi.admin
 
 import javafx.collections.FXCollections
 import javafx.event.EventHandler
@@ -24,7 +24,7 @@ public class AdminApplication extends javafx.application.Application {
 	javafx.collections.ObservableList<ClientPresentationModel> allDepartures = FXCollections.observableArrayList()
 
 	def selectedDepartureId = clientDolphin.presentationModel(SELECTED_DEPARTURE_ID, [ATT_ID])
-	def selectedDeparture = clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL_ATTRIBUTES)
+	def selectedDeparture = clientDolphin.presentationModel(SELECTED_DEPARTURE, com.canoo.codecamp.dolphinpi.ApplicationConstants.ALL_ATTRIBUTES)
 	def topDeparture = clientDolphin.presentationModel(TOP_DEPARTURE, [ATT_DOMAIN_ID: -1])
 
 	public AdminApplication() {
