@@ -1,8 +1,7 @@
 package com.canoo.codecamp.dolphinpi.fxbaseddisplay
 
 import com.canoo.codecamp.dolphinpi.ApplicationConstants
-import com.canoo.codecamp.dolphinpi.DeparturesBoardApplicationModel
-import com.canoo.codecamp.dolphinpi.fxbaseddisplay.DepartureBoardViewFactory
+import com.canoo.codecamp.dolphinpi.DepartureBoardApplicationModel
 import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.paint.Color
@@ -15,7 +14,7 @@ import org.opendolphin.core.client.ClientDolphin
 public class DepartureBoardApplication extends Application {
 	public static ClientDolphin clientDolphin;
 
-	private DeparturesBoardApplicationModel departuresModel
+	private DepartureBoardApplicationModel departuresModel
 
 	public DepartureBoardApplication() {
 	}
@@ -23,7 +22,7 @@ public class DepartureBoardApplication extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 
-		departuresModel = new DeparturesBoardApplicationModel(clientDolphin: clientDolphin)
+		departuresModel = new DepartureBoardApplicationModel(clientDolphin: clientDolphin)
 		departuresModel.initialize()
 
 		def longPoll = null

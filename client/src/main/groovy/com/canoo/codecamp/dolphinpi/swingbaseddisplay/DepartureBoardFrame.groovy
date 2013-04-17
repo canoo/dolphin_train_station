@@ -1,6 +1,6 @@
 package com.canoo.codecamp.dolphinpi.swingbaseddisplay
 
-import com.canoo.codecamp.dolphinpi.DeparturesBoardApplicationModel
+import com.canoo.codecamp.dolphinpi.DepartureBoardApplicationModel
 import com.canoo.codecamp.dolphinpi.swingbaseddisplay.departureboardswingbased.board.DepartureBoard
 import org.opendolphin.core.Attribute
 import org.opendolphin.core.PresentationModel
@@ -15,11 +15,11 @@ import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 public class DepartureBoardFrame extends JFrame {
 	private final ClientDolphin clientDolphin;
 
-	private final DeparturesBoardApplicationModel departuresModel
+	private final DepartureBoardApplicationModel departuresModel
 
 	private DepartureBoard board
 
-	public DepartureBoardFrame(ClientDolphin clientDolphin, DeparturesBoardApplicationModel departuresModel) {
+	public DepartureBoardFrame(ClientDolphin clientDolphin, DepartureBoardApplicationModel departuresModel) {
 		super("Abfahrten ab Olten")
 		this.clientDolphin = clientDolphin
 		this.departuresModel = departuresModel

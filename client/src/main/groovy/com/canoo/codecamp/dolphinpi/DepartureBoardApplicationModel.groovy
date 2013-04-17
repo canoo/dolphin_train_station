@@ -6,13 +6,13 @@ import org.opendolphin.core.client.ClientPresentationModel
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 
-class DeparturesBoardApplicationModel {
+class DepartureBoardApplicationModel {
 
 	ClientDolphin clientDolphin;
 
 	final javafx.collections.ObservableList<ClientPresentationModel> departuresOnBoard = FXCollections.observableArrayList()
 
-	DeparturesBoardApplicationModel initialize() {
+	DepartureBoardApplicationModel initialize() {
 		(1..5).each {
 			departuresOnBoard << clientDolphin.presentationModel(pmId(TYPE_DEPARTURE_ON_BOARD, it), ALL_ATTRIBUTES)
 		}

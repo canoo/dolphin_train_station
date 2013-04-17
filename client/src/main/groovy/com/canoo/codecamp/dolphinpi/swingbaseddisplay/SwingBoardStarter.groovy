@@ -1,6 +1,6 @@
 package com.canoo.codecamp.dolphinpi.swingbaseddisplay
 
-import com.canoo.codecamp.dolphinpi.DeparturesBoardApplicationModel
+import com.canoo.codecamp.dolphinpi.DepartureBoardApplicationModel
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.comm.ClientConnector
@@ -20,7 +20,7 @@ public class SwingBoardStarter {
 
 		clientDolphin.setClientConnector(connector);
 
-		DeparturesBoardApplicationModel departuresModel = new DeparturesBoardApplicationModel(clientDolphin: clientDolphin)
+		DepartureBoardApplicationModel departuresModel = new DepartureBoardApplicationModel(clientDolphin: clientDolphin)
 		departuresModel.initialize()
 
 		SwingUtilities.invokeAndWait(new Runnable() {

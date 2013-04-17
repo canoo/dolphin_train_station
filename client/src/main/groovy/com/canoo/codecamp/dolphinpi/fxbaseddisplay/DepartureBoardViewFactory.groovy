@@ -1,6 +1,6 @@
 package com.canoo.codecamp.dolphinpi.fxbaseddisplay
 
-import com.canoo.codecamp.dolphinpi.DeparturesBoardApplicationModel
+import com.canoo.codecamp.dolphinpi.DepartureBoardApplicationModel
 import javafx.scene.control.TableColumnBuilder
 import javafx.scene.control.TableView
 import javafx.scene.control.TableViewBuilder
@@ -11,7 +11,7 @@ import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 
 class DepartureBoardViewFactory {
 
-	static javafx.scene.Node newView(DeparturesBoardApplicationModel inModel) {
+	static javafx.scene.Node newView(DepartureBoardApplicationModel inModel) {
 
 		TableViewBuilder.create()
 			.items(inModel.departuresOnBoard)
