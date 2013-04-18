@@ -26,15 +26,14 @@ class DetailViewFactory {
 		bind propertyName, Tag.LABEL of pm to 'text' of label
 
 		bindBidirectional(propertyName, inNode, pm)
-
 	}
 
 	static javafx.scene.Node newView(ClientPresentationModel selectedDeparture, ClientPresentationModel topDeparture, ClientDolphin inClientDolphin){
 
 
 		MigPane migPane = new MigPane(
-			"wrap 2, inset 30 30 30 30",                         // Layout Constraints
-			"[pref!]10[fill, grow]",  // Column constraints
+			"wrap 2, inset 30 30 30 30",// Layout Constraints
+			"[pref!]10[fill, grow]",    // Column constraints
 			"[pref!]10[pref!]10[pref!]10[pref!]10[top, grow, fill]30[]10[]",  // Row constraints
 		)
 
@@ -99,7 +98,6 @@ class DetailViewFactory {
 	static void bindBidirectional(String propertyName, javafx.scene.Node textNode, ClientPresentationModel pm) {
 		bind propertyName of pm to 'text' of textNode
 		bind 'text' of textNode to propertyName of pm, {  newVal ->
-			// boolean matches = newVal ==~ '[A-Z]{2,3} [0-9]{1,4}'
 			String regex = pm.getAt(propertyName, Tag.REGEX)?.value
 			if (!regex) return newVal
 
@@ -107,12 +105,10 @@ class DetailViewFactory {
 			putStyle(textNode, !matches, 'invalid')
 
 			if (!matches) {
-				int c = 1
-				int duration = 100
 				Timeline tl = TimelineBuilder.create().cycleCount(2).autoReverse(false).keyFrames(
-					new KeyFrame(Duration.millis(c*25), new KeyValue(textNode.translateXProperty(), 3)),
-					new KeyFrame(Duration.millis(c*75), new KeyValue(textNode.translateXProperty(), -3)),
-					new KeyFrame(Duration.millis(c*100), new KeyValue(textNode.translateXProperty(), 0)),
+					new KeyFrame(Duration.millis(25), new KeyValue(textNode.translateXProperty(), 3)),
+					new KeyFrame(Duration.millis(75), new KeyValue(textNode.translateXProperty(), -3)),
+					new KeyFrame(Duration.millis(100), new KeyValue(textNode.translateXProperty(), 0)),
 				).build()
 				tl.play()
 			}

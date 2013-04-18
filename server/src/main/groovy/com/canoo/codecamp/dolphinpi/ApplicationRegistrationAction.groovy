@@ -35,16 +35,16 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		eventBus.subscribe(valueQueue)
 	}
 
-	private void sendDepartureBoardRecord(PresentationModel pm, int inPosition) {
+	private void sendDepartureBoardRecord(PresentationModel pm, int positionOnBoard) {
 		final positionOfPm = pm[ATT_POSITION].value as Integer
-		positionsOnBoard[inPosition-1] = positionOfPm
+		positionsOnBoard[positionOnBoard] = positionOfPm
 		List<Slot> slots = []
 		ALL_ATTRIBUTES.each { propertyName ->
 			if (propertyName != ATT_POSITION) {
 				slots << new Slot(propertyName, pm[propertyName].value)
 			}
 		}
-		slots << new Slot(ATT_POSITION, inPosition)
+		slots << new Slot(ATT_POSITION, positionOnBoard)
 
 		DTO dto = new DTO(slots)
 		eventBus.publish valueQueue, dto
@@ -110,12 +110,12 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 				int top = selectedPm[ATT_POSITION].value as int
 				PresentationModel pmOnTopOfBoard = nextModelOnBoard(top)
 				top = pmOnTopOfBoard[ATT_POSITION].value as Integer
-				sendDepartureBoardRecord(pmOnTopOfBoard, 1)
+				sendDepartureBoardRecord(pmOnTopOfBoard, 0)
 				int pos = top + 1
-				for (int idx = 2; idx < 6; idx++) {
+				for (int posOnBoard = 1; posOnBoard < 5; posOnBoard++) {
 					PresentationModel pm = nextModelOnBoard(pos)
 					pos = (pm[ATT_POSITION].value as Integer) + 1
-					sendDepartureBoardRecord(pm, idx)
+					sendDepartureBoardRecord(pm, posOnBoard)
 				}
 
 				Attribute domainIdAttribute = getServerDolphin()[TOP_DEPARTURE][ATT_DOMAIN_ID]
@@ -151,16 +151,16 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 				if (modifiedPmPosition in positionsOnBoard) {
 					if (changedAttribute.propertyName == ATT_STATUS && command.newValue == STATUS_HAS_LEFT) {
-						int start = positionsOnBoard.indexOf(modifiedPmPosition) + 1
-						int pos = modifiedPmPosition
-						for (int idx = start; idx < 6; idx++) {
-							PresentationModel pm = nextModelOnBoard(pos)
-							sendDepartureBoardRecord(pm, idx)
-							pos = (pm[ATT_POSITION].value as Integer) + 1
+						int start = positionsOnBoard.indexOf(modifiedPmPosition)
+						int positionInList = modifiedPmPosition
+						for (int positionOnBoard = start; positionOnBoard < 5; positionOnBoard++) {
+							PresentationModel pm = nextModelOnBoard(positionInList)
+							sendDepartureBoardRecord(pm, positionOnBoard)
+							positionInList = (pm[ATT_POSITION].value as Integer) + 1
 						}
 					}
 					else {
-						sendDepartureBoardRecord(modifiedPm, positionsOnBoard.indexOf(modifiedPmPosition) + 1)
+						sendDepartureBoardRecord(modifiedPm, positionsOnBoard.indexOf(modifiedPmPosition))
 					}
 				}
 			}

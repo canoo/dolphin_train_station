@@ -1,30 +1,29 @@
 package com.canoo.codecamp.dolphinpi.swingbaseddisplay
 
-import com.canoo.codecamp.dolphinpi.DepartureBoardApplicationModel
 import com.canoo.codecamp.dolphinpi.swingbaseddisplay.departureboardswingbased.board.DepartureBoard
 import org.opendolphin.core.Attribute
 import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.client.ClientDolphin
+import org.opendolphin.core.client.ClientPresentationModel
 
 import javax.swing.*
 import java.awt.*
 import java.beans.PropertyChangeListener
+import java.util.List
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 
 public class DepartureBoardFrame extends JFrame {
 	private final ClientDolphin clientDolphin;
-
-	private final DepartureBoardApplicationModel departuresModel
+	private final List departuresOnBoard
 
 	private DepartureBoard board
 
-	public DepartureBoardFrame(ClientDolphin clientDolphin, DepartureBoardApplicationModel departuresModel) {
-		super("Abfahrten ab Olten")
+	public DepartureBoardFrame(ClientDolphin clientDolphin, List<ClientPresentationModel> departuresOnBoard) {
+		super("Swing - Abfahrten ab Olten")
+		this.departuresOnBoard = departuresOnBoard
 		this.clientDolphin = clientDolphin
-		this.departuresModel = departuresModel
 	}
-
 
 	public void createAndShow() {
 		def longPoll = null
@@ -46,18 +45,18 @@ public class DepartureBoardFrame extends JFrame {
 	}
 
 	void doAllBindings() {
-		for (i in (1..5)) {
-			PresentationModel pm = clientDolphin.modelStore.findPresentationModelById(pmId(TYPE_DEPARTURE_ON_BOARD, i))
-			final row = board.getRows().get(i - 1)
-			bind(pm[ATT_DEPARTURE_TIME],  { Collection<String> newValue = ((String)it.newValue).split(":")
-									 	    row.setHour newValue.first()
-										    row.setMinute newValue.last()
-			                              })
-			bind pm[ATT_DESTINATION],     { row.destination = it.newValue as String }
-			bind pm[ATT_TRACK],           { row.setTrack      it.newValue as String}
-			bind pm[ATT_STATUS],          { row.blinking    = it.newValue == STATUS_IN_STATION }
+		(0..4).each { posOnBoard ->
+			PresentationModel pm = departuresOnBoard[posOnBoard]
+			final row = board.rows[posOnBoard]
+			bind(pm[ATT_DEPARTURE_TIME], {
+										   Collection<String> newValue = ((String) it.newValue).split(":")
+										   row.setHour        newValue.first()
+										   row.setMinute      newValue.last()
+										 })
+			bind pm[ATT_DESTINATION],    { row.destination  = it.newValue as String }
+			bind pm[ATT_TRACK],          { row.setTrack       it.newValue as String }
+			bind pm[ATT_STATUS],         { row.blinking     = it.newValue == STATUS_IN_STATION }
 		}
-
 	}
 
 	static void bind(Attribute attribute, Closure closure) {

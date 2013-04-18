@@ -1,8 +1,8 @@
 package com.canoo.codecamp.dolphinpi.swingbaseddisplay
 
-import com.canoo.codecamp.dolphinpi.DepartureBoardApplicationModel
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
+import org.opendolphin.core.client.ClientPresentationModel
 import org.opendolphin.core.client.comm.ClientConnector
 import org.opendolphin.core.client.comm.HttpClientConnector
 import org.opendolphin.core.client.comm.UiThreadHandler
@@ -10,7 +10,10 @@ import org.opendolphin.core.comm.JsonCodec
 
 import javax.swing.*
 
+import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
+
 public class SwingBoardStarter {
+
 	public static void main(String[] args) {
 		ClientDolphin clientDolphin = new ClientDolphin();
 		clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
@@ -20,13 +23,15 @@ public class SwingBoardStarter {
 
 		clientDolphin.setClientConnector(connector);
 
-		DepartureBoardApplicationModel departuresModel = new DepartureBoardApplicationModel(clientDolphin: clientDolphin)
-		departuresModel.initialize()
+		List<ClientPresentationModel> departuresOnBoard = [];
+		(0..4).each {
+			departuresOnBoard << clientDolphin.presentationModel(pmId(TYPE_DEPARTURE_ON_BOARD, it), ALL_ATTRIBUTES)
+		}
 
 		SwingUtilities.invokeAndWait(new Runnable() {
 			@Override
 			public void run() {
-				new DepartureBoardFrame(clientDolphin, departuresModel).createAndShow()
+				new DepartureBoardFrame(clientDolphin, departuresOnBoard).createAndShow()
 			}
 		});
 

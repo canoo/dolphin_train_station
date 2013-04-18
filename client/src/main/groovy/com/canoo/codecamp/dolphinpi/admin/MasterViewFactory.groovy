@@ -1,8 +1,6 @@
 package com.canoo.codecamp.dolphinpi.admin
 
-import javafx.beans.property.SimpleStringProperty
 import javafx.beans.value.ChangeListener
-import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
 import javafx.scene.control.TableColumn
@@ -24,38 +22,26 @@ import static org.opendolphin.binding.JavaFxUtil.cellEdit
 
 class MasterViewFactory {
 
-	static javafx.scene.Node newMasterView(
-		ObservableList<ClientPresentationModel> data,
-		ClientPresentationModel selectedDepartureId,
-		ClientDolphin inClientDolphin
-	){
-
+	static javafx.scene.Node newMasterView(ObservableList<ClientPresentationModel> data, ClientPresentationModel selectedDepartureId, ClientDolphin inClientDolphin) {
 		TableView result = TableViewBuilder.create()
-			.items(data)
-			.columns(
+				.items(data)
+				.columns(
 				newTableColumn(ATT_DEPARTURE_TIME, "Uhrzeit"),
 				newTableColumn(ATT_TRAIN_NUMBER, "Fahrt"),
 				newTableColumn(ATT_DESTINATION, "Richtung"),
 				newTableColumn(ATT_STATUS, "Status"),
 				newTableColumn(ATT_TRACK, "Gleis"),
-			)
-		.columnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY).build()
+		)
+				.columnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY).build()
 		result.setEditable(true)
 
-
-		// used as both, event handler and change listener
-		def changeSelectionHandler = { PresentationModel pm ->
-			return {
-				selectedDepartureId[ATT_ID].setValue(pm.getId())
-//				inClientDolphin.apply pm to selectedDeparture
-			}
-		}
-
-		result.selectionModel.selectedItemProperty().addListener( { o, oldVal, selectedPM ->
-			changeSelectionHandler(selectedPM).call()
+		// on selection change update the selectedDepartureId
+		result.selectionModel.selectedItemProperty().addListener({ o, oldVal, selectedPM ->
+			selectedDepartureId[ATT_ID].value = selectedPM.id
 		} as ChangeListener)
 
 
+		// change table selection whenever the selectedDepartureId changes
 		selectedDepartureId[ATT_ID].addPropertyChangeListener('value', new PropertyChangeListener() {
 			@Override
 			void propertyChange(final PropertyChangeEvent evt) {
@@ -66,33 +52,16 @@ class MasterViewFactory {
 		})
 
 		return result
-
 	}
 
-	static newTableColumn(String inPropertyName, String inTitle) {
+	static TableColumn newTableColumn(String inPropertyName, String inTitle) {
 		TableColumnBuilder.create()
-			.text(inTitle)
-			.cellFactory(TextFieldTableCell.forTableColumn())
-			.cellValueFactory({ row -> new ClientAttributeWrapper(row.value[inPropertyName]) } as Callback)
-			.onEditCommit(cellEdit(inPropertyName, { it }) as EventHandler)
-			.editable(true)
-			.build()
-	}
-
-	public static Callback newCallback(String inPropertyName) {
-		def result = new Callback<TableColumn.CellDataFeatures<ClientPresentationModel, String>, ObservableValue<String>>() {
-
-			@Override
-			public ObservableValue<String> call(TableColumn.CellDataFeatures<ClientPresentationModel, String> cellDataFeatures) {
-				ClientPresentationModel pm = cellDataFeatures.getValue()
-				if (pm != null) {
-					return new SimpleStringProperty(pm.findAttributeByPropertyName(inPropertyName).value as String);
-				} else {
-					return new SimpleStringProperty("...");
-				}
-			}
-		}
-		result
+				.text(inTitle)
+				.cellFactory(TextFieldTableCell.forTableColumn())
+				.cellValueFactory({ row -> new ClientAttributeWrapper(row.value[inPropertyName]) } as Callback)
+				.onEditCommit(cellEdit(inPropertyName, { it }) as EventHandler)
+				.editable(true)
+				.build()
 	}
 
 }
