@@ -60,7 +60,7 @@ public class DepartureBoardFrame extends JFrame {
 	}
 
 	static void bind(Attribute attribute, Closure closure) {
-		attribute.addPropertyChangeListener(closure as PropertyChangeListener)
+		attribute.addPropertyChangeListener('value', closure as PropertyChangeListener)
 	}
 
 }

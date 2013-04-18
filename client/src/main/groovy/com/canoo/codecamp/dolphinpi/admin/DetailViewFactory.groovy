@@ -8,10 +8,14 @@ import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.scene.control.*
 import javafx.util.Duration
+import org.opendolphin.core.Attribute
 import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 import org.tbee.javafx.scene.layout.MigPane
+
+import java.beans.PropertyChangeEvent
+import java.beans.PropertyChangeListener
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 import static org.opendolphin.binding.JFXBinder.bind
@@ -39,7 +43,7 @@ class DetailViewFactory {
 
 		// binding:
 		inClientDolphin.send COMMAND_INIT_SELECTED_DEPARTURE, { pms ->
-			Button einfahren, ausfahren, moveToTop, undo, redo
+			Button einfahren, ausfahren, moveToTop
 
 			[ATT_DEPARTURE_TIME, ATT_DESTINATION, ATT_TRAIN_NUMBER, ATT_TRACK].each { String pn ->
 				addAttributeEditor(migPane, TextFieldBuilder.create().build(), pn, selectedDeparture)
@@ -83,10 +87,14 @@ class DetailViewFactory {
 				def selectedPosition = selectedDeparture.getAt(ATT_POSITION).value
 				it == selectedPosition
 			}
+
 			bind ATT_POSITION of selectedDeparture to 'disabled' of moveToTop, {
 				def domainId = topDeparture.getAt(ATT_DOMAIN_ID).value
 				it == domainId
 			}
+
+			bindAttribute selectedDeparture[ATT_POSITION] , { evt -> migPane.setDisable(evt.newValue==null) }
+
 		}
 
 		putStyle(migPane, true, 'pane')
@@ -115,8 +123,14 @@ class DetailViewFactory {
 
 			return matches ? newVal : pm.getAt(propertyName).value
 		}
-
 	}
+
+	static void bindAttribute(Attribute attribute, Closure closure) {
+		final listener = closure as PropertyChangeListener
+		attribute.addPropertyChangeListener('value', listener)
+		listener.propertyChange(new PropertyChangeEvent(attribute, 'value', attribute.value, attribute.value))
+	}
+
 
 	static void putStyle(node, boolean addOrRemove, String styleClassName) {
 		if (addOrRemove) {

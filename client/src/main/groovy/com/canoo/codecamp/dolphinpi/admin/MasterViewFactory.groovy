@@ -37,10 +37,7 @@ class MasterViewFactory {
 
 		// on selection change update the selectedDepartureId
 		result.selectionModel.selectedItemProperty().addListener({ o, oldVal, selectedPM ->
-			println o
-			println oldVal
-			println selectedPM
-			selectedDepartureId[ATT_ID].value = selectedPM.id
+			selectedDepartureId[ATT_ID].value = selectedPM == null ? EMPTY_DEPARTURE : selectedPM.id
 		} as ChangeListener)
 
 

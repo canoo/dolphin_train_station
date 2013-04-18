@@ -116,16 +116,16 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		actionRegistry.register(COMMAND_INIT_SELECTED_DEPARTURE, new CommandHandler<Command>() {
 			public void handleCommand(Command command, List<Command> response) {
 				initAt SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, '[0-9][0-9]:[0-9][0-9]', Tag.REGEX
-				initAt SELECTED_DEPARTURE, ATT_DESTINATION, null, '.*', Tag.REGEX
-				initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER, null, '[A-Z]{2,3} [0-9]{1,4}', Tag.REGEX
-				initAt SELECTED_DEPARTURE, ATT_TRACK, null, '[0-9]{1,2}', Tag.REGEX
-				initAt SELECTED_DEPARTURE, ATT_STOPOVERS, null, '.*', Tag.REGEX
+				initAt SELECTED_DEPARTURE, ATT_DESTINATION,    null, '.*',                    Tag.REGEX
+				initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER,   null, '[A-Z]{2,3} [0-9]{1,4}', Tag.REGEX
+				initAt SELECTED_DEPARTURE, ATT_TRACK,          null, '[0-9]{0,2}',            Tag.REGEX
+				initAt SELECTED_DEPARTURE, ATT_STOPOVERS,      null, '.*',                    Tag.REGEX
 
-				initAt SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, 'Uhrzeit', Tag.LABEL
-				initAt SELECTED_DEPARTURE, ATT_DESTINATION, null, 'In Richtung', Tag.LABEL
-				initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER, null, 'Fahrt', Tag.LABEL
-				initAt SELECTED_DEPARTURE, ATT_TRACK, null, 'Gleis', Tag.LABEL
-				initAt SELECTED_DEPARTURE, ATT_STOPOVERS, null, 'Über', Tag.LABEL
+				initAt SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, 'Uhrzeit',     Tag.LABEL
+				initAt SELECTED_DEPARTURE, ATT_DESTINATION,    null, 'In Richtung', Tag.LABEL
+				initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER,   null, 'Fahrt',       Tag.LABEL
+				initAt SELECTED_DEPARTURE, ATT_TRACK,          null, 'Gleis',       Tag.LABEL
+				initAt SELECTED_DEPARTURE, ATT_STOPOVERS,      null, 'Über',        Tag.LABEL
 			}
 		})
 
