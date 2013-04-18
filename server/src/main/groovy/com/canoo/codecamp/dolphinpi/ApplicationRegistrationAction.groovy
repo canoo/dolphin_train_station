@@ -1,7 +1,6 @@
 package com.canoo.codecamp.dolphinpi
 
 import groovyx.gpars.dataflow.DataflowQueue
-import org.opendolphin.core.Attribute
 import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.Tag
 import org.opendolphin.core.comm.Command
@@ -28,16 +27,26 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 	ValueChangedCommand nextTripleToIgnore
 
 	//this is status needed on the server only
-	final List<Integer> positionsOnBoard = [-1,-1,-1,-1,-1]
+	final List<Integer> positionsOnBoard = [-1, -1, -1, -1, -1]
 
 	ApplicationRegistrationAction() {
 		valueQueue = new DataflowQueue()
 		eventBus.subscribe(valueQueue)
 	}
 
-	private void sendDepartureBoardRecord(PresentationModel pm, int positionOnBoard) {
-		final positionOfPm = pm[ATT_POSITION].value as Integer
-		positionsOnBoard[positionOnBoard] = positionOfPm
+	private DTO createEmptyDepartureDTO(int positionOnBoard) {
+		List<Slot> slots = []
+		ALL_ATTRIBUTES.each { propertyName ->
+			if (propertyName != ATT_POSITION) {
+				slots << new Slot(propertyName, "")
+			}
+		}
+		slots << new Slot(ATT_POSITION, positionOnBoard)
+
+		new DTO(slots)
+	}
+
+	private DTO createDepartureDTO(PresentationModel pm, int positionOnBoard) {
 		List<Slot> slots = []
 		ALL_ATTRIBUTES.each { propertyName ->
 			if (propertyName != ATT_POSITION) {
@@ -46,9 +55,23 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		}
 		slots << new Slot(ATT_POSITION, positionOnBoard)
 
-		DTO dto = new DTO(slots)
-		eventBus.publish valueQueue, dto
+		new DTO(slots)
 	}
+
+
+	private void sendDepartureBoardEntries(List<Integer> positions) {
+		positions.each { idx ->
+			int positionInList = positionsOnBoard[idx]
+			DTO dto
+			if (positionInList == -1) {
+				dto = createEmptyDepartureDTO(idx)
+			} else {
+				dto = createDepartureDTO(pmAtPos(positionInList), idx)
+			}
+			eventBus.publish valueQueue, dto
+		}
+	}
+
 
 	boolean hasToBeIgnored(final ValueChangedCommand inNextTripleToIgnore, final ValueChangedCommand inValueChangedCommand) {
 		return inNextTripleToIgnore != null &&
@@ -64,13 +87,28 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 	PresentationModel nextModelOnBoard(int startPos) {
 		int pos = startPos
 		PresentationModel pm = pmAtPos(pos)
-		//todo doesn't work at the end of the table
-		while (pm[ATT_STATUS].value == STATUS_HAS_LEFT) {
+
+		while (pm != null && pm[ATT_STATUS].value == STATUS_HAS_LEFT) {
 			pos++
 			pm = pmAtPos(pos)
 		}
 
 		pm
+	}
+
+	void updatePositionsOnBoard(int firstPositionInList, int firstPositionOnBoard) {
+		int nextPosInList = firstPositionInList
+		for (int i = firstPositionOnBoard; i < 5; i++) {
+			PresentationModel pm = nextModelOnBoard(nextPosInList)
+			if(pm != null){
+				nextPosInList = pm[ATT_POSITION].value as Integer
+				positionsOnBoard[i] = nextPosInList
+				nextPosInList = nextPosInList + 1
+			}
+			else {
+				positionsOnBoard[i] = -1
+			}
+		}
 	}
 
 	public void registerIn(ActionRegistry actionRegistry) {
@@ -105,21 +143,10 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 		actionRegistry.register(COMMAND_MOVE_TO_TOP, new CommandHandler<Command>() {
 			public void handleCommand(Command command, List<Command> response) {
-				def selectedPm = getServerDolphin()[SELECTED_DEPARTURE]
+				updatePositionsOnBoard(getServerDolphin()[SELECTED_DEPARTURE][ATT_POSITION].value as int, 0)
+				sendDepartureBoardEntries(0..4)
 
-				int top = selectedPm[ATT_POSITION].value as int
-				PresentationModel pmOnTopOfBoard = nextModelOnBoard(top)
-				top = pmOnTopOfBoard[ATT_POSITION].value as Integer
-				sendDepartureBoardRecord(pmOnTopOfBoard, 0)
-				int pos = top + 1
-				for (int posOnBoard = 1; posOnBoard < 5; posOnBoard++) {
-					PresentationModel pm = nextModelOnBoard(pos)
-					pos = (pm[ATT_POSITION].value as Integer) + 1
-					sendDepartureBoardRecord(pm, posOnBoard)
-				}
-
-				Attribute domainIdAttribute = getServerDolphin()[TOP_DEPARTURE][ATT_DOMAIN_ID]
-				changeValue domainIdAttribute as ServerAttribute, top
+				changeValue getServerDolphin()[TOP_DEPARTURE][ATT_DOMAIN_ID], positionsOnBoard[0]
 			}
 		})
 
@@ -151,17 +178,14 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 				if (modifiedPmPosition in positionsOnBoard) {
 					if (changedAttribute.propertyName == ATT_STATUS && command.newValue == STATUS_HAS_LEFT) {
-						int start = positionsOnBoard.indexOf(modifiedPmPosition)
-						int positionInList = modifiedPmPosition
-						for (int positionOnBoard = start; positionOnBoard < 5; positionOnBoard++) {
-							PresentationModel pm = nextModelOnBoard(positionInList)
-							sendDepartureBoardRecord(pm, positionOnBoard)
-							positionInList = (pm[ATT_POSITION].value as Integer) + 1
-						}
+						int startOnBoard = positionsOnBoard.indexOf(modifiedPmPosition)
+						updatePositionsOnBoard(modifiedPmPosition, startOnBoard)
+						sendDepartureBoardEntries(startOnBoard..4)
+					} else {
+						final toUpdate = positionsOnBoard.indexOf(modifiedPmPosition)
+						sendDepartureBoardEntries(toUpdate..toUpdate)
 					}
-					else {
-						sendDepartureBoardRecord(modifiedPm, positionsOnBoard.indexOf(modifiedPmPosition))
-					}
+					changeValue getServerDolphin()[TOP_DEPARTURE][ATT_DOMAIN_ID], positionsOnBoard[0]
 				}
 			}
 		})
