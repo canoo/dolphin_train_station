@@ -46,6 +46,7 @@ public class ApplicationConstants {
 	public static final String COMMAND_LONG_POLL = "longPoll";
 
 	public static final String SELECTED_DEPARTURE = "selectedDeparture";
+	public static final String EMPTY_DEPARTURE = "emptyDeparture";
 
 
     /**

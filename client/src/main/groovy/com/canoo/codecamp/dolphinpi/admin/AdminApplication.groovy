@@ -23,9 +23,10 @@ public class AdminApplication extends javafx.application.Application {
 
 	javafx.collections.ObservableList<ClientPresentationModel> allDepartures = FXCollections.observableArrayList()
 
-	def selectedDepartureId = clientDolphin.presentationModel(SELECTED_DEPARTURE_ID, [ATT_ID])
-	def selectedDeparture = clientDolphin.presentationModel(SELECTED_DEPARTURE, com.canoo.codecamp.dolphinpi.ApplicationConstants.ALL_ATTRIBUTES)
-	def topDeparture = clientDolphin.presentationModel(TOP_DEPARTURE, [ATT_DOMAIN_ID: -1])
+	def selectedDepartureId = clientDolphin.presentationModel(SELECTED_DEPARTURE_ID, [ATT_ID: EMPTY_DEPARTURE])
+	def selectedDeparture = clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL_ATTRIBUTES)
+	def emptyDeparture = clientDolphin.presentationModel(EMPTY_DEPARTURE, ALL_ATTRIBUTES)
+	def topDeparture = clientDolphin.presentationModel(TOP_DEPARTURE, [ATT_DOMAIN_ID: EMPTY_DEPARTURE])
 
 	public AdminApplication() {
 	}
