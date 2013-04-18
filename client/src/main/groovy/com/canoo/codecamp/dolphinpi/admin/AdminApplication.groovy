@@ -1,14 +1,18 @@
 package com.canoo.codecamp.dolphinpi.admin
 
+import javafx.application.Application
 import javafx.collections.FXCollections
 import javafx.event.EventHandler
 import javafx.scene.Scene
+import javafx.scene.control.Button
 import javafx.scene.control.ButtonBuilder
+import javafx.scene.control.SplitPane
 import javafx.scene.control.SplitPaneBuilder
 import javafx.scene.control.TextFieldBuilder
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.stage.Stage
+import org.opendolphin.core.Attribute
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 import org.tbee.javafx.scene.layout.MigPane
@@ -18,7 +22,7 @@ import java.beans.PropertyChangeListener
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 
-public class AdminApplication extends javafx.application.Application {
+public class AdminApplication extends Application {
 	public static ClientDolphin clientDolphin;
 
 	javafx.collections.ObservableList<ClientPresentationModel> allDepartures = FXCollections.observableArrayList()
@@ -28,73 +32,46 @@ public class AdminApplication extends javafx.application.Application {
 	def emptyDeparture = clientDolphin.presentationModel(EMPTY_DEPARTURE, ALL_ATTRIBUTES)
 	def topDeparture = clientDolphin.presentationModel(TOP_DEPARTURE, [ATT_DOMAIN_ID: EMPTY_DEPARTURE])
 
-	public AdminApplication() {
-	}
 
 	@Override
 	public void start(Stage stage) throws Exception {
+		stage.title = "Abfahren ab Olten";
 
-		selectedDepartureId[ATT_ID].addPropertyChangeListener('value', new PropertyChangeListener() {
-			@Override
-			void propertyChange(final PropertyChangeEvent evt) {
-				def id = evt.newValue
+		clientDolphin.send COMMAND_INIT_SELECTED_DEPARTURE, {
+			javafx.scene.Node root = setupStage()
 
-				def pm = clientDolphin.modelStore.findPresentationModelById(id)
-				clientDolphin.apply pm to selectedDeparture
-			}
-		})
+			Scene scene = new Scene(root, 1000, 400)
+			scene.stylesheets << 'demo.css'
 
-		stage.setTitle("Departures of Olten");
+			stage.setScene(scene);
+			stage.show();
 
-		javafx.scene.Node root = setupStage();
-		addClientSideAction();
-
-		setupBinding();
-
-		Scene scene = new Scene(root, 1000, 400)
-		scene.stylesheets << 'demo.css'
-
-		stage.setScene(scene);
-		stage.setTitle(getClass().getName());
-		stage.show();
+			root.requestLayout()
+		}
 
 		clientDolphin.send COMMAND_GET_ALL_DEPARTURES, { pms ->
-			for (pm in pms) {
-				allDepartures << pm
-			}
+			pms.each {allDepartures << it}
 		}
+
+		bindAttribute(selectedDepartureId[ATT_ID], { evt -> clientDolphin.apply clientDolphin[evt.newValue] to selectedDeparture })
 	}
 
 	private javafx.scene.Node setupStage() {
-		MigPane migPane = new MigPane("wrap 4", "", "[][fill, grow]")
+		MigPane migPane = new MigPane("wrap 4", "", "[][fill]")
+		migPane.add createButton("/save-icon.png")
+		migPane.add createButton("/undo-icon.png", COMMAND_UNDO)
+		migPane.add createButton("/redo-icon.png", COMMAND_REDO), "pushx"
+		migPane.add TextFieldBuilder.create().build(), "right"
 
-		migPane.add(ButtonBuilder.create()
-				.graphic(createImageView("/save-icon.png"))
-				.styleClass("toolbar-button")
-				.onAction({println "not implemented"} as EventHandler)
-				.build())
-		migPane.add(ButtonBuilder.create()
-				.graphic(createImageView("/undo-icon.png"))
-				.styleClass("toolbar-button")
-				.onAction({clientDolphin.send(COMMAND_UNDO)} as EventHandler)
-				.build())
-		migPane.add(ButtonBuilder.create()
-				.graphic(createImageView("/redo-icon.png"))
-				.styleClass("toolbar-button")
-				.onAction({clientDolphin.send(COMMAND_REDO)} as EventHandler)
-				.build(), "push")
-		migPane.add(TextFieldBuilder.create().build(), "right")
-
-
-		double[] divs = [0.5].toArray()
-		final splitPane = SplitPaneBuilder.create()
-				.dividerPositions(divs)
+		final SplitPane splitPane = SplitPaneBuilder.create()
+				.dividerPositions([0.5] as double[])
 				.items(
-				MasterViewFactory.newMasterView(allDepartures, selectedDepartureId, clientDolphin),
-				DetailViewFactory.newView(selectedDeparture, topDeparture, clientDolphin)
-		         )
+					MasterViewFactory.newMasterView(allDepartures, selectedDepartureId, clientDolphin),
+					DetailViewFactory.newView(selectedDeparture, topDeparture, clientDolphin)
+		 		)
 		        .build()
-		migPane.add(splitPane, "span, grow")
+		migPane.add splitPane, "span, grow, pushy"
+
 		migPane
 	}
 
@@ -102,10 +79,25 @@ public class AdminApplication extends javafx.application.Application {
 		return new ImageView(new Image(getClass().getResourceAsStream(filename)))
 	}
 
-	private void setupBinding() {
+	private Button createButton(String iconFilename, String command=null) {
+		ButtonBuilder.create()
+				.graphic(createImageView(iconFilename))
+				.styleClass("toolbar-button")
+				.onAction({
+							if (command != null) {
+								clientDolphin.send(command)
+							} else {
+								println "not implemented yet"
+							}
+						} as EventHandler)
+				.build()
 	}
 
-	private void addClientSideAction() {
+	public static void bindAttribute(Attribute attribute, Closure closure) {
+		final listener = closure as PropertyChangeListener
+		attribute.addPropertyChangeListener('value', listener)
+		listener.propertyChange(new PropertyChangeEvent(attribute, 'value', attribute.value, attribute.value))
 	}
+
 }
 
