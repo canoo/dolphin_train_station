@@ -147,7 +147,7 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 				updatePositionsOnBoard(getServerDolphin()[SELECTED_DEPARTURE][ATT_POSITION].value as int, 0)
 				sendDepartureBoardEntries(0..4)
 
-				changeValue getServerDolphin()[TOP_DEPARTURE][ATT_DOMAIN_ID], positionsOnBoard[0]
+				changeValue getServerDolphin()[APPLICATION_STATE][ATT_TOP_DEPARTURE_ON_BOARD], positionsOnBoard[0]
 			}
 		})
 
@@ -186,7 +186,7 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 						final toUpdate = positionsOnBoard.indexOf(modifiedPmPosition)
 						sendDepartureBoardEntries(toUpdate..toUpdate)
 					}
-					changeValue getServerDolphin()[TOP_DEPARTURE][ATT_DOMAIN_ID], positionsOnBoard[0]
+					changeValue getServerDolphin()[APPLICATION_STATE][ATT_TOP_DEPARTURE_ON_BOARD], positionsOnBoard[0]
 				}
 			}
 		})

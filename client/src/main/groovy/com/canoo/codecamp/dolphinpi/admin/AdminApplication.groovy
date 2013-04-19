@@ -27,11 +27,11 @@ public class AdminApplication extends Application {
 
 	javafx.collections.ObservableList<ClientPresentationModel> allDepartures = FXCollections.observableArrayList()
 
-	def selectedDepartureId = clientDolphin.presentationModel(SELECTED_DEPARTURE_ID, [ATT_ID: EMPTY_DEPARTURE])
 	def selectedDeparture = clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL_ATTRIBUTES)
 	def emptyDeparture = clientDolphin.presentationModel(EMPTY_DEPARTURE, ALL_ATTRIBUTES)
-	def topDeparture = clientDolphin.presentationModel(TOP_DEPARTURE, [ATT_DOMAIN_ID: EMPTY_DEPARTURE])
 
+	def applicationState = clientDolphin.presentationModel(APPLICATION_STATE, [ATT_SELECTED_DEPARTURE_ID: EMPTY_DEPARTURE,
+																			   ATT_TOP_DEPARTURE_ON_BOARD: EMPTY_DEPARTURE])
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -51,7 +51,7 @@ public class AdminApplication extends Application {
 			pms.each {allDepartures << it}
 		}
 
-		bindAttribute(selectedDepartureId[ATT_ID], { evt -> clientDolphin.apply clientDolphin[evt.newValue] to selectedDeparture })
+		bindAttribute(applicationState[ATT_SELECTED_DEPARTURE_ID], { evt -> clientDolphin.apply clientDolphin[evt.newValue] to selectedDeparture })
 	}
 
 	private javafx.scene.Node setupStage() {
@@ -64,8 +64,8 @@ public class AdminApplication extends Application {
 		final SplitPane splitPane = SplitPaneBuilder.create()
 				.dividerPositions([0.5] as double[])
 				.items(
-					MasterViewFactory.newMasterView(allDepartures, selectedDepartureId, clientDolphin),
-					DetailViewFactory.newView(selectedDeparture, topDeparture, clientDolphin)
+					MasterViewFactory.newMasterView(allDepartures, applicationState, clientDolphin),
+					DetailViewFactory.newView(selectedDeparture, applicationState, clientDolphin)
 		 		)
 		        .build()
 		migPane.add splitPane, "span, grow, pushy"

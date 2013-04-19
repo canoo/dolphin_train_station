@@ -10,12 +10,12 @@ public class ApplicationConstants {
 	public static final String TYPE_DEPARTURE = unique("Departure");
 	public static final String TYPE_DEPARTURE_ON_BOARD = unique("DepartureOnBoard");
 
-	public static final String ATT_ID = "ATT_ID";
-	public static final String SELECTED_DEPARTURE_ID = "ATT_SELECTED_DEPARTURE_ID";
+	// Application State PM
+	public static final String APPLICATION_STATE = "ApplicationState"
+	public static final String ATT_SELECTED_DEPARTURE_ID = "ATT_SELECTED_DEPARTURE_ID"
+	public static final String ATT_TOP_DEPARTURE_ON_BOARD = "ATT_TOP_DEPARTURE_ON_BOARD"
+	public static final List<String> ALL_APPLICATION_STATE_ATTRIBUTES = [ATT_SELECTED_DEPARTURE_ID, ATT_TOP_DEPARTURE_ON_BOARD]
 
-	// Departure PM:
-	public static final String TOP_DEPARTURE = "TOP_DEPARTURE";
-	public static final String ATT_DOMAIN_ID = "ATT_DOMAIN_ID";
 
 	// Departure PM:
 	public static final String ATT_POSITION = "POSITION";

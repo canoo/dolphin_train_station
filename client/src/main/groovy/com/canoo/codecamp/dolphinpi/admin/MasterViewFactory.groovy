@@ -22,7 +22,7 @@ class MasterViewFactory {
 
 	private static ClientDolphin clientDolphin
 
-	static javafx.scene.Node newMasterView(ObservableList<ClientPresentationModel> data, ClientPresentationModel selectedDepartureId, ClientDolphin inClientDolphin) {
+	static javafx.scene.Node newMasterView(ObservableList<ClientPresentationModel> data, ClientPresentationModel applicationState, ClientDolphin inClientDolphin) {
 		clientDolphin = inClientDolphin
 		TableView table = TableViewBuilder.create()
 				.items(data)
@@ -37,13 +37,15 @@ class MasterViewFactory {
 				.editable(true)
 				.build()
 
+		def selectedPMId = applicationState[ATT_SELECTED_DEPARTURE_ID]
+
 		// on selection change update the selectedDepartureId
 		table.selectionModel.selectedItemProperty().addListener({ o, oldVal, selectedPM ->
-			selectedDepartureId[ATT_ID].value = selectedPM == null ? EMPTY_DEPARTURE : selectedPM.id
+			selectedPMId.value = selectedPM == null ? EMPTY_DEPARTURE : selectedPM.id
 		} as ChangeListener)
 
 		// change table selection whenever the selectedDepartureId changes
-		bindAttribute(selectedDepartureId[ATT_ID], { evt ->
+		bindAttribute(selectedPMId, { evt ->
 			final pmId = evt.newValue
 			if (pmId == EMPTY_DEPARTURE) {
 				table.getSelectionModel().clearSelection()

@@ -22,7 +22,7 @@ import static org.opendolphin.binding.JFXBinder.bind
 
 class DetailViewFactory {
 
-	static javafx.scene.Node newView(ClientPresentationModel selectedDeparture, ClientPresentationModel topDeparture, ClientDolphin inClientDolphin) {
+	static javafx.scene.Node newView(ClientPresentationModel selectedDeparture, ClientPresentationModel applicationState, ClientDolphin inClientDolphin) {
 		MigPane migPane = new MigPane(
 				"wrap 2, inset 30 30 30 30",// Layout Constraints
 				"[pref!]10[fill, grow]",    // Column constraints
@@ -70,13 +70,13 @@ class DetailViewFactory {
 			!STATUS_IN_STATION.equals(it)
 		}
 
-		bind ATT_DOMAIN_ID of topDeparture to 'disabled' of moveToTop, {
+		bind ATT_TOP_DEPARTURE_ON_BOARD of applicationState to 'disabled' of moveToTop, {
 			def selectedPosition = selectedDeparture.getAt(ATT_POSITION).value
 			it == selectedPosition
 		}
 
 		bind ATT_POSITION of selectedDeparture to 'disabled' of moveToTop, {
-			def domainId = topDeparture.getAt(ATT_DOMAIN_ID).value
+			def domainId = applicationState[ATT_TOP_DEPARTURE_ON_BOARD].value
 			it == domainId
 		}
 
@@ -126,7 +126,7 @@ class DetailViewFactory {
 					final caretPos = textInput.getCaretPosition()
 					String text = pm[propertyName].value
 					textInput['text'] = text
-					textInput.positionCaret Math.min(caretPos, text.length())
+					textInput.positionCaret(Math.min(caretPos, text.length()))
 				}
 			}
 		})
