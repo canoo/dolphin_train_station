@@ -51,7 +51,7 @@ public class AdminApplication extends Application {
 		migPane.add createButton("/save-icon.png")
 		migPane.add createButton("/undo-icon.png", COMMAND_UNDO)
 		migPane.add createButton("/redo-icon.png", COMMAND_REDO), "pushx"
-		migPane.add TextFieldBuilder.create().build(), "right"
+		migPane.add TextFieldBuilder.create().styleClass("search-field").build(), "right"
 
 		final SplitPane splitPane = SplitPaneBuilder.create()
 				.dividerPositions([0.5] as double[])

@@ -52,6 +52,15 @@
 .text-area:focused {
 	 -fx-background-color: orange,white;
  }
+
 .toolbar-button {
     -fx-padding: 1
+}
+
+.search-field {
+    -fx-background-color: papayawhip,white;
+}
+
+.search-field:focused {
+	-fx-background-color: orange,white;
 }
