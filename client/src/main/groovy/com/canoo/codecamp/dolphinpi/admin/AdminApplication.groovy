@@ -1,20 +1,15 @@
 package com.canoo.codecamp.dolphinpi.admin
 
 import javafx.application.Application
-import javafx.collections.FXCollections
 import javafx.event.EventHandler
+import javafx.scene.Parent
 import javafx.scene.Scene
-import javafx.scene.control.Button
-import javafx.scene.control.ButtonBuilder
-import javafx.scene.control.SplitPane
-import javafx.scene.control.SplitPaneBuilder
-import javafx.scene.control.TextFieldBuilder
+import javafx.scene.control.*
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.stage.Stage
 import org.opendolphin.core.Attribute
 import org.opendolphin.core.client.ClientDolphin
-import org.opendolphin.core.client.ClientPresentationModel
 import org.tbee.javafx.scene.layout.MigPane
 
 import java.beans.PropertyChangeEvent
@@ -25,36 +20,33 @@ import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 public class AdminApplication extends Application {
 	public static ClientDolphin clientDolphin;
 
-	javafx.collections.ObservableList<ClientPresentationModel> allDepartures = FXCollections.observableArrayList()
-
-	def selectedDeparture = clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL_ATTRIBUTES)
-	def emptyDeparture = clientDolphin.presentationModel(EMPTY_DEPARTURE, ALL_ATTRIBUTES)
-
-	def applicationState = clientDolphin.presentationModel(APPLICATION_STATE, [ATT_SELECTED_DEPARTURE_ID: EMPTY_DEPARTURE,
-																			   ATT_TOP_DEPARTURE_ON_BOARD: EMPTY_DEPARTURE])
-
 	@Override
 	public void start(Stage stage) throws Exception {
-		stage.title = "Abfahren ab Olten";
+		initializePresentationModels()
 
 		clientDolphin.send COMMAND_INIT_SELECTED_DEPARTURE, {
-			javafx.scene.Node root = setupStage()
+			stage.title = "Abfahrten ab Olten";
 
-			Scene scene = new Scene(root, 1000, 400)
+			Scene scene = new Scene(createStageRoot(), 1000, 400)
 			scene.stylesheets << 'demo.css'
 
 			stage.setScene(scene);
 			stage.show();
 		}
 
-		clientDolphin.send COMMAND_GET_ALL_DEPARTURES, { pms ->
-			pms.each {allDepartures << it}
-		}
+		clientDolphin.send COMMAND_GET_ALL_DEPARTURES
 
-		bindAttribute(applicationState[ATT_SELECTED_DEPARTURE_ID], { evt -> clientDolphin.apply clientDolphin[evt.newValue] to selectedDeparture })
+		doAllBindings()
 	}
 
-	private javafx.scene.Node setupStage() {
+	private static void initializePresentationModels () {
+		clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL_ATTRIBUTES)
+		clientDolphin.presentationModel(EMPTY_DEPARTURE, ALL_ATTRIBUTES)
+		clientDolphin.presentationModel(APPLICATION_STATE, [ATT_SELECTED_DEPARTURE_ID: EMPTY_DEPARTURE,
+														    ATT_TOP_DEPARTURE_ON_BOARD: EMPTY_DEPARTURE])
+	}
+
+	private static Parent createStageRoot() {
 		MigPane migPane = new MigPane("wrap 4", "", "[][fill]")
 		migPane.add createButton("/save-icon.png")
 		migPane.add createButton("/undo-icon.png", COMMAND_UNDO)
@@ -64,8 +56,8 @@ public class AdminApplication extends Application {
 		final SplitPane splitPane = SplitPaneBuilder.create()
 				.dividerPositions([0.5] as double[])
 				.items(
-					MasterViewFactory.newMasterView(allDepartures, applicationState, clientDolphin),
-					DetailViewFactory.newView(selectedDeparture, applicationState, clientDolphin)
+					MasterViewFactory.createMasterView(clientDolphin),
+					DetailViewFactory.createDetailView(clientDolphin)
 		 		)
 		        .build()
 		migPane.add splitPane, "span, grow, pushy"
@@ -73,11 +65,18 @@ public class AdminApplication extends Application {
 		migPane
 	}
 
-	private ImageView createImageView(String filename) {
+	private static void doAllBindings(){
+		def applicationState = clientDolphin[APPLICATION_STATE]
+		def selectedDeparture = clientDolphin[SELECTED_DEPARTURE]
+
+		bindAttribute(applicationState[ATT_SELECTED_DEPARTURE_ID], { evt -> clientDolphin.apply clientDolphin[evt.newValue] to selectedDeparture })
+	}
+
+	private static ImageView createImageView(String filename) {
 		return new ImageView(new Image(getClass().getResourceAsStream(filename)))
 	}
 
-	private Button createButton(String iconFilename, String command=null) {
+	private static Button createButton(String iconFilename, String command=null) {
 		ButtonBuilder.create()
 				.graphic(createImageView(iconFilename))
 				.styleClass("toolbar-button")
@@ -91,6 +90,7 @@ public class AdminApplication extends Application {
 				.build()
 	}
 
+	// todo: move this kind of method to dolphin: "bind attribute to closure" and "bind 'propertyName' of pm to closure"
 	public static void bindAttribute(Attribute attribute, Closure closure) {
 		final listener = closure as PropertyChangeListener
 		attribute.addPropertyChangeListener('value', listener)

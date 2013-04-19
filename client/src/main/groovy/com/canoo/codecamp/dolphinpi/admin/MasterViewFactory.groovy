@@ -1,14 +1,18 @@
 package com.canoo.codecamp.dolphinpi.admin
 
 import javafx.beans.value.ChangeListener
+import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
+import javafx.scene.Parent
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableColumnBuilder
 import javafx.scene.control.TableView
 import javafx.scene.control.TableViewBuilder
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.util.Callback
+import org.opendolphin.core.ModelStoreEvent
+import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientAttributeWrapper
 import org.opendolphin.core.client.ClientDolphin
@@ -20,18 +24,19 @@ import static org.opendolphin.binding.JavaFxUtil.cellEdit
 
 class MasterViewFactory {
 
-	private static ClientDolphin clientDolphin
+	static Parent createMasterView(ClientDolphin clientDolphin) {
+		ObservableList<ClientPresentationModel> data = FXCollections.observableArrayList()
+		PresentationModel applicationState = clientDolphin[APPLICATION_STATE]
+		PresentationModel selectedDeparture = clientDolphin[SELECTED_DEPARTURE]
 
-	static javafx.scene.Node newMasterView(ObservableList<ClientPresentationModel> data, ClientPresentationModel applicationState, ClientDolphin inClientDolphin) {
-		clientDolphin = inClientDolphin
 		TableView table = TableViewBuilder.create()
 				.items(data)
 				.columns(
-					createColumn(ATT_DEPARTURE_TIME),
-					createColumn(ATT_TRAIN_NUMBER),
-					createColumn(ATT_DESTINATION),
-					createColumn(ATT_STATUS, false),
-					createColumn(ATT_TRACK),
+					createColumn(selectedDeparture, ATT_DEPARTURE_TIME),
+					createColumn(selectedDeparture, ATT_TRAIN_NUMBER),
+					createColumn(selectedDeparture, ATT_DESTINATION),
+					createColumn(selectedDeparture, ATT_STATUS, false),
+					createColumn(selectedDeparture, ATT_TRACK),
 					)
 				.columnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY)
 				.editable(true)
@@ -50,14 +55,23 @@ class MasterViewFactory {
 			if (pmId == EMPTY_DEPARTURE) {
 				table.getSelectionModel().clearSelection()
 			} else {
-				table.getSelectionModel().select(inClientDolphin[pmId])
+				table.getSelectionModel().select(clientDolphin[pmId])
+			}
+		})
+
+		clientDolphin.addModelStoreListener(TYPE_DEPARTURE, { ModelStoreEvent evt ->
+			if(evt.type == ModelStoreEvent.Type.ADDED){
+				data << evt.presentationModel
+			}
+			else {
+				data.remove(evt.presentationModel)
 			}
 		})
 
 		return table
 	}
 
-	static TableColumn createColumn(String inPropertyName, boolean editable=true) {
+	static TableColumn createColumn(ClientPresentationModel selectedDeparture, String inPropertyName, boolean editable=true) {
 		TableColumn col = TableColumnBuilder.create()
 				.cellFactory(TextFieldTableCell.forTableColumn())
 				.cellValueFactory({ row -> new ClientAttributeWrapper(row.value[inPropertyName]) } as Callback)
@@ -65,7 +79,7 @@ class MasterViewFactory {
 				.editable(editable)
 				.build()
 
-		bindAttribute(clientDolphin[SELECTED_DEPARTURE].getAt(inPropertyName, Tag.LABEL), {evt -> col.setText(evt.newValue)})
+		bindAttribute selectedDeparture.getAt(inPropertyName, Tag.LABEL), { evt -> col.setText(evt.newValue) }
 
 		col
 	}

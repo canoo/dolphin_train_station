@@ -23,18 +23,23 @@ public class SwingBoardStarter {
 
 		clientDolphin.setClientConnector(connector);
 
-		List<ClientPresentationModel> departuresOnBoard = [];
-		(0..4).each {
-			departuresOnBoard << clientDolphin.presentationModel(pmId(TYPE_DEPARTURE_ON_BOARD, it), ALL_ATTRIBUTES)
-		}
+		initializePresentationModels(clientDolphin)
 
 		SwingUtilities.invokeAndWait(new Runnable() {
 			@Override
 			public void run() {
-				new DepartureBoardFrame(clientDolphin, departuresOnBoard).createAndShow()
+				new DepartureBoardFrame(clientDolphin).createAndShow()
 			}
 		});
 
+	}
+
+	private static void initializePresentationModels(ClientDolphin clientDolphin) {
+		(0..4).each {
+			Map<String, Object> attributeMap = [:]
+			ALL_ATTRIBUTES.each { attr -> attributeMap[attr] = null }
+			clientDolphin.presentationModel(pmId(TYPE_DEPARTURE_ON_BOARD, it), TYPE_DEPARTURE_ON_BOARD, attributeMap)
+		}
 	}
 
 	private static ClientConnector createConnector(ClientDolphin clientDolphin) {

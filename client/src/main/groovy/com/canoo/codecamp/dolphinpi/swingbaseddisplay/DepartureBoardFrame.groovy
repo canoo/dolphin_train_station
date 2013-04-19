@@ -19,9 +19,10 @@ public class DepartureBoardFrame extends JFrame {
 
 	private DepartureBoard board
 
-	public DepartureBoardFrame(ClientDolphin clientDolphin, List<ClientPresentationModel> departuresOnBoard) {
+	public DepartureBoardFrame(ClientDolphin clientDolphin) {
 		super("Swing - Abfahrten ab Olten")
-		this.departuresOnBoard = departuresOnBoard
+		departuresOnBoard = new ArrayList<>(clientDolphin.findAllPresentationModelsByType(TYPE_DEPARTURE_ON_BOARD))
+
 		this.clientDolphin = clientDolphin
 	}
 
