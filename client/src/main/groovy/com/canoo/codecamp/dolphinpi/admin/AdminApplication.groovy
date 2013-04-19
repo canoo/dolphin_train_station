@@ -45,8 +45,6 @@ public class AdminApplication extends Application {
 
 			stage.setScene(scene);
 			stage.show();
-
-			root.requestLayout()
 		}
 
 		clientDolphin.send COMMAND_GET_ALL_DEPARTURES, { pms ->

@@ -5,8 +5,11 @@ import javafx.animation.KeyValue
 import javafx.animation.Timeline
 import javafx.animation.TimelineBuilder
 import javafx.event.ActionEvent
+import javafx.event.Event
 import javafx.event.EventHandler
 import javafx.scene.control.*
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyEvent
 import javafx.util.Duration
 import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientDolphin
@@ -33,6 +36,7 @@ class DetailViewFactory {
 		}
 		addAttributeEditor(migPane, TextAreaBuilder.create().wrapText(true).build(), ATT_STOPOVERS, selectedDeparture)
 
+		//todo: get rid of these hard coded Strings
 		migPane.add(einfahren = ButtonBuilder.create().text("Fährt ein").build())
 		migPane.add(ausfahren = ButtonBuilder.create().text("Fährt aus").build(), "right, grow 0")
 
@@ -102,7 +106,7 @@ class DetailViewFactory {
 				tl.play()
 			}
 
-			return matches ? newVal : pm.getAt(propertyName).value
+			return matches ? newVal : pm[propertyName].value
 		}
 	}
 
@@ -114,14 +118,26 @@ class DetailViewFactory {
 		}
 	}
 
-	private static addAttributeEditor(MigPane migPane, javafx.scene.Node inNode, String propertyName, ClientPresentationModel pm) {
+	private static addAttributeEditor(MigPane migPane, TextInputControl textInput, String propertyName, ClientPresentationModel pm) {
+		textInput.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+			@Override
+			void handle(KeyEvent t) {
+				if(t.getCode() == KeyCode.ESCAPE){
+					final caretPos = textInput.getCaretPosition()
+					String text = pm[propertyName].value
+					textInput['text'] = text
+					textInput.positionCaret Math.min(caretPos, text.length())
+				}
+			}
+		})
+
 		def label
 		migPane.add(label = LabelBuilder.create().build())
-		migPane.add(inNode)
-
+		migPane.add(textInput)
+		//todo: bind bidirectional to support multi-language
 		bind propertyName, Tag.LABEL of pm to 'text' of label
 
-		bindBidirectional(propertyName, inNode, pm)
+		bindBidirectional(propertyName, textInput, pm)
 	}
 
 }
