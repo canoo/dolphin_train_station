@@ -37,7 +37,6 @@ public class ApplicationConstants {
 
 	public static final String COMMAND_UNDO = "COMMAND_UNDO";
 	public static final String COMMAND_REDO = "COMMAND_REDO";
-	public static final String COMMAND_CLEAR_UNDO_REDO_STACK = "COMMAND_CLEAR_UNDO_REDO_STACK";
 
 	public static final String COMMAND_INIT_SELECTED_DEPARTURE = "COMMAND_INIT_SELECTED_DEPARTURE";
 	public static final String COMMAND_GET_ALL_DEPARTURES = "getAllDepartures";

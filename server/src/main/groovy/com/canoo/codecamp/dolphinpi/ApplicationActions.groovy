@@ -4,37 +4,164 @@ import groovyx.gpars.dataflow.DataflowQueue
 import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.Tag
 import org.opendolphin.core.comm.Command
-import org.opendolphin.core.comm.NamedCommand
 import org.opendolphin.core.comm.ValueChangedCommand
 import org.opendolphin.core.server.*
 import org.opendolphin.core.server.action.DolphinServerAction
 import org.opendolphin.core.server.comm.ActionRegistry
 import org.opendolphin.core.server.comm.CommandHandler
-import org.opendolphin.core.server.comm.NamedCommandHandler
+import org.opendolphin.core.server.comm.SimpleCommandHandler
 
 import java.util.concurrent.TimeUnit
 
 import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 
-class ApplicationRegistrationAction extends DolphinServerAction {
+@SuppressWarnings("GroovyAssignabilityCheck")
+class ApplicationActions extends DolphinServerAction {
 
+	//static to be accessible by other "sessions"
 	private static EventBus eventBus = new EventBus()
+
 	private final DataflowQueue valueQueue
+	private final Deque<ValueChangedCommand> undoStack = new ArrayDeque<>();
+	private final Deque<ValueChangedCommand> redoStack = new ArrayDeque<>();
+	private final List<Integer> positionsOnBoard = [-1, -1, -1, -1, -1]
 
-	Deque<ValueChangedCommand> undoStack = new ArrayDeque<>();
-	Deque<ValueChangedCommand> redoStack = new ArrayDeque<>();
+	// needed for proper undo/redo handling
+	private ValueChangedCommand nextTripleToIgnore
 
-	ValueChangedCommand nextTripleToIgnore
+	//all available Actions / CommandHandlers
+	private final CommandHandler initSelectedDepartureAction = new SimpleCommandHandler() {
+		@Override
+		void handleCommand() {
+			initAt SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, '[0-9][0-9]:[0-9][0-9]', Tag.REGEX
+			initAt SELECTED_DEPARTURE, ATT_DESTINATION,    null, '.*',                    Tag.REGEX
+			initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER,   null, '[A-Z]{2,3} [0-9]{1,4}', Tag.REGEX
+			initAt SELECTED_DEPARTURE, ATT_TRACK,          null, '[0-9]{0,2}',            Tag.REGEX
+			initAt SELECTED_DEPARTURE, ATT_STOPOVERS,      null, '.*',                    Tag.REGEX
 
-	//this is status needed on the server only
-	final List<Integer> positionsOnBoard = [-1, -1, -1, -1, -1]
+			initAt SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, 'Uhrzeit',     Tag.LABEL
+			initAt SELECTED_DEPARTURE, ATT_DESTINATION,    null, 'In Richtung', Tag.LABEL
+			initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER,   null, 'Fahrt',       Tag.LABEL
+			initAt SELECTED_DEPARTURE, ATT_TRACK,          null, 'Gleis',       Tag.LABEL
+			initAt SELECTED_DEPARTURE, ATT_STOPOVERS,      null, 'Über',        Tag.LABEL
+			initAt SELECTED_DEPARTURE, ATT_STATUS,         null, 'Status',      Tag.LABEL
+		}
+	}
 
-	ApplicationRegistrationAction() {
+	private final CommandHandler getAllDeparturesAction = new SimpleCommandHandler() {
+		@Override
+		void handleCommand() {
+			loadDepartureDTOs().eachWithIndex { dto, index ->
+				presentationModel pmId(TYPE_DEPARTURE, index), TYPE_DEPARTURE, dto
+			}
+		}
+	}
+
+	private final CommandHandler moveToTopAction = new SimpleCommandHandler() {
+		@Override
+		void handleCommand() {
+			updatePositionsOnBoard(getServerDolphin()[SELECTED_DEPARTURE][ATT_POSITION].value as int, 0)
+			sendDepartureBoardEntries(0..4)
+			changeValue getServerDolphin()[APPLICATION_STATE][ATT_TOP_DEPARTURE_ON_BOARD], positionsOnBoard[0]
+		}
+	}
+
+	private final CommandHandler undoAction = new SimpleCommandHandler() {
+		@Override
+		void handleCommand() {
+			if (undoStack.isEmpty()) {
+				return
+			}
+			ValueChangedCommand cmd = undoStack.pop()
+			nextTripleToIgnore = new ValueChangedCommand(attributeId: cmd.attributeId, oldValue: cmd.newValue, newValue: cmd.oldValue)
+			redoStack.push(cmd)
+			changeValue(getServerDolphin().serverModelStore.findAttributeById(cmd.attributeId) as ServerAttribute, cmd.oldValue)
+		}
+	}
+
+	private final CommandHandler redoAction = new SimpleCommandHandler() {
+		@Override
+		void handleCommand() {
+			if (redoStack.isEmpty()) {
+				return
+			}
+			ValueChangedCommand valueChangedCommand = redoStack.pop()
+			nextTripleToIgnore = new ValueChangedCommand(attributeId: valueChangedCommand.attributeId, oldValue: valueChangedCommand.oldValue, newValue: valueChangedCommand.newValue)
+			undoStack.push(valueChangedCommand)
+			changeValue(getServerDolphin().serverModelStore.findAttributeById(valueChangedCommand.attributeId) as ServerAttribute, valueChangedCommand.newValue)
+		}
+	}
+
+	private final CommandHandler valueChangedAction = new CommandHandler<ValueChangedCommand>() {
+
+		@Override
+		public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
+			PresentationModel selectedPM = getServerDolphin()[SELECTED_DEPARTURE]
+			if (selectedPM && !selectedPM.findAttributeById(command.attributeId)) {
+				if (hasToBeIgnored(nextTripleToIgnore, command)) {
+					nextTripleToIgnore = null
+				} else {
+					undoStack.push(command)
+					redoStack.clear()
+				}
+			}
+
+			int positionOnTopOfBoard = positionsOnBoard[0]
+			if (positionOnTopOfBoard == -1) return
+
+			def changedAttribute = getServerDolphin().serverModelStore.findAttributeById(command.attributeId)
+			if (!changedAttribute?.qualifier?.startsWith(TYPE_DEPARTURE)) return
+			if (changedAttribute.tag != Tag.VALUE) return
+
+			String pmId = pmIdFromQualifier(changedAttribute.qualifier)
+
+			ServerPresentationModel modifiedPm = getServerDolphin()[pmId]
+			int modifiedPmPosition = modifiedPm[ATT_POSITION].value as int
+
+			if (modifiedPmPosition in positionsOnBoard) {
+				if (changedAttribute.propertyName == ATT_STATUS && command.newValue == STATUS_HAS_LEFT) {
+					int startOnBoard = positionsOnBoard.indexOf(modifiedPmPosition)
+					updatePositionsOnBoard(modifiedPmPosition, startOnBoard)
+					sendDepartureBoardEntries(startOnBoard..4)
+				} else {
+					final toUpdate = positionsOnBoard.indexOf(modifiedPmPosition)
+					sendDepartureBoardEntries(toUpdate..toUpdate)
+				}
+				changeValue getServerDolphin()[APPLICATION_STATE][ATT_TOP_DEPARTURE_ON_BOARD], positionsOnBoard[0]
+			}
+		}
+	}
+
+	private final CommandHandler longPollAction = new SimpleCommandHandler() {
+		@Override
+		void handleCommand() {
+			DTO dto = valueQueue.getVal(60, TimeUnit.SECONDS)
+			if (dto == null) return
+			int positionOnBoard = dto.slots.find { it.propertyName == ATT_POSITION }.value
+
+			ServerPresentationModel pm = getServerDolphin()[pmId(TYPE_DEPARTURE_ON_BOARD, positionOnBoard)]
+			pm.attributes.each { attr ->
+				changeValue(attr, dto.slots.find { it.propertyName == attr.propertyName }.value)
+			}
+		}
+	}
+
+	ApplicationActions() {
 		valueQueue = new DataflowQueue()
 		eventBus.subscribe(valueQueue)
 	}
 
-	private DTO createEmptyDepartureDTO(int positionOnBoard) {
+	public void registerIn(ActionRegistry registry) {
+		registry.register(COMMAND_INIT_SELECTED_DEPARTURE, initSelectedDepartureAction)
+		registry.register(COMMAND_GET_ALL_DEPARTURES,      getAllDeparturesAction)
+		registry.register(COMMAND_MOVE_TO_TOP,             moveToTopAction)
+		registry.register(ValueChangedCommand.class,       valueChangedAction)
+		registry.register(COMMAND_UNDO, 				   undoAction)
+		registry.register(COMMAND_REDO, 			  	   redoAction)
+		registry.register(COMMAND_LONG_POLL, 			   longPollAction)
+	}
+
+	private static DTO createEmptyDepartureDTO(int positionOnBoard) {
 		List<Slot> slots = []
 		ALL_ATTRIBUTES.each { propertyName ->
 			if (propertyName != ATT_POSITION) {
@@ -46,7 +173,7 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		new DTO(slots)
 	}
 
-	private DTO createDepartureDTO(PresentationModel pm, int positionOnBoard) {
+	private static DTO createDepartureDTO(PresentationModel pm, int positionOnBoard) {
 		List<Slot> slots = []
 		ALL_ATTRIBUTES.each { propertyName ->
 			if (propertyName != ATT_POSITION) {
@@ -57,7 +184,6 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 
 		new DTO(slots)
 	}
-
 
 	private void sendDepartureBoardEntries(List<Integer> positions) {
 		positions.each { idx ->
@@ -72,19 +198,18 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		}
 	}
 
-
-	boolean hasToBeIgnored(final ValueChangedCommand inNextTripleToIgnore, final ValueChangedCommand inValueChangedCommand) {
+	private static boolean hasToBeIgnored(final ValueChangedCommand inNextTripleToIgnore, final ValueChangedCommand inValueChangedCommand) {
 		return inNextTripleToIgnore != null &&
 				inNextTripleToIgnore.attributeId == inValueChangedCommand.attributeId &&
 				inNextTripleToIgnore.oldValue == inValueChangedCommand.oldValue &&
 				inNextTripleToIgnore.newValue == inValueChangedCommand.newValue
 	}
 
-	PresentationModel pmAtPos(int pos) {
+	private PresentationModel pmAtPos(int pos) {
 		getServerDolphin()[pmId(TYPE_DEPARTURE, pos)]
 	}
 
-	PresentationModel nextModelOnBoard(int startPos) {
+	private PresentationModel nextModelOnBoard(int startPos) {
 		int pos = startPos
 		PresentationModel pm = pmAtPos(pos)
 
@@ -96,7 +221,7 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		pm
 	}
 
-	void updatePositionsOnBoard(int firstPositionInList, int firstPositionOnBoard) {
+	private void updatePositionsOnBoard(int firstPositionInList, int firstPositionOnBoard) {
 		int nextPosInList = firstPositionInList
 		for (int i = firstPositionOnBoard; i < 5; i++) {
 			PresentationModel pm = nextModelOnBoard(nextPosInList)
@@ -111,140 +236,7 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		}
 	}
 
-	public void registerIn(ActionRegistry actionRegistry) {
-
-		actionRegistry.register(COMMAND_INIT_SELECTED_DEPARTURE, new CommandHandler<Command>() {
-			public void handleCommand(Command command, List<Command> response) {
-				initAt SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, '[0-9][0-9]:[0-9][0-9]', Tag.REGEX
-				initAt SELECTED_DEPARTURE, ATT_DESTINATION,    null, '.*',                    Tag.REGEX
-				initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER,   null, '[A-Z]{2,3} [0-9]{1,4}', Tag.REGEX
-				initAt SELECTED_DEPARTURE, ATT_TRACK,          null, '[0-9]{0,2}',            Tag.REGEX
-				initAt SELECTED_DEPARTURE, ATT_STOPOVERS,      null, '.*',                    Tag.REGEX
-
-				initAt SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, 'Uhrzeit',     Tag.LABEL
-				initAt SELECTED_DEPARTURE, ATT_DESTINATION,    null, 'In Richtung', Tag.LABEL
-				initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER,   null, 'Fahrt',       Tag.LABEL
-				initAt SELECTED_DEPARTURE, ATT_TRACK,          null, 'Gleis',       Tag.LABEL
-				initAt SELECTED_DEPARTURE, ATT_STOPOVERS,      null, 'Über',        Tag.LABEL
-				initAt SELECTED_DEPARTURE, ATT_STATUS,         null, 'Status',      Tag.LABEL
-			}
-		})
-
-		actionRegistry.register(COMMAND_GET_ALL_DEPARTURES, new CommandHandler<Command>() {
-			public void handleCommand(Command command, List<Command> response) {
-				List<DTO> dtos = []
-				populateDTOs(dtos)
-
-				dtos.eachWithIndex { dto, index ->
-					presentationModel pmId(TYPE_DEPARTURE, index), TYPE_DEPARTURE, dto
-				}
-			}
-		})
-
-
-		actionRegistry.register(COMMAND_MOVE_TO_TOP, new CommandHandler<Command>() {
-			public void handleCommand(Command command, List<Command> response) {
-				updatePositionsOnBoard(getServerDolphin()[SELECTED_DEPARTURE][ATT_POSITION].value as int, 0)
-				sendDepartureBoardEntries(0..4)
-
-				changeValue getServerDolphin()[APPLICATION_STATE][ATT_TOP_DEPARTURE_ON_BOARD], positionsOnBoard[0]
-			}
-		})
-
-		actionRegistry.register(ValueChangedCommand.class, new CommandHandler<ValueChangedCommand>() {
-
-			@Override
-			public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
-				PresentationModel selectedPM = getServerDolphin()[SELECTED_DEPARTURE]
-				if (selectedPM && !selectedPM.findAttributeById(command.attributeId)) {
-					if (hasToBeIgnored(nextTripleToIgnore, command)) {
-						nextTripleToIgnore = null
-					} else {
-						undoStack.push(command)
-						redoStack.clear()
-					}
-				}
-
-				int positionOnTopOfBoard = positionsOnBoard[0]
-				if (positionOnTopOfBoard == -1) return
-
-				def changedAttribute = getServerDolphin().serverModelStore.findAttributeById(command.attributeId)
-				if (!changedAttribute?.qualifier?.startsWith(TYPE_DEPARTURE)) return
-				if (changedAttribute.tag != Tag.VALUE) return
-
-				String pmId = pmIdFromQualifier(changedAttribute.qualifier)
-
-				ServerPresentationModel modifiedPm = getServerDolphin()[pmId]
-				int modifiedPmPosition = modifiedPm[ATT_POSITION].value as int
-
-				if (modifiedPmPosition in positionsOnBoard) {
-					if (changedAttribute.propertyName == ATT_STATUS && command.newValue == STATUS_HAS_LEFT) {
-						int startOnBoard = positionsOnBoard.indexOf(modifiedPmPosition)
-						updatePositionsOnBoard(modifiedPmPosition, startOnBoard)
-						sendDepartureBoardEntries(startOnBoard..4)
-					} else {
-						final toUpdate = positionsOnBoard.indexOf(modifiedPmPosition)
-						sendDepartureBoardEntries(toUpdate..toUpdate)
-					}
-					changeValue getServerDolphin()[APPLICATION_STATE][ATT_TOP_DEPARTURE_ON_BOARD], positionsOnBoard[0]
-				}
-			}
-		})
-
-		actionRegistry.register(COMMAND_UNDO, new NamedCommandHandler() {
-
-			@Override
-			void handleCommand(final NamedCommand command, final List<Command> response) {
-				if (undoStack.isEmpty()) {
-					return
-				}
-				ValueChangedCommand valueChangedCommand = undoStack.pop()
-				nextTripleToIgnore = new ValueChangedCommand(attributeId: valueChangedCommand.attributeId, oldValue: valueChangedCommand.newValue, newValue: valueChangedCommand.oldValue)
-				redoStack.push(valueChangedCommand)
-				changeValue(getServerDolphin().serverModelStore.findAttributeById(valueChangedCommand.attributeId) as ServerAttribute, valueChangedCommand.oldValue)
-			}
-		})
-		actionRegistry.register(COMMAND_REDO, new NamedCommandHandler() {
-
-			@Override
-			void handleCommand(final NamedCommand command, final List<Command> response) {
-				if (redoStack.isEmpty()) {
-					return
-				}
-				ValueChangedCommand valueChangedCommand = redoStack.pop()
-				nextTripleToIgnore = new ValueChangedCommand(attributeId: valueChangedCommand.attributeId, oldValue: valueChangedCommand.oldValue, newValue: valueChangedCommand.newValue)
-				undoStack.push(valueChangedCommand)
-				changeValue(getServerDolphin().serverModelStore.findAttributeById(valueChangedCommand.attributeId) as ServerAttribute, valueChangedCommand.newValue)
-			}
-		})
-
-		actionRegistry.register(COMMAND_CLEAR_UNDO_REDO_STACK, new NamedCommandHandler() {
-
-			@Override
-			void handleCommand(final NamedCommand command, final List<Command> response) {
-				redoStack.clear()
-				undoStack.clear()
-			}
-		})
-
-		actionRegistry.register(COMMAND_LONG_POLL, new NamedCommandHandler() {
-			@Override
-			void handleCommand(final NamedCommand command, final List<Command> response) {
-				DTO dto = valueQueue.getVal(60, TimeUnit.SECONDS)
-				if (dto == null) return
-				int positionOnBoard = dto.slots.find { it.propertyName == ATT_POSITION }.value
-
-				ServerPresentationModel pm = getServerDolphin()[pmId(TYPE_DEPARTURE_ON_BOARD, positionOnBoard)]
-				pm.attributes.each { attr ->
-					changeValue(attr, dto.slots.find { it.propertyName == attr.propertyName }.value)
-				}
-			}
-		})
-	}
-
-
-
-	DTO createDeparture(id, departureTime, trainNumber, destination, stopOvers, track) {
+	private DTO createDeparture(id, departureTime, trainNumber, destination, stopOvers, track) {
 		new DTO(
 				createSlot(ATT_POSITION, id, id),
 				createSlot(ATT_DEPARTURE_TIME, departureTime, id),
@@ -255,15 +247,16 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 				createSlot(ATT_STATUS, STATUS_APPROACHING, id))
 	}
 
-	Slot createSlot(String propertyName, Object value, int id) {
+	private static Slot createSlot(String propertyName, Object value, int id) {
 		new Slot(propertyName, value, pmId(TYPE_DEPARTURE, id) + '/' + propertyName)
 	}
 
-	String pmIdFromQualifier(String qualifier) {
+	private static String pmIdFromQualifier(String qualifier) {
 		qualifier.split('/').first()
 	}
 
-	def populateDTOs(dtos) {
+	private List<DTO> loadDepartureDTOs() {
+		List<DTO> dtos = []
 		def i = 0
 		dtos.add(createDeparture(i++, "00:00", "IC 747", "Zürich HB", "Olten  00:00 - Aarau  00:08 - Zürich HB  00:33", ""));
 		dtos.add(createDeparture(i++, "00:04", "IC 746", "Bern", "Olten  00:04 - Bern  00:31", ""));
@@ -398,8 +391,9 @@ class ApplicationRegistrationAction extends DolphinServerAction {
 		dtos.add(createDeparture(i++, "23:32", "ICE 996", "Basel SBB", "Olten  23:32 - Liestal  23:47 - Basel SBB  23:59", ""));
 		dtos.add(createDeparture(i++, "23:35", "IC 846", "Bern", "Olten  23:35 - Bern  00:02", ""));
 		dtos.add(createDeparture(i++, "23:35", "ICN 1547", "St. Gallen", "Olten  23:35 - Aarau  23:43 - Zürich HB  00:10 - Zürich Flughafen  00:27 • Winterthur  00:42 - Wil SG  00:59 - Uzwil  01:06 - Flawil  01:12 - Gossau SG  01:17 - St. Gallen  01:25", "2"));
-		dtos.add(createDeparture(i++, "23:40", "ICN 1546", "Biel/Bienne", "Olten  23:40 - Oensingen  23:52 - Solothurn  00:04 - Grenchen Süd  00:11 - Biel/Bienne", ""));
+		dtos.add(createDeparture(i, "23:40", "ICN 1546", "Biel/Bienne", "Olten  23:40 - Oensingen  23:52 - Solothurn  00:04 - Grenchen Süd  00:11 - Biel/Bienne", ""));
 
+		dtos
 	}
 
 }
