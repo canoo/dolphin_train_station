@@ -1,6 +1,5 @@
 package com.canoo.codecamp.dolphinpi.fxbaseddisplay
 
-import com.canoo.codecamp.dolphinpi.BoardItemConstants
 import javafx.application.Application
 import javafx.scene.Parent
 import javafx.scene.Scene
@@ -10,6 +9,11 @@ import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import javafx.stage.Stage
 import org.opendolphin.core.client.ClientDolphin
+
+import static com.canoo.codecamp.dolphinpi.BoardItemConstants.ATT.ALL
+import static com.canoo.codecamp.dolphinpi.BoardItemConstants.CMD.LONG_POLL
+import static com.canoo.codecamp.dolphinpi.BoardItemConstants.TYPE.BOARD_ITEM
+import static com.canoo.codecamp.dolphinpi.BoardItemConstants.pmId
 
 public class DepartureBoardApplication extends Application {
 	public static ClientDolphin clientDolphin;
@@ -32,7 +36,7 @@ public class DepartureBoardApplication extends Application {
 
 		def longPoll = null
 		longPoll = {
-			clientDolphin.send BoardItemConstants.CMD.LONG_POLL, longPoll
+			clientDolphin.send LONG_POLL, longPoll
 		}
 
 		longPoll()
@@ -44,8 +48,8 @@ public class DepartureBoardApplication extends Application {
 			//PresentationModel pm = clientDolphin.presentationModel(pmId(TYPE_DEPARTURE_ON_BOARD, it), TYPE_DEPARTURE_ON_BOARD, ALL_ATTRIBUTES)
 
 			Map<String, Object> attributeMap = [:]
-			BoardItemConstants.ATT.ALL.each {attr -> attributeMap[attr] = null}
-			clientDolphin.presentationModel(BoardItemConstants.pmId(BoardItemConstants.TYPE.BOARD_ITEM, it), BoardItemConstants.TYPE.BOARD_ITEM, attributeMap)
+			ALL.each {attr -> attributeMap[attr] = null}
+			clientDolphin.presentationModel(pmId(BOARD_ITEM, it), BOARD_ITEM, attributeMap)
 		}
 	}
 
