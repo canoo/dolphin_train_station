@@ -13,8 +13,6 @@ import org.opendolphin.core.server.comm.SimpleCommandHandler
 
 import java.util.concurrent.TimeUnit
 
-import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
-
 @SuppressWarnings("GroovyAssignabilityCheck")
 class ApplicationActions extends DolphinServerAction {
 
@@ -33,18 +31,18 @@ class ApplicationActions extends DolphinServerAction {
 	private final CommandHandler initSelectedDepartureAction = new SimpleCommandHandler() {
 		@Override
 		void handleCommand() {
-			initAt SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, '[0-9][0-9]:[0-9][0-9]', Tag.REGEX
-			initAt SELECTED_DEPARTURE, ATT_DESTINATION,    null, '.*',                    Tag.REGEX
-			initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER,   null, '[A-Z]{2,3} [0-9]{1,4}', Tag.REGEX
-			initAt SELECTED_DEPARTURE, ATT_TRACK,          null, '[0-9]{0,2}',            Tag.REGEX
-			initAt SELECTED_DEPARTURE, ATT_STOPOVERS,      null, '.*',                    Tag.REGEX
+			initAt DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.DEPARTURE_TIME, null, '[0-9][0-9]:[0-9][0-9]', Tag.REGEX
+			initAt DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.DESTINATION,    null, '.*',                    Tag.REGEX
+			initAt DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.TRAIN_NUMBER,   null, '[A-Z]{2,3} [0-9]{1,4}', Tag.REGEX
+			initAt DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.TRACK,          null, '[0-9]{0,2}',            Tag.REGEX
+			initAt DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.STOPOVERS,      null, '.*',                    Tag.REGEX
 
-			initAt SELECTED_DEPARTURE, ATT_DEPARTURE_TIME, null, 'Uhrzeit',     Tag.LABEL
-			initAt SELECTED_DEPARTURE, ATT_DESTINATION,    null, 'In Richtung', Tag.LABEL
-			initAt SELECTED_DEPARTURE, ATT_TRAIN_NUMBER,   null, 'Fahrt',       Tag.LABEL
-			initAt SELECTED_DEPARTURE, ATT_TRACK,          null, 'Gleis',       Tag.LABEL
-			initAt SELECTED_DEPARTURE, ATT_STOPOVERS,      null, 'Über',        Tag.LABEL
-			initAt SELECTED_DEPARTURE, ATT_STATUS,         null, 'Status',      Tag.LABEL
+			initAt DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.DEPARTURE_TIME, null, 'Uhrzeit',     Tag.LABEL
+			initAt DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.DESTINATION,    null, 'In Richtung', Tag.LABEL
+			initAt DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.TRAIN_NUMBER,   null, 'Fahrt',       Tag.LABEL
+			initAt DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.TRACK,          null, 'Gleis',       Tag.LABEL
+			initAt DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.STOPOVERS,      null, 'Über',        Tag.LABEL
+			initAt DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.STATUS,         null, 'Status',      Tag.LABEL
 		}
 	}
 
@@ -52,7 +50,7 @@ class ApplicationActions extends DolphinServerAction {
 		@Override
 		void handleCommand() {
 			loadDepartureDTOs().eachWithIndex { dto, index ->
-				presentationModel pmId(TYPE_DEPARTURE, index), TYPE_DEPARTURE, dto
+				presentationModel DepartureConstants.pmId(DepartureConstants.TYPE.DEPARTURE, index), DepartureConstants.TYPE.DEPARTURE, dto
 			}
 		}
 	}
@@ -60,9 +58,9 @@ class ApplicationActions extends DolphinServerAction {
 	private final CommandHandler moveToTopAction = new SimpleCommandHandler() {
 		@Override
 		void handleCommand() {
-			updatePositionsOnBoard(getServerDolphin()[SELECTED_DEPARTURE][ATT_POSITION].value as int, 0)
+			updatePositionsOnBoard(getServerDolphin()[DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE][DepartureConstants.ATT.POSITION].value as int, 0)
 			sendDepartureBoardEntries(0..4)
-			changeValue getServerDolphin()[APPLICATION_STATE][ATT_TOP_DEPARTURE_ON_BOARD], positionsOnBoard[0]
+			changeValue getServerDolphin()[PresentationStateConstants.TYPE.PRESENTATION_STATE][PresentationStateConstants.ATT.TOP_DEPARTURE_ON_BOARD], positionsOnBoard[0]
 		}
 	}
 
@@ -96,7 +94,7 @@ class ApplicationActions extends DolphinServerAction {
 
 		@Override
 		public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
-			PresentationModel selectedPM = getServerDolphin()[SELECTED_DEPARTURE]
+			PresentationModel selectedPM = getServerDolphin()[DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE]
 			if (selectedPM && !selectedPM.findAttributeById(command.attributeId)) {
 				if (hasToBeIgnored(nextTripleToIgnore, command)) {
 					nextTripleToIgnore = null
@@ -110,16 +108,16 @@ class ApplicationActions extends DolphinServerAction {
 			if (positionOnTopOfBoard == -1) return
 
 			def changedAttribute = getServerDolphin().serverModelStore.findAttributeById(command.attributeId)
-			if (!changedAttribute?.qualifier?.startsWith(TYPE_DEPARTURE)) return
+			if (!changedAttribute?.qualifier?.startsWith(DepartureConstants.TYPE.DEPARTURE)) return
 			if (changedAttribute.tag != Tag.VALUE) return
 
 			String pmId = pmIdFromQualifier(changedAttribute.qualifier)
 
 			ServerPresentationModel modifiedPm = getServerDolphin()[pmId]
-			int modifiedPmPosition = modifiedPm[ATT_POSITION].value as int
+			int modifiedPmPosition = modifiedPm[DepartureConstants.ATT.POSITION].value as int
 
 			if (modifiedPmPosition in positionsOnBoard) {
-				if (changedAttribute.propertyName == ATT_STATUS && command.newValue == STATUS_HAS_LEFT) {
+				if (changedAttribute.propertyName == DepartureConstants.ATT.STATUS && command.newValue == DepartureConstants.STATUS.HAS_LEFT) {
 					int startOnBoard = positionsOnBoard.indexOf(modifiedPmPosition)
 					updatePositionsOnBoard(modifiedPmPosition, startOnBoard)
 					sendDepartureBoardEntries(startOnBoard..4)
@@ -127,7 +125,7 @@ class ApplicationActions extends DolphinServerAction {
 					final toUpdate = positionsOnBoard.indexOf(modifiedPmPosition)
 					sendDepartureBoardEntries(toUpdate..toUpdate)
 				}
-				changeValue getServerDolphin()[APPLICATION_STATE][ATT_TOP_DEPARTURE_ON_BOARD], positionsOnBoard[0]
+				changeValue getServerDolphin()[PresentationStateConstants.TYPE.PRESENTATION_STATE][PresentationStateConstants.ATT.TOP_DEPARTURE_ON_BOARD], positionsOnBoard[0]
 			}
 		}
 	}
@@ -137,9 +135,9 @@ class ApplicationActions extends DolphinServerAction {
 		void handleCommand() {
 			DTO dto = valueQueue.getVal(60, TimeUnit.SECONDS)
 			if (dto == null) return
-			int positionOnBoard = dto.slots.find { it.propertyName == ATT_POSITION }.value
+			int positionOnBoard = dto.slots.find { it.propertyName == BoardItemConstants.ATT.POSITION }.value
 
-			ServerPresentationModel pm = getServerDolphin()[pmId(TYPE_DEPARTURE_ON_BOARD, positionOnBoard)]
+			ServerPresentationModel pm = getServerDolphin()[BoardItemConstants.pmId(BoardItemConstants.TYPE.BOARD_ITEM, positionOnBoard)]
 			pm.attributes.each { attr ->
 				changeValue(attr, dto.slots.find { it.propertyName == attr.propertyName }.value)
 			}
@@ -152,35 +150,35 @@ class ApplicationActions extends DolphinServerAction {
 	}
 
 	public void registerIn(ActionRegistry registry) {
-		registry.register(COMMAND_INIT_SELECTED_DEPARTURE, initSelectedDepartureAction)
-		registry.register(COMMAND_GET_ALL_DEPARTURES,      getAllDeparturesAction)
-		registry.register(COMMAND_MOVE_TO_TOP,             moveToTopAction)
+		registry.register(DepartureConstants.CMD.INIT_SELECTED_DEPARTURE, initSelectedDepartureAction)
+		registry.register(DepartureConstants.CMD.PULL,      getAllDeparturesAction)
+		registry.register(DepartureConstants.CMD.MOVE_TO_TOP,             moveToTopAction)
 		registry.register(ValueChangedCommand.class,       valueChangedAction)
-		registry.register(COMMAND_UNDO, 				   undoAction)
-		registry.register(COMMAND_REDO, 			  	   redoAction)
-		registry.register(COMMAND_LONG_POLL, 			   longPollAction)
+		registry.register(DepartureConstants.CMD.UNDO, 				   undoAction)
+		registry.register(DepartureConstants.CMD.REDO, 			  	   redoAction)
+		registry.register(BoardItemConstants.CMD.LONG_POLL, 			   longPollAction)
 	}
 
 	private static DTO createEmptyDepartureDTO(int positionOnBoard) {
 		List<Slot> slots = []
-		ALL_ATTRIBUTES.each { propertyName ->
-			if (propertyName != ATT_POSITION) {
+		DepartureConstants.ATT.ALL.each { propertyName ->
+			if (propertyName != DepartureConstants.ATT.POSITION) {
 				slots << new Slot(propertyName, "")
 			}
 		}
-		slots << new Slot(ATT_POSITION, positionOnBoard)
+		slots << new Slot(DepartureConstants.ATT.POSITION, positionOnBoard)
 
 		new DTO(slots)
 	}
 
 	private static DTO createDepartureDTO(PresentationModel pm, int positionOnBoard) {
 		List<Slot> slots = []
-		ALL_ATTRIBUTES.each { propertyName ->
-			if (propertyName != ATT_POSITION) {
+		DepartureConstants.ATT.ALL.each { propertyName ->
+			if (propertyName != DepartureConstants.ATT.POSITION) {
 				slots << new Slot(propertyName, pm[propertyName].value)
 			}
 		}
-		slots << new Slot(ATT_POSITION, positionOnBoard)
+		slots << new Slot(DepartureConstants.ATT.POSITION, positionOnBoard)
 
 		new DTO(slots)
 	}
@@ -206,14 +204,14 @@ class ApplicationActions extends DolphinServerAction {
 	}
 
 	private PresentationModel pmAtPos(int pos) {
-		getServerDolphin()[pmId(TYPE_DEPARTURE, pos)]
+		getServerDolphin()[DepartureConstants.pmId(DepartureConstants.TYPE.DEPARTURE, pos)]
 	}
 
 	private PresentationModel nextModelOnBoard(int startPos) {
 		int pos = startPos
 		PresentationModel pm = pmAtPos(pos)
 
-		while (pm != null && pm[ATT_STATUS].value == STATUS_HAS_LEFT) {
+		while (pm != null && pm[DepartureConstants.ATT.STATUS].value == DepartureConstants.STATUS.HAS_LEFT) {
 			pos++
 			pm = pmAtPos(pos)
 		}
@@ -226,7 +224,7 @@ class ApplicationActions extends DolphinServerAction {
 		for (int i = firstPositionOnBoard; i < 5; i++) {
 			PresentationModel pm = nextModelOnBoard(nextPosInList)
 			if(pm != null){
-				nextPosInList = pm[ATT_POSITION].value as Integer
+				nextPosInList = pm[DepartureConstants.ATT.POSITION].value as Integer
 				positionsOnBoard[i] = nextPosInList
 				nextPosInList = nextPosInList + 1
 			}
@@ -238,17 +236,17 @@ class ApplicationActions extends DolphinServerAction {
 
 	private DTO createDeparture(id, departureTime, trainNumber, destination, stopOvers, track) {
 		new DTO(
-				createSlot(ATT_POSITION, id, id),
-				createSlot(ATT_DEPARTURE_TIME, departureTime, id),
-				createSlot(ATT_TRAIN_NUMBER, trainNumber, id),
-				createSlot(ATT_DESTINATION, destination, id),
-				createSlot(ATT_TRACK, track, id),
-				createSlot(ATT_STOPOVERS, stopOvers, id),
-				createSlot(ATT_STATUS, STATUS_APPROACHING, id))
+				createSlot(DepartureConstants.ATT.POSITION, id, id),
+				createSlot(DepartureConstants.ATT.DEPARTURE_TIME, departureTime, id),
+				createSlot(DepartureConstants.ATT.TRAIN_NUMBER, trainNumber, id),
+				createSlot(DepartureConstants.ATT.DESTINATION, destination, id),
+				createSlot(DepartureConstants.ATT.TRACK, track, id),
+				createSlot(DepartureConstants.ATT.STOPOVERS, stopOvers, id),
+				createSlot(DepartureConstants.ATT.STATUS, DepartureConstants.STATUS.APPROACHING, id))
 	}
 
 	private static Slot createSlot(String propertyName, Object value, int id) {
-		new Slot(propertyName, value, pmId(TYPE_DEPARTURE, id) + '/' + propertyName)
+		new Slot(propertyName, value, DepartureConstants.pmId(DepartureConstants.TYPE.DEPARTURE, id) + '/' + propertyName)
 	}
 
 	private static String pmIdFromQualifier(String qualifier) {

@@ -1,5 +1,7 @@
 package com.canoo.codecamp.dolphinpi.admin
 
+import com.canoo.codecamp.dolphinpi.DepartureConstants
+import com.canoo.codecamp.dolphinpi.PresentationStateConstants
 import javafx.animation.KeyFrame
 import javafx.animation.KeyValue
 import javafx.animation.Timeline
@@ -17,15 +19,14 @@ import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 import org.tbee.javafx.scene.layout.MigPane
 
-import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 import static com.canoo.codecamp.dolphinpi.admin.AdminApplication.bindAttribute
 import static org.opendolphin.binding.JFXBinder.bind
 
 class DetailViewFactory {
 
 	static Parent createDetailView(ClientDolphin inClientDolphin) {
-		PresentationModel selectedDeparture = inClientDolphin[SELECTED_DEPARTURE]
-		PresentationModel applicationState = inClientDolphin[APPLICATION_STATE]
+		PresentationModel selectedDeparture = inClientDolphin[DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE]
+		PresentationModel applicationState = inClientDolphin[PresentationStateConstants.TYPE.PRESENTATION_STATE]
 		MigPane migPane = new MigPane(
 				"wrap 2, inset 30 30 30 30",// Layout Constraints
 				"[pref!]10[fill, grow]",    // Column constraints
@@ -34,10 +35,10 @@ class DetailViewFactory {
 
 		Button einfahren, ausfahren, moveToTop
 
-		[ATT_DEPARTURE_TIME, ATT_DESTINATION, ATT_TRAIN_NUMBER, ATT_TRACK].each { String pn ->
+		[DepartureConstants.ATT.DEPARTURE_TIME, DepartureConstants.ATT.DESTINATION, DepartureConstants.ATT.TRAIN_NUMBER, DepartureConstants.ATT.TRACK].each { String pn ->
 			addAttributeEditor(migPane, TextFieldBuilder.create().build(), pn, selectedDeparture)
 		}
-		addAttributeEditor(migPane, TextAreaBuilder.create().wrapText(true).build(), ATT_STOPOVERS, selectedDeparture)
+		addAttributeEditor(migPane, TextAreaBuilder.create().wrapText(true).build(), DepartureConstants.ATT.STOPOVERS, selectedDeparture)
 
 		//todo: get rid of these hard coded Strings
 		migPane.add(einfahren = ButtonBuilder.create().text("Fährt ein").build())
@@ -48,42 +49,42 @@ class DetailViewFactory {
 		moveToTop.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				inClientDolphin.send COMMAND_MOVE_TO_TOP
+				inClientDolphin.send DepartureConstants.CMD.MOVE_TO_TOP
 			}
 		});
 
 		einfahren.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				selectedDeparture.getAt(ATT_STATUS).setValue(STATUS_IN_STATION)
+				selectedDeparture.getAt(DepartureConstants.ATT.STATUS).setValue(DepartureConstants.STATUS.IN_STATION)
 			}
 		});
 
-		bind ATT_STATUS of selectedDeparture to 'disabled' of einfahren, {
-			!STATUS_APPROACHING.equals(it)
+		bind DepartureConstants.ATT.STATUS of selectedDeparture to 'disabled' of einfahren, {
+			!DepartureConstants.STATUS.APPROACHING.equals(it)
 		}
 
 		ausfahren.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				selectedDeparture.getAt(ATT_STATUS).setValue(STATUS_HAS_LEFT)
+				selectedDeparture.getAt(DepartureConstants.ATT.STATUS).setValue(DepartureConstants.STATUS.HAS_LEFT)
 			}
 		});
-		bind ATT_STATUS of selectedDeparture to 'disabled' of ausfahren, {
-			!STATUS_IN_STATION.equals(it)
+		bind DepartureConstants.ATT.STATUS of selectedDeparture to 'disabled' of ausfahren, {
+			!DepartureConstants.STATUS.IN_STATION.equals(it)
 		}
 
-		bind ATT_TOP_DEPARTURE_ON_BOARD of applicationState to 'disabled' of moveToTop, {
-			def selectedPosition = selectedDeparture.getAt(ATT_POSITION).value
+		bind PresentationStateConstants.ATT.TOP_DEPARTURE_ON_BOARD of applicationState to 'disabled' of moveToTop, {
+			def selectedPosition = selectedDeparture.getAt(DepartureConstants.ATT.POSITION).value
 			it == selectedPosition
 		}
 
-		bind ATT_POSITION of selectedDeparture to 'disabled' of moveToTop, {
-			def domainId = applicationState[ATT_TOP_DEPARTURE_ON_BOARD].value
+		bind DepartureConstants.ATT.POSITION of selectedDeparture to 'disabled' of moveToTop, {
+			def domainId = applicationState[PresentationStateConstants.ATT.TOP_DEPARTURE_ON_BOARD].value
 			it == domainId
 		}
 
-		bindAttribute selectedDeparture[ATT_POSITION], { evt -> migPane.setDisable(evt.newValue == null) }
+		bindAttribute selectedDeparture[DepartureConstants.ATT.POSITION], { evt -> migPane.setDisable(evt.newValue == null) }
 
 		putStyle(migPane, true, 'pane')
 

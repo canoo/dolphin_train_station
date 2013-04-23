@@ -1,5 +1,6 @@
 package com.canoo.codecamp.dolphinpi.swingbaseddisplay
 
+import com.canoo.codecamp.dolphinpi.BoardItemConstants
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel
@@ -9,8 +10,6 @@ import org.opendolphin.core.client.comm.UiThreadHandler
 import org.opendolphin.core.comm.JsonCodec
 
 import javax.swing.*
-
-import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 
 public class SwingBoardStarter {
 
@@ -37,8 +36,8 @@ public class SwingBoardStarter {
 	private static void initializePresentationModels(ClientDolphin clientDolphin) {
 		(0..4).each {
 			Map<String, Object> attributeMap = [:]
-			ALL_ATTRIBUTES.each { attr -> attributeMap[attr] = null }
-			clientDolphin.presentationModel(pmId(TYPE_DEPARTURE_ON_BOARD, it), TYPE_DEPARTURE_ON_BOARD, attributeMap)
+			BoardItemConstants.ATT.ALL.each { attr -> attributeMap[attr] = null }
+			clientDolphin.presentationModel(BoardItemConstants.pmId(BoardItemConstants.TYPE.BOARD_ITEM, it), BoardItemConstants.TYPE.BOARD_ITEM, attributeMap)
 		}
 	}
 

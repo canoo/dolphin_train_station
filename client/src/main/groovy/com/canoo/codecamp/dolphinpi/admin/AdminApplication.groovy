@@ -1,5 +1,7 @@
 package com.canoo.codecamp.dolphinpi.admin
 
+import com.canoo.codecamp.dolphinpi.DepartureConstants
+import com.canoo.codecamp.dolphinpi.PresentationStateConstants
 import javafx.application.Application
 import javafx.event.EventHandler
 import javafx.scene.Parent
@@ -15,8 +17,6 @@ import org.tbee.javafx.scene.layout.MigPane
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 
-import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
-
 public class AdminApplication extends Application {
 	public static ClientDolphin clientDolphin;
 
@@ -24,7 +24,7 @@ public class AdminApplication extends Application {
 	public void start(Stage stage) throws Exception {
 		initializePresentationModels()
 
-		clientDolphin.send COMMAND_INIT_SELECTED_DEPARTURE, {
+		clientDolphin.send DepartureConstants.CMD.INIT_SELECTED_DEPARTURE, {
 			stage.title = "Abfahrten ab Olten";
 
 			Scene scene = new Scene(createStageRoot(), 1000, 400)
@@ -34,23 +34,25 @@ public class AdminApplication extends Application {
 			stage.show();
 		}
 
-		clientDolphin.send COMMAND_GET_ALL_DEPARTURES
+		clientDolphin.send DepartureConstants.CMD.PULL
 
 		doAllBindings()
 	}
 
 	private static void initializePresentationModels () {
-		clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL_ATTRIBUTES)
-		clientDolphin.presentationModel(EMPTY_DEPARTURE, ALL_ATTRIBUTES)
-		clientDolphin.presentationModel(APPLICATION_STATE, [ATT_SELECTED_DEPARTURE_ID: EMPTY_DEPARTURE,
-														    ATT_TOP_DEPARTURE_ON_BOARD: EMPTY_DEPARTURE])
+		clientDolphin.presentationModel(DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE, DepartureConstants.ATT.ALL)
+		clientDolphin.presentationModel(DepartureConstants.SPECIAL_ID.EMPTY_DEPARTURE, DepartureConstants.ATT.ALL)
+		Map attributeValueMap = [:]
+		attributeValueMap.put(PresentationStateConstants.ATT.SELECTED_DEPARTURE_ID, DepartureConstants.SPECIAL_ID.EMPTY_DEPARTURE)
+		attributeValueMap.put(PresentationStateConstants.ATT.TOP_DEPARTURE_ON_BOARD, DepartureConstants.SPECIAL_ID.EMPTY_DEPARTURE)
+		clientDolphin.presentationModel(PresentationStateConstants.TYPE.PRESENTATION_STATE,attributeValueMap)
 	}
 
 	private static Parent createStageRoot() {
 		MigPane migPane = new MigPane("wrap 4", "", "[][fill]")
 		migPane.add createButton("/save-icon.png")
-		migPane.add createButton("/undo-icon.png", COMMAND_UNDO)
-		migPane.add createButton("/redo-icon.png", COMMAND_REDO), "pushx"
+		migPane.add createButton("/undo-icon.png", DepartureConstants.CMD.UNDO)
+		migPane.add createButton("/redo-icon.png", DepartureConstants.CMD.REDO), "pushx"
 		migPane.add TextFieldBuilder.create().styleClass("search-field").build(), "right"
 
 		final SplitPane splitPane = SplitPaneBuilder.create()
@@ -66,10 +68,10 @@ public class AdminApplication extends Application {
 	}
 
 	private static void doAllBindings(){
-		def applicationState = clientDolphin[APPLICATION_STATE]
-		def selectedDeparture = clientDolphin[SELECTED_DEPARTURE]
+		def applicationState = clientDolphin[PresentationStateConstants.TYPE.PRESENTATION_STATE]
+		def selectedDeparture = clientDolphin[DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE]
 
-		bindAttribute(applicationState[ATT_SELECTED_DEPARTURE_ID], { evt -> clientDolphin.apply clientDolphin[evt.newValue] to selectedDeparture })
+		bindAttribute(applicationState[PresentationStateConstants.ATT.SELECTED_DEPARTURE_ID], { evt -> clientDolphin.apply clientDolphin[evt.newValue] to selectedDeparture })
 	}
 
 	private static ImageView createImageView(String filename) {

@@ -33,4 +33,6 @@ class BoardItemConstants {
 
 	static String unique(String s) { DepartureConstants.class.name + '.'+ s }
 
+	static String pmId(String type, int index) { type + "-" + index}
+
 }

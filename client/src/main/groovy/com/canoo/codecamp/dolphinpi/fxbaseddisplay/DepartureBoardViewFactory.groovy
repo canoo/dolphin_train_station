@@ -1,5 +1,6 @@
 package com.canoo.codecamp.dolphinpi.fxbaseddisplay
 
+import com.canoo.codecamp.dolphinpi.BoardItemConstants
 import javafx.collections.FXCollections
 import javafx.scene.Parent
 import javafx.scene.control.TableColumnBuilder
@@ -9,22 +10,20 @@ import javafx.util.Callback
 import org.opendolphin.core.client.ClientAttributeWrapper
 import org.opendolphin.core.client.ClientDolphin
 
-import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
-
 class DepartureBoardViewFactory {
 
 	static Parent createView(ClientDolphin clientDolphin) {
 		def departuresOnBoard = FXCollections.observableArrayList()
-		departuresOnBoard.addAll(clientDolphin.findAllPresentationModelsByType(TYPE_DEPARTURE_ON_BOARD))
+		departuresOnBoard.addAll(clientDolphin.findAllPresentationModelsByType(BoardItemConstants.TYPE.BOARD_ITEM))
 
 		TableViewBuilder.create()
 				.items(departuresOnBoard)
 				.columns(
-					createColumn(ATT_DEPARTURE_TIME, "Uhrzeit"),
-					createColumn(ATT_TRAIN_NUMBER,   "Fahrt"),
-					createColumn(ATT_DESTINATION,    "Richtung"),
-					createColumn(ATT_STATUS,         "Status"),
-					createColumn(ATT_TRACK,          "Gleis"),
+					createColumn(BoardItemConstants.ATT.DEPARTURE_TIME, "Uhrzeit"),
+					createColumn(BoardItemConstants.ATT.TRAIN_NUMBER,   "Fahrt"),
+					createColumn(BoardItemConstants.ATT.DESTINATION,    "Richtung"),
+					createColumn(BoardItemConstants.ATT.STATUS,         "Status"),
+					createColumn(BoardItemConstants.ATT.TRACK,          "Gleis"),
 				 )
 				.columnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY)
 				.build()

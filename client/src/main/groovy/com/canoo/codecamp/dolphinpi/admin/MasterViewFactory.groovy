@@ -1,5 +1,7 @@
 package com.canoo.codecamp.dolphinpi.admin
 
+import com.canoo.codecamp.dolphinpi.DepartureConstants
+import com.canoo.codecamp.dolphinpi.PresentationStateConstants
 import javafx.beans.value.ChangeListener
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -18,7 +20,6 @@ import org.opendolphin.core.client.ClientAttributeWrapper
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 
-import static com.canoo.codecamp.dolphinpi.ApplicationConstants.*
 import static com.canoo.codecamp.dolphinpi.admin.AdminApplication.bindAttribute
 import static org.opendolphin.binding.JavaFxUtil.cellEdit
 
@@ -26,40 +27,40 @@ class MasterViewFactory {
 
 	static Parent createMasterView(ClientDolphin clientDolphin) {
 		ObservableList<ClientPresentationModel> data = FXCollections.observableArrayList()
-		PresentationModel applicationState = clientDolphin[APPLICATION_STATE]
-		PresentationModel selectedDeparture = clientDolphin[SELECTED_DEPARTURE]
+		PresentationModel applicationState = clientDolphin[PresentationStateConstants.TYPE.PRESENTATION_STATE]
+		PresentationModel selectedDeparture = clientDolphin[DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE]
 
 		TableView table = TableViewBuilder.create()
 				.items(data)
 				.columns(
-					createColumn(selectedDeparture, ATT_DEPARTURE_TIME),
-					createColumn(selectedDeparture, ATT_TRAIN_NUMBER),
-					createColumn(selectedDeparture, ATT_DESTINATION),
-					createColumn(selectedDeparture, ATT_STATUS, false),
-					createColumn(selectedDeparture, ATT_TRACK),
+					createColumn(selectedDeparture, DepartureConstants.ATT.DEPARTURE_TIME),
+					createColumn(selectedDeparture, DepartureConstants.ATT.TRAIN_NUMBER),
+					createColumn(selectedDeparture, DepartureConstants.ATT.DESTINATION),
+					createColumn(selectedDeparture, DepartureConstants.ATT.STATUS, false),
+					createColumn(selectedDeparture, DepartureConstants.ATT.TRACK),
 					)
 				.columnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY)
 				.editable(true)
 				.build()
 
-		def selectedPMId = applicationState[ATT_SELECTED_DEPARTURE_ID]
+		def selectedPMId = applicationState[PresentationStateConstants.ATT.SELECTED_DEPARTURE_ID]
 
 		// on selection change update the selectedDepartureId
 		table.selectionModel.selectedItemProperty().addListener({ o, oldVal, selectedPM ->
-			selectedPMId.value = selectedPM == null ? EMPTY_DEPARTURE : selectedPM.id
+			selectedPMId.value = selectedPM == null ? DepartureConstants.SPECIAL_ID.EMPTY_DEPARTURE : selectedPM.id
 		} as ChangeListener)
 
 		// change table selection whenever the selectedDepartureId changes
 		bindAttribute(selectedPMId, { evt ->
 			final pmId = evt.newValue
-			if (pmId == EMPTY_DEPARTURE) {
+			if (pmId == DepartureConstants.SPECIAL_ID.EMPTY_DEPARTURE) {
 				table.getSelectionModel().clearSelection()
 			} else {
 				table.getSelectionModel().select(clientDolphin[pmId])
 			}
 		})
 
-		clientDolphin.addModelStoreListener(TYPE_DEPARTURE, { ModelStoreEvent evt ->
+		clientDolphin.addModelStoreListener(DepartureConstants.TYPE.DEPARTURE, { ModelStoreEvent evt ->
 			if(evt.type == ModelStoreEvent.Type.ADDED){
 				data << evt.presentationModel
 			}
