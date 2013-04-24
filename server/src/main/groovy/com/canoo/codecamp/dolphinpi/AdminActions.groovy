@@ -11,8 +11,6 @@ import org.opendolphin.core.server.comm.ActionRegistry
 import org.opendolphin.core.server.comm.CommandHandler
 import org.opendolphin.core.server.comm.SimpleCommandHandler
 
-import java.util.concurrent.TimeUnit
-
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.DEPARTURE_TIME
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.DESTINATION
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.POSITION
@@ -35,10 +33,7 @@ import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.TOP_DE
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.TYPE.PRESENTATION_STATE
 
 @SuppressWarnings("GroovyAssignabilityCheck")
-class ApplicationActions extends DolphinServerAction {
-
-	//static to be accessible by other "sessions"
-	private static EventBus eventBus = new EventBus()
+class AdminActions extends DolphinServerAction {
 
 	private final DataflowQueue valueQueue
 	private final Deque<ValueChangedCommand> undoStack = new ArrayDeque<>();
@@ -151,23 +146,8 @@ class ApplicationActions extends DolphinServerAction {
 		}
 	}
 
-	private final CommandHandler longPollAction = new SimpleCommandHandler() {
-		@Override
-		void handleCommand() {
-			DTO dto = valueQueue.getVal(60, TimeUnit.SECONDS)
-			if (dto == null) return
-			int positionOnBoard = dto.slots.find { it.propertyName == BoardItemConstants.ATT.POSITION }.value
-
-			ServerPresentationModel pm = getServerDolphin()[BoardItemConstants.pmId(BoardItemConstants.TYPE.BOARD_ITEM, positionOnBoard)]
-			pm.attributes.each { attr ->
-				changeValue(attr, dto.slots.find { it.propertyName == attr.propertyName }.value)
-			}
-		}
-	}
-
-	ApplicationActions() {
-		valueQueue = new DataflowQueue()
-		eventBus.subscribe(valueQueue)
+	AdminActions(DataflowQueue valueQueue) {
+		this.valueQueue = valueQueue
 	}
 
 	public void registerIn(ActionRegistry registry) {
@@ -177,7 +157,6 @@ class ApplicationActions extends DolphinServerAction {
 		registry.register(ValueChangedCommand.class, valueChangedAction)
 		registry.register(UNDO, 				     undoAction)
 		registry.register(REDO, 			  	     redoAction)
-		registry.register(BoardItemConstants.CMD.LONG_POLL, longPollAction)
 	}
 
 	private static DTO createEmptyDepartureDTO(int positionOnBoard) {
@@ -213,7 +192,7 @@ class ApplicationActions extends DolphinServerAction {
 			} else {
 				dto = createDepartureDTO(pmAtPos(positionInList), idx)
 			}
-			eventBus.publish valueQueue, dto
+			ApplicationDirector.eventBus.publish valueQueue, dto
 		}
 	}
 
@@ -255,7 +234,7 @@ class ApplicationActions extends DolphinServerAction {
 		}
 	}
 
-	private DTO createDeparture(id, departureTime, trainNumber, destination, stopOvers, track) {
+	private static DTO createDeparture(id, departureTime, trainNumber, destination, stopOvers, track) {
 		new DTO(
 				createSlot(POSITION, id, id),
 				createSlot(DEPARTURE_TIME, departureTime, id),
@@ -274,7 +253,7 @@ class ApplicationActions extends DolphinServerAction {
 		qualifier.split('/').first()
 	}
 
-	private List<DTO> loadDepartureDTOs() {
+	private static List<DTO> loadDepartureDTOs() {
 		List<DTO> dtos = []
 		def i = 0
 		dtos.add(createDeparture(i++, "00:00", "IC 747", "Zürich HB", "Olten  00:00 - Aarau  00:08 - Zürich HB  00:33", ""));

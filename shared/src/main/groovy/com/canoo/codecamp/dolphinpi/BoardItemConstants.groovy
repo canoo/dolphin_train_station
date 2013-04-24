@@ -28,10 +28,10 @@ class BoardItemConstants {
 	}
 
 	static class CMD {
-		public static final String LONG_POLL       = DepartureConstants.unique 'longPull'
+		public static final String LONG_POLL       = BoardItemConstants.unique 'longPoll'
 	}
 
-	static String unique(String s) { DepartureConstants.class.name + '.'+ s }
+	static String unique(String s) { BoardItemConstants.class.name + '.'+ s }
 
 	static String pmId(String type, int index) { type + "-" + index}
 
