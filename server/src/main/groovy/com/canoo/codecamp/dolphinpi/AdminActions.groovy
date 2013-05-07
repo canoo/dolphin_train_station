@@ -106,7 +106,7 @@ class AdminActions extends DolphinServerAction {
 		}
 	}
 
-	private final CommandHandler valueChangedAction = new CommandHandler<ValueChangedCommand>() {
+	private final CommandHandler undoRedoStackAction = new CommandHandler<ValueChangedCommand>() {
 
 		@Override
 		public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
@@ -119,7 +119,13 @@ class AdminActions extends DolphinServerAction {
 					redoStack.clear()
 				}
 			}
+		}
+	}
 
+	private final CommandHandler pushBoardDeparturesOnQueueAction = new CommandHandler<ValueChangedCommand>() {
+
+		@Override
+		public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
 			int positionOnTopOfBoard = positionsOnBoard[0]
 			if (positionOnTopOfBoard == -1) return
 
@@ -154,7 +160,8 @@ class AdminActions extends DolphinServerAction {
 		registry.register(INIT_SELECTED_DEPARTURE,   initSelectedDepartureAction)
 		registry.register(PULL,                      getAllDeparturesAction)
 		registry.register(MOVE_TO_TOP,               moveToTopAction)
-		registry.register(ValueChangedCommand.class, valueChangedAction)
+		registry.register(ValueChangedCommand.class, undoRedoStackAction)
+		registry.register(ValueChangedCommand.class, pushBoardDeparturesOnQueueAction)
 		registry.register(UNDO, 				     undoAction)
 		registry.register(REDO, 			  	     redoAction)
 	}
