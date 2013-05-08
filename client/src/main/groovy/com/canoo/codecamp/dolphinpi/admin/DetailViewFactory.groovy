@@ -116,12 +116,7 @@ class DetailViewFactory {
 			putStyle(textNode, !matches, 'invalid')
 
 			if (!matches) {
-				Timeline tl = TimelineBuilder.create().cycleCount(2).autoReverse(false).keyFrames(
-					new KeyFrame(Duration.millis(25), new KeyValue(textNode.translateXProperty(), 3)),
-					new KeyFrame(Duration.millis(75), new KeyValue(textNode.translateXProperty(), -3)),
-					new KeyFrame(Duration.millis(100), new KeyValue(textNode.translateXProperty(), 0)),
-				).build()
-				tl.play()
+				Util.shake(textNode)
 			}
 
 			return matches ? newVal : pm[propertyName].value

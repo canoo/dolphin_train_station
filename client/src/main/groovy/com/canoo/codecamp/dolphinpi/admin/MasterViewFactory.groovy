@@ -67,6 +67,7 @@ class MasterViewFactory {
 				table.getSelectionModel().clearSelection()
 			} else {
 				table.getSelectionModel().select(clientDolphin[pmId])
+				table.scrollTo(table.getSelectionModel().getSelectedIndex())
 			}
 		})
 
