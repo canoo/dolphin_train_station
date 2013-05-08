@@ -29,13 +29,15 @@ import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.REDO
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.UNDO
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.EMPTY_DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE
-import static com.canoo.codecamp.dolphinpi.DepartureConstants.TYPE.DEPARTURE
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.SELECTED_DEPARTURE_ID
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.TOP_DEPARTURE_ON_BOARD
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.TYPE.PRESENTATION_STATE
+import static com.canoo.codecamp.dolphinpi.admin.Util.allMatchingDepartures
+import static com.canoo.codecamp.dolphinpi.admin.Util.shake
 
 public class AdminApplication extends Application {
-	public static ClientDolphin clientDolphin;
+	public static ClientDolphin clientDolphin
+	static private TextField searchField;
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -66,35 +68,27 @@ public class AdminApplication extends Application {
 	}
 
 	private static Parent createStageRoot() {
+		searchField = TextFieldBuilder.create()
+				.styleClass("search-field")
+				.onAction({ ActionEvent event ->
+							String searchString = event.source.text.toLowerCase()
+							List<PresentationModel> matchingDepartures = allMatchingDepartures(clientDolphin, searchString)
+							def nextPmId
+							if (matchingDepartures) {
+								def selectedPos = clientDolphin[SELECTED_DEPARTURE][POSITION].value
+								nextPmId = (matchingDepartures.find { it[POSITION].value > selectedPos } ?: matchingDepartures[0]).id
+							} else {
+								shake(event.source)
+								nextPmId = EMPTY_DEPARTURE
+							}
+							clientDolphin[PRESENTATION_STATE][SELECTED_DEPARTURE_ID].value = nextPmId
+						} as EventHandler)
+				.build()
 		MigPane migPane = new MigPane("wrap 4", "", "[][fill]")
 		migPane.add createButton("/save-icon.png")
 		migPane.add createButton("/undo-icon.png", UNDO)
 		migPane.add createButton("/redo-icon.png", REDO), "pushx"
-		migPane.add TextFieldBuilder.create()
-				.styleClass("search-field")
-		        .onAction(new EventHandler<ActionEvent>() {
-							private static final ATTRIBUTE_CANDIDATES = [DEPARTURE_TIME, TRACK, TRAIN_NUMBER, DESTINATION]
-
-							@Override
-							void handle(ActionEvent event) {
-								String searchString = event.source.text.toLowerCase()
-								List<PresentationModel> matchingDepartures = clientDolphin.findAllPresentationModelsByType(DEPARTURE)
-										.findAll { PresentationModel departure ->
-													ATTRIBUTE_CANDIDATES.any { departure[it].value.toLowerCase().contains(searchString) }
-												 }
-										.sort { it[POSITION].value }
-								def nextPmId
-								if (matchingDepartures) {
-									def selectedPos = clientDolphin[SELECTED_DEPARTURE][POSITION].value
-									nextPmId = (matchingDepartures.find { it[POSITION].value > selectedPos } ?: matchingDepartures[0]).id
-								} else {
-									Util.shake(event.source)
-									nextPmId = EMPTY_DEPARTURE
-								}
-								clientDolphin[PRESENTATION_STATE][SELECTED_DEPARTURE_ID].value = nextPmId
-							}
-						})
-				.build(), "right"
+		migPane.add searchField, "right"
 
 		final SplitPane splitPane = SplitPaneBuilder.create()
 				.dividerPositions([0.5] as double[])
