@@ -25,6 +25,7 @@ import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.STOPOVERS
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.TRACK
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.TRAIN_NUMBER
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.MOVE_TO_TOP
+import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.EMPTY_DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.STATUS.APPROACHING
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.STATUS.HAS_LEFT
@@ -112,7 +113,7 @@ class DetailViewFactory {
 			String regex = pm.getAt(propertyName, Tag.REGEX)?.value
 			if (!regex) return newVal
 
-			boolean matches = newVal ==~ regex
+			boolean matches = !newVal || newVal ==~ regex
 			putStyle(textNode, !matches, 'invalid')
 
 			if (!matches) {

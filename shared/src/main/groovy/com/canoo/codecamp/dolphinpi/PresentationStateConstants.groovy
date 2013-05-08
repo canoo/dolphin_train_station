@@ -12,6 +12,7 @@ class PresentationStateConstants {
     static class ATT {
 		public static final String SELECTED_DEPARTURE_ID  = 'selectedDepartureId'
 		public static final String TOP_DEPARTURE_ON_BOARD = 'topDepartureOnBoard'
+		public static final String SEARCH_STRING          = 'searchString'
 	}
 
 	static String unique(String s) { DepartureConstants.class.name + '.'+ s }

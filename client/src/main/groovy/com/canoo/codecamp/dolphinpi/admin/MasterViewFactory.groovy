@@ -26,7 +26,7 @@ import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.TRAIN_NUMBER
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.EMPTY_DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.TYPE.DEPARTURE
-
+import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.SEARCH_STRING
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.SELECTED_DEPARTURE_ID
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.TYPE.PRESENTATION_STATE
 
@@ -55,8 +55,11 @@ class MasterViewFactory {
 
 		def selectedPMId = applicationState[SELECTED_DEPARTURE_ID]
 
+		boolean ignoreSelectionChange = false
+
 		// on selection change update the selectedDepartureId
 		table.selectionModel.selectedItemProperty().addListener({ o, oldVal, selectedPM ->
+			if (ignoreSelectionChange) return
 			selectedPMId.value = selectedPM == null ? EMPTY_DEPARTURE : selectedPM.id
 		} as ChangeListener)
 
@@ -69,6 +72,14 @@ class MasterViewFactory {
 				table.getSelectionModel().select(clientDolphin[pmId])
 				table.scrollTo(table.getSelectionModel().getSelectedIndex())
 			}
+		})
+
+		// if the searchString changes, table needs to be filtered
+		bindAttribute(applicationState[SEARCH_STRING], { evt ->
+			ignoreSelectionChange = true
+			data.setAll(Util.allMatchingDepartures(clientDolphin, evt.newValue))
+			table.getSelectionModel().select(0)
+			ignoreSelectionChange = false
 		})
 
 		clientDolphin.addModelStoreListener(DEPARTURE, { ModelStoreEvent evt ->

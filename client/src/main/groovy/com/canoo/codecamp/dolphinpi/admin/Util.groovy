@@ -30,10 +30,11 @@ class Util {
 	}
 
 	static  List<PresentationModel> allMatchingDepartures(ClientDolphin dolphin, String searchString){
-		final attributeCandidates = [DEPARTURE_TIME, TRACK, TRAIN_NUMBER, DESTINATION]
+		def attributeCandidates = [DEPARTURE_TIME, TRACK, TRAIN_NUMBER, DESTINATION]
+		String lowerCaseString = searchString.toLowerCase()
 		dolphin.findAllPresentationModelsByType(DEPARTURE)
 			.findAll { PresentationModel departure ->
-						attributeCandidates.any { departure[it].value.toLowerCase().contains(searchString) }
+						attributeCandidates.any { departure[it].value.toLowerCase().contains(lowerCaseString) }
 					 }
 			.sort    { it[POSITION].value }
 	}

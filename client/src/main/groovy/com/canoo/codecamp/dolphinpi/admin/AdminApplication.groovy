@@ -1,13 +1,14 @@
 package com.canoo.codecamp.dolphinpi.admin
 
 import javafx.application.Application
-import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.*
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
 import org.opendolphin.core.Attribute
 import org.opendolphin.core.PresentationModel
@@ -17,11 +18,7 @@ import org.tbee.javafx.scene.layout.MigPane
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 
-import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.DEPARTURE_TIME
-import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.DESTINATION
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.POSITION
-import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.TRACK
-import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.TRAIN_NUMBER
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.getALL
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.INIT_SELECTED_DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.PULL
@@ -29,11 +26,13 @@ import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.REDO
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.UNDO
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.EMPTY_DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE
+import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.SEARCH_STRING
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.SELECTED_DEPARTURE_ID
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.TOP_DEPARTURE_ON_BOARD
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.TYPE.PRESENTATION_STATE
 import static com.canoo.codecamp.dolphinpi.admin.Util.allMatchingDepartures
 import static com.canoo.codecamp.dolphinpi.admin.Util.shake
+import static org.opendolphin.binding.JFXBinder.bind
 
 public class AdminApplication extends Application {
 	public static ClientDolphin clientDolphin
@@ -48,14 +47,13 @@ public class AdminApplication extends Application {
 
 			Scene scene = new Scene(createStageRoot(), 1000, 400)
 			scene.stylesheets << 'demo.css'
+			doAllBindings()
 
 			stage.setScene(scene);
 			stage.show();
 		}
 
 		clientDolphin.send PULL
-
-		doAllBindings()
 	}
 
 	private static void initializePresentationModels () {
@@ -64,21 +62,27 @@ public class AdminApplication extends Application {
 		Map attributeValueMap = [:]
 		attributeValueMap.put(SELECTED_DEPARTURE_ID, EMPTY_DEPARTURE)
 		attributeValueMap.put(TOP_DEPARTURE_ON_BOARD, EMPTY_DEPARTURE)
+		attributeValueMap.put(SEARCH_STRING, "")
 		clientDolphin.presentationModel(PRESENTATION_STATE,attributeValueMap)
 	}
 
 	private static Parent createStageRoot() {
 		searchField = TextFieldBuilder.create()
 				.styleClass("search-field")
-				.onAction({ ActionEvent event ->
-							String searchString = event.source.text.toLowerCase()
-							List<PresentationModel> matchingDepartures = allMatchingDepartures(clientDolphin, searchString)
+				.onKeyReleased({ KeyEvent event ->
+							final field = event.source
+							List<PresentationModel> matchingDepartures = allMatchingDepartures(clientDolphin, field.text)
 							def nextPmId
 							if (matchingDepartures) {
-								def selectedPos = clientDolphin[SELECTED_DEPARTURE][POSITION].value
-								nextPmId = (matchingDepartures.find { it[POSITION].value > selectedPos } ?: matchingDepartures[0]).id
+								if(event.code == KeyCode.ENTER){
+									def selectedPos = clientDolphin[SELECTED_DEPARTURE][POSITION].value
+									nextPmId = (matchingDepartures.find { it[POSITION].value > selectedPos } ?: matchingDepartures[0]).id
+								}
+								else {
+									nextPmId = matchingDepartures[0].id
+								}
 							} else {
-								shake(event.source)
+								shake(field)
 								nextPmId = EMPTY_DEPARTURE
 							}
 							clientDolphin[PRESENTATION_STATE][SELECTED_DEPARTURE_ID].value = nextPmId
@@ -107,6 +111,8 @@ public class AdminApplication extends Application {
 		def selectedDeparture = clientDolphin[SELECTED_DEPARTURE]
 
 		bindAttribute(applicationState[SELECTED_DEPARTURE_ID], { evt -> clientDolphin.apply clientDolphin[evt.newValue] to selectedDeparture })
+		bind SEARCH_STRING of applicationState to 'text' of searchField
+		bind 'text' of searchField to SEARCH_STRING of applicationState
 	}
 
 	private static ImageView createImageView(String filename) {
