@@ -1,5 +1,6 @@
 apply plugin: 'application'
 
+
 dependencies {
     compile project.files("${System.properties['java.home']}/lib/jfxrt.jar")
     compile project(':shared')

@@ -47,6 +47,7 @@ public class AdminApplication extends Application {
 
 			Scene scene = new Scene(createStageRoot(), 1000, 400)
 			scene.stylesheets << 'demo.css'
+			//scene.stylesheets << 'dark.css'
 			doAllBindings()
 
 			stage.setScene(scene);

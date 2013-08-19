@@ -6,7 +6,7 @@ package com.canoo.codecamp.dolphinpi
 class PresentationStateConstants {
 
     static class TYPE {
-		public static final String PRESENTATION_STATE     = PresentationStateConstants.unique 'type'
+		public static final String PRESENTATION_STATE     = unique 'type'
     }
 
     static class ATT {
@@ -15,5 +15,5 @@ class PresentationStateConstants {
 		public static final String SEARCH_STRING          = 'searchString'
 	}
 
-	static String unique(String s) { DepartureConstants.class.name + '.'+ s }
+	static String unique(String s) { PresentationStateConstants.class.name + '.'+ s }
 }

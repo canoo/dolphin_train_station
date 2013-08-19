@@ -24,7 +24,8 @@ public class FXBoardStarter {
 
 	private static ClientConnector createConnector(ClientDolphin clientDolphin) {
 		//running real client server mode.
-        HttpClientConnector connector = new HttpClientConnector(clientDolphin, "http://localhost:8080/appContext/applicationServlet/");
+       HttpClientConnector connector = new HttpClientConnector(clientDolphin, "http://localhost:8080/appContext/applicationServlet/");
+       //	HttpClientConnector connector = new HttpClientConnector(clientDolphin, "http://10.175.4.198:8080/appContext/applicationServlet/");
 		connector.setCodec(new JsonCodec());
 		return connector;
 	}

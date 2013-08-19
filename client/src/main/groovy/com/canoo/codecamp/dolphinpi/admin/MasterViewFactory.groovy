@@ -76,6 +76,7 @@ class MasterViewFactory {
 
 		// if the searchString changes, table needs to be filtered
 		bindAttribute(applicationState[SEARCH_STRING], { evt ->
+			// data.setAll will clear table selection, don't want to show this selection change
 			ignoreSelectionChange = true
 			data.setAll(Util.allMatchingDepartures(clientDolphin, evt.newValue))
 			table.getSelectionModel().select(0)

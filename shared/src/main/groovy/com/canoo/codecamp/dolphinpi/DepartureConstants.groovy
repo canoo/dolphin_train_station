@@ -6,7 +6,7 @@ package com.canoo.codecamp.dolphinpi
 public class DepartureConstants {
 
     static class TYPE {
-        public static final String DEPARTURE               = DepartureConstants.unique 'type'
+        public static final String DEPARTURE               = unique 'type'
     }
 
     static class ATT {
@@ -28,16 +28,16 @@ public class DepartureConstants {
     }
 
     static class CMD {
-		public static final String PULL                    = DepartureConstants.unique 'pull'
-		public static final String UNDO                    = DepartureConstants.unique 'undo'
-		public static final String REDO                    = DepartureConstants.unique 'redo'
-		public static final String INIT_SELECTED_DEPARTURE = DepartureConstants.unique 'initSelectedDeparture'
-		public static final String MOVE_TO_TOP             = DepartureConstants.unique 'moveToTop'
+		public static final String PULL                    = unique 'pull'
+		public static final String UNDO                    = unique 'undo'
+		public static final String REDO                    = unique 'redo'
+		public static final String INIT_SELECTED_DEPARTURE = unique 'initSelectedDeparture'
+		public static final String MOVE_TO_TOP             = unique 'moveToTop'
     }
 
 	static class SPECIAL_ID {
-		public static final String SELECTED_DEPARTURE      = DepartureConstants.unique 'selectedDeparture'
-		public static final String EMPTY_DEPARTURE         = DepartureConstants.unique 'emptyDeparture'
+		public static final String SELECTED_DEPARTURE      = unique 'selectedDeparture'
+		public static final String EMPTY_DEPARTURE         = unique 'emptyDeparture'
 	}
 
     static String unique(String s) { DepartureConstants.class.name + '.'+ s }
