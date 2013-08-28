@@ -6,7 +6,7 @@ package com.canoo.codecamp.dolphinpi
 class BoardItemConstants {
 
 	static class TYPE {
-        public static final String BOARD_ITEM      = unique 'type'
+        public static final String BOARD_ITEM      = BoardItemConstants.unique 'type'
 	}
 
 	static class ATT {
@@ -28,7 +28,7 @@ class BoardItemConstants {
 	}
 
 	static class CMD {
-		public static final String LONG_POLL       = unique 'longPoll'
+		public static final String LONG_POLL       = BoardItemConstants.unique 'longPoll'
 	}
 
 	static String unique(String s) { BoardItemConstants.class.name + '.'+ s }
