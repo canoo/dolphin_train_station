@@ -24,6 +24,7 @@ import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.MOVE_TO_TOP
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.PULL
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.REDO
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.UNDO
+import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.DEPARTURES
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.STATUS.APPROACHING
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.STATUS.HAS_LEFT
@@ -266,7 +267,7 @@ class AdminActions extends DolphinServerAction {
 
     static List<DTO> loadDepartureDTOs() {
 
-        def stream = AdminActions.class.getClassLoader().getResourceAsStream('Departures.txt')
+        def stream = AdminActions.class.getClassLoader().getResourceAsStream(DEPARTURES)
         List<DTO> dtos = []
         def i = 0
         stream.eachLine {

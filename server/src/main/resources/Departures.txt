@@ -96,7 +96,7 @@
 18:30,ICN 674,Basel SBB,Olten  18:30 - Basel SBB  18:55, ,
 18:32,IC 986,Basel SBB,Olten  18:32 - Liestal  18:47 - Basel SBB  18:59,7
 18:40,ICN 536,Genf-Flughafen,Olten  18:40 - Solothurn  18:56 - Biel/Bienne  19:13 - Neuchâtel  19:35 - Yverdon-les-Bains  19:54 - Morges  20:18 - Nyon  20:32 - Genf  20:46 - Genf-Flughafen  20:56,8
-18:59,IC 1085,Interlaken Ost,,Olten  18:59 - Bern  19:27 - Thun  19:52 - Spiez  20:02 - Interlaken West  20:22 - Interlaken Ost  20:28,12
+18:59,IC 1085,Interlaken Ost,Olten  18:59 - Bern  19:27 - Thun  19:52 - Spiez  20:02 - Interlaken West  20:22 - Interlaken Ost  20:28,12
 19:05,IC 1086,Basel SBB,Olten  19:05 - Basel SBB  19:29,3
 19:20,ICN 1539,St. Gallen,Olten  19:20 - Aarau  19:28 - Zürich HB  19:56 - Zürich Flughafen  20:20 - Winterthur  20:35 - Wil SG  20:52 - Gossau SG  21:06 - St. Gallen  21:15,7
 19:29,ICE 987,Interlaken Ost,Olten  19:29 - Bern  19:56 - Thun  20:21 - Spiez  20:31 - Interlaken West  20:48 - Interlaken Ost  20:54,11

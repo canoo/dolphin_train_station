@@ -22,6 +22,7 @@ public class DepartureConstants {
      }
 
     static class STATUS {
+
     	public static final String APPROACHING             = 'hat Einfahrt'
         public static final String IN_STATION              = 'im Bahnhof'
         public static final String HAS_LEFT                = 'abgefahren'
@@ -38,6 +39,7 @@ public class DepartureConstants {
 	static class SPECIAL_ID {
 		public static final String SELECTED_DEPARTURE      = DepartureConstants.unique 'selectedDeparture'
 		public static final String EMPTY_DEPARTURE         = DepartureConstants.unique 'emptyDeparture'
+        public static final String DEPARTURES              = 'Departures.txt'
 	}
 
     static String unique(String s) { DepartureConstants.class.name + '.'+ s }
