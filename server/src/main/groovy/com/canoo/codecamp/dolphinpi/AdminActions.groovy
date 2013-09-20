@@ -35,6 +35,7 @@ import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.SAVE
 import static com.canoo.codecamp.dolphinpi.BoardItemConstants.TYPE.BOARD_ITEM
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.BUTTONS
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.DEPARTURES
+import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.EMPTY_DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.SELECTED_DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.APPROACHING
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.HAS_LEFT
@@ -114,13 +115,14 @@ class AdminActions extends DolphinServerAction {
                 return;
             }
             ValueChangedCommand cmd = undoStack.pop()
-
             nextTripleToIgnore = new ValueChangedCommand(attributeId: cmd.attributeId, oldValue: cmd.newValue, newValue: cmd.oldValue)
-            redoStack.push(cmd)
+
             changeValue(getServerDolphin()[PRESENTATION_STATE][REDO_DISABLED], false)
             changeValue(getServerDolphin().serverModelStore.findAttributeById(cmd.attributeId) as ServerAttribute, cmd.oldValue)
+            redoStack.push(cmd)
             if (undoStack.isEmpty()) {
-                changeValue(getServerDolphin()[PRESENTATION_STATE][UNDO_DISABLED], true)}
+                changeValue(getServerDolphin()[PRESENTATION_STATE][UNDO_DISABLED], true)
+            }
 
         }
     }
@@ -133,7 +135,8 @@ class AdminActions extends DolphinServerAction {
             }
             ValueChangedCommand valueChangedCommand = redoStack.pop()
             if (redoStack.isEmpty()) {
-                changeValue(getServerDolphin()[PRESENTATION_STATE][REDO_DISABLED], true)}
+                changeValue(getServerDolphin()[PRESENTATION_STATE][REDO_DISABLED], true)
+            }
             nextTripleToIgnore = new ValueChangedCommand(attributeId: valueChangedCommand.attributeId, oldValue: valueChangedCommand.oldValue, newValue: valueChangedCommand.newValue)
             undoStack.push(valueChangedCommand)
             changeValue(getServerDolphin()[PRESENTATION_STATE][UNDO_DISABLED], false)
@@ -144,28 +147,18 @@ class AdminActions extends DolphinServerAction {
     private final CommandHandler saveAction = new SimpleCommandHandler() {
         @Override
         void handleCommand() {
-            println System.getProperty("java.io.tmpdir") + DEPARTURES
             def writer = new FileWriter(System.getProperty("java.io.tmpdir") + DEPARTURES)
-            def departures =  getServerDolphin().serverModelStore.findAllPresentationModelsByType(DEPARTURE)
+            def departures = getServerDolphin().serverModelStore.findAllPresentationModelsByType(DEPARTURE)
             departures.each {
                 writer.write(
-                it[DEPARTURE_TIME].value + "," +
-                it[TRAIN_NUMBER].value + "," +
-                it[DESTINATION].value + "," +
-                it[STOPOVERS].value + "," +
-                it[TRACK].value + "," +
-                System.getProperty( "line.separator" )
+                        it[DEPARTURE_TIME].value + "," +
+                                it[TRAIN_NUMBER].value + "," +
+                                it[DESTINATION].value + "," +
+                                it[STOPOVERS].value + "," +
+                                it[TRACK].value + "," +
+                                System.getProperty("line.separator")
                 )
-             writer.flush()
-
- //           stream = new File(AdminActions.class.getResourceAsStream(DEPARTURES))
-  //          println(stream)
-            //FileOutputStream fop = new FileOutputStream(file);
-
-//            FileWriter fw = new FileWriter(file.getAbsoluteFile());
-//            BufferedWriter bw = new BufferedWriter(fw);
-//            bw.write("tom");
-//            bw.close();
+                writer.flush()
 
             }
 
@@ -178,27 +171,29 @@ class AdminActions extends DolphinServerAction {
         public void handleCommand(final ValueChangedCommand command, final List<Command> response) {
             PresentationModel statePM = getServerDolphin()[PRESENTATION_STATE]
             PresentationModel selectedPM = getServerDolphin()[SELECTED_DEPARTURE]
-            long undoId =  statePM[UNDO_DISABLED].getId()
-            long redoId =  statePM[REDO_DISABLED].getId()
-            if (command.getAttributeId()>19) {
-                if (command.getAttributeId()==undoId) return;
-                if (command.getAttributeId()==redoId) return;
-                if (command.getAttributeId()==969) return;
-                if (command.getAttributeId()==970) return;
-                if (command.getAttributeId()==971) return;
-                if (command.getAttributeId()==972) return;
-                if (command.getAttributeId()==973) return;
-                if (command.getAttributeId()==974) return;
-                if (command.getAttributeId()==975) return;
+            PresentationModel buttonsPM = getServerDolphin()[BUTTONS]
+            PresentationModel emptyPM = getServerDolphin()[EMPTY_DEPARTURE]
+            def attributeAffected = getServerDolphin().getModelStore().findAttributeById(command.getAttributeId());
+            if (statePM != null) {
+
+                def undoId = statePM[UNDO_DISABLED].getId()
+                def redoId = statePM[REDO_DISABLED].getId()
+                if (attributeAffected.getTag().compareTo(Tag.LABEL) == 0) return;
+                if (command.getAttributeId() == undoId) return;
+                if (selectedPM.findAttributeById(command.getAttributeId())) return;
+                if (buttonsPM.findAttributeById(command.getAttributeId())) return;
+                if (emptyPM.findAttributeById(command.getAttributeId())) return;
+                if (command.getAttributeId() == redoId) return;
+
                 if (hasToBeIgnored(nextTripleToIgnore, command)) {
                     nextTripleToIgnore = null
                 } else {
                     undoStack.push(command)
-                    println undoStack.getFirst()
                     changeValue getServerDolphin()[PRESENTATION_STATE][UNDO_DISABLED], false
                     redoStack.clear()
                     changeValue getServerDolphin()[PRESENTATION_STATE][REDO_DISABLED], true
                 }
+
             }
         }
     }
@@ -216,6 +211,7 @@ class AdminActions extends DolphinServerAction {
             changeValue getServerDolphin()[SELECTED_DEPARTURE][TRACK, Tag.LABEL], bundle.getString("TRACK")
             changeValue getServerDolphin()[SELECTED_DEPARTURE][STOPOVERS, Tag.LABEL], bundle.getString("STOPOVERS")
             changeValue getServerDolphin()[SELECTED_DEPARTURE][STATUS, Tag.LABEL], bundle.getString("STATUS")
+
 
             changeValue getServerDolphin()[BUTTONS][DRIVE_IN], bundle.getString("DRIVE_IN")
             changeValue getServerDolphin()[BUTTONS][DRIVE_OUT], bundle.getString("DRIVE_OUT")
@@ -251,9 +247,9 @@ class AdminActions extends DolphinServerAction {
                     int startOnBoard = positionsOnBoard.indexOf(modifiedPmPosition)
                     updatePositionsOnBoard(modifiedPmPosition, startOnBoard)
                     sendDepartureBoardEntries(startOnBoard..4)
-                } else {
+                }
+                else {
                     final toUpdate = positionsOnBoard.indexOf(modifiedPmPosition)
-
                     sendDepartureBoardEntries(toUpdate..toUpdate)
                 }
                 changeValue getServerDolphin()[PRESENTATION_STATE][TOP_DEPARTURE_ON_BOARD], positionsOnBoard[0]
@@ -351,7 +347,9 @@ class AdminActions extends DolphinServerAction {
             }
         }
     }
+
     static ResourceBundle bundle2 = ResourceBundle.getBundle("BoardResources")
+
     private static DTO createDeparture(id, departureTime, trainNumber, destination, stopOvers, track) {
         new DTO(
 
@@ -388,7 +386,7 @@ class AdminActions extends DolphinServerAction {
 
         List<DTO> dtos = []
         def file = new File(System.getProperty("java.io.tmpdir") + DEPARTURES)
-        if (file.canExecute()){
+        if (file.canExecute()) {
             def i = 0
             def reader = new FileReader(System.getProperty("java.io.tmpdir") + DEPARTURES)
             reader.eachLine {
@@ -405,9 +403,7 @@ class AdminActions extends DolphinServerAction {
                 dtos.add(createDeparture(i++, Departure.DepartureTime, Departure.TrainNumber, Departure.Destination, Departure.Track, Departure.StopOvers))
             }
             dtos
-        }
-
-        else {
+        } else {
             InputStream stream = AdminActions.class.getClassLoader().getResourceAsStream(DEPARTURES)
             def i = 0
 
