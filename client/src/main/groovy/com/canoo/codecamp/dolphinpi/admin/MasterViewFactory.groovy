@@ -298,11 +298,11 @@ class MasterViewFactory {
         final SplitPane splitPane = SplitPaneBuilder.create()
                 .dividerPositions([0.66] as double[])
                 .items(
-                tabPane,
+//                tabPane,
                 table
         ).build()
 
-        return splitPane
+        return table
     }
 
     static TableColumn createColumn(ClientPresentationModel selectedDeparture, String inPropertyName, boolean editable = true) {

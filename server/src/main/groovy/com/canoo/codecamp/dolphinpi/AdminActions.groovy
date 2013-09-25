@@ -20,6 +20,8 @@ import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.FIRST_ONE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.HAS_LEFT
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.IN_STATION
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.POSITION
+import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.DEPARTURE_TIME
+import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.DESTINATION
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.STATUS
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.STOPOVERS
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.TRACK
@@ -44,10 +46,12 @@ import static com.canoo.codecamp.dolphinpi.DepartureConstants.TYPE.DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.pmId
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.LANGUAGE
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.REDO_DISABLED
+import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.SAVE_DISABLED
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.SELECTED_DEPARTURE_ID
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.TOP_DEPARTURE_ON_BOARD
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.UNDO_DISABLED
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.TYPE.PRESENTATION_STATE
+
 
 @SuppressWarnings("GroovyAssignabilityCheck")
 class AdminActions extends DolphinServerAction {
@@ -58,6 +62,7 @@ class AdminActions extends DolphinServerAction {
     private final Deque<ValueChangedCommand> redoStack = new ArrayDeque<>();
     private final List<Integer> positionsOnBoard = [-1, -1, -1, -1, -1]
     ResourceBundle bundle = ResourceBundle.getBundle("BoardResources")
+
 
     // needed for proper undo/redo handling
     private ValueChangedCommand nextTripleToIgnore
@@ -122,6 +127,7 @@ class AdminActions extends DolphinServerAction {
             redoStack.push(cmd)
             if (undoStack.isEmpty()) {
                 changeValue(getServerDolphin()[PRESENTATION_STATE][UNDO_DISABLED], true)
+                changeValue(getServerDolphin()[PRESENTATION_STATE][SAVE_DISABLED], true)
             }
 
         }
@@ -175,15 +181,17 @@ class AdminActions extends DolphinServerAction {
             PresentationModel emptyPM = getServerDolphin()[EMPTY_DEPARTURE]
             def attributeAffected = getServerDolphin().getModelStore().findAttributeById(command.getAttributeId());
             if (statePM != null) {
-
+                println attributeAffected
                 def undoId = statePM[UNDO_DISABLED].getId()
                 def redoId = statePM[REDO_DISABLED].getId()
+                def saveId = statePM[SAVE_DISABLED].getId()
                 if (attributeAffected.getTag().compareTo(Tag.LABEL) == 0) return;
                 if (command.getAttributeId() == undoId) return;
                 if (selectedPM.findAttributeById(command.getAttributeId())) return;
                 if (buttonsPM.findAttributeById(command.getAttributeId())) return;
                 if (emptyPM.findAttributeById(command.getAttributeId())) return;
                 if (command.getAttributeId() == redoId) return;
+                if (command.getAttributeId() == saveId) return;
 
                 if (hasToBeIgnored(nextTripleToIgnore, command)) {
                     nextTripleToIgnore = null
@@ -192,9 +200,15 @@ class AdminActions extends DolphinServerAction {
                     changeValue getServerDolphin()[PRESENTATION_STATE][UNDO_DISABLED], false
                     redoStack.clear()
                     changeValue getServerDolphin()[PRESENTATION_STATE][REDO_DISABLED], true
+                    if (attributeAffected.getPropertyName()==DESTINATION || attributeAffected.getPropertyName()==TRACK || attributeAffected.getPropertyName()==TRAIN_NUMBER){
+                        changeValue getServerDolphin()[PRESENTATION_STATE][SAVE_DISABLED], false
+
+                    }
                 }
 
             }
+
+
         }
     }
 

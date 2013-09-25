@@ -38,6 +38,7 @@ import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.SELECTE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.BUTTONS
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.DEPARTURES
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.REDO_DISABLED
+import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.SAVE_DISABLED
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.SEARCH_STRING
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.SELECTED_DEPARTURE_ID
 import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.ATT.LANGUAGE
@@ -59,7 +60,7 @@ public class AdminApplication extends Application {
 		clientDolphin.send INIT_SELECTED_DEPARTURE, {
 			stage.title = "Abfahrten ab Olten";
 
-			Scene scene = new Scene(createStageRoot(), 1500, 460)
+			Scene scene = new Scene(createStageRoot(), 1000, 460)
 			//scene.stylesheets << 'demo.css'
 			//scene.stylesheets << 'dark.css'
 			doAllBindings()
@@ -79,9 +80,10 @@ public class AdminApplication extends Application {
 		attributeValueMap.put(SELECTED_DEPARTURE_ID, EMPTY_DEPARTURE)
 		attributeValueMap.put(TOP_DEPARTURE_ON_BOARD, EMPTY_DEPARTURE)
 		attributeValueMap.put(SEARCH_STRING, "")
-        attributeValueMap.put(LANGUAGE, "fr")
+        attributeValueMap.put(LANGUAGE, "en")
         attributeValueMap.put(UNDO_DISABLED, true)
         attributeValueMap.put(REDO_DISABLED, true)
+        attributeValueMap.put(SAVE_DISABLED, true)
 		clientDolphin.presentationModel(PRESENTATION_STATE,attributeValueMap)
 	}
 
@@ -111,7 +113,7 @@ public class AdminApplication extends Application {
         ChoiceBox cb = new ChoiceBox(FXCollections.observableArrayList(
                 "fr", "en", "de")
         )
-        cb.setValue("fr")
+        cb.setValue("en")
         bindAttribute(clientDolphin[PRESENTATION_STATE][LANGUAGE],{
             clientDolphin.send CHANGE
 
@@ -136,11 +138,12 @@ public class AdminApplication extends Application {
         Button redo = createButton("/redo-icon.png", REDO)
 		migPane.add redo, "pushx"
         bind REDO_DISABLED of clientDolphin[PRESENTATION_STATE] to 'disabled' of redo
+        bind SAVE_DISABLED of clientDolphin[PRESENTATION_STATE] to 'disabled' of save
 		migPane.add searchField, "right"
 		migPane.add cb, "right"
 
 		final SplitPane splitPane = SplitPaneBuilder.create()
-				.dividerPositions([0.75] as double[])
+				.dividerPositions([0.55] as double[])
 				.items(
 					MasterViewFactory.createMasterView(clientDolphin),
 					DetailViewFactory.createDetailView(clientDolphin)
