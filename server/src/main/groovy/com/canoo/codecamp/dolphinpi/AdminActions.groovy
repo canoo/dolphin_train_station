@@ -255,7 +255,8 @@ class AdminActions extends DolphinServerAction {
     }
 
     private static Slot createSlot(String propertyName, Object value, int id) {
-        new Slot(propertyName, value, pmId(DEPARTURE, id) + '/' + propertyName)
+        String qualifier = pmId(DEPARTURE, id) + '/' + propertyName
+        new Slot(propertyName, value, qualifier)
     }
 
     private static String pmIdFromQualifier(String qualifier) {
