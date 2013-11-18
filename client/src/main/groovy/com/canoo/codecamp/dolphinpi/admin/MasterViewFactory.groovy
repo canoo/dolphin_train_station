@@ -284,9 +284,6 @@ class MasterViewFactory {
         tab3.setContent(lineChart)
         tabPane.getTabs().addAll(tab2, tab3, tab)
 
-
-
-
         addMouseListeners(chart)
 
         StackPane test = new StackPane()
