@@ -20,7 +20,6 @@ import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.tbee.javafx.scene.layout.MigPane
-import com.aquafx_project.AquaFx
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 
@@ -64,7 +63,6 @@ public class AdminApplication extends Application {
 			//scene.stylesheets << 'demo.css'
 			//scene.stylesheets << 'dark.css'
 			doAllBindings()
-            //AquaFx.style();
 			stage.setScene(scene);
 			stage.show();
 		}

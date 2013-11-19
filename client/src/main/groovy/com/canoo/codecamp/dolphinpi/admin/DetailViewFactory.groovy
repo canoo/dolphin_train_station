@@ -5,7 +5,6 @@ import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.tbee.javafx.scene.layout.MigPane
-import com.aquafx_project.AquaFx
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 import javafx.beans.value.ChangeListener
