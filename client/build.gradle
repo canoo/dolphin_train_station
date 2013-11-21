@@ -14,7 +14,7 @@ dependencies {
 
 }
 
-mainClassName = 'com.canoo.codecamp.dolphinpi.AdminApplicationStarter'
+mainClassName = 'com.canoo.codecamp.dolphinpi.admin.AdminApplicationStarter'
 
 gradle.taskGraph.whenReady { tg ->
 	run {

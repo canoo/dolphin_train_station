@@ -19,7 +19,6 @@ simulate arrival and departures of trains.
 * cd client/build/install/client/bin
 * mv client startadmin
 * cp startadmin startboard
-* change classname in the last line in startboard script from 'AdminApplicationStarter' to 'DisplayApplicationStarter'
 * open a second terminal in the project directory and start the server by invoking: ./gradlew jettyRun
 * in the first terminal start one instance (as background process so that you can reuse the terminal) of the board client by invoking: ./startboard &
   which should bring up a GUI with an empty table
