@@ -6,7 +6,7 @@ package com.canoo.codecamp.dolphinpi
 class PresentationStateConstants {
 
     static class TYPE {
-		public static final String PRESENTATION_STATE     = unique 'type'
+		public static final String PRESENTATION_STATE     = PresentationStateConstants.unique 'type'
     }
 
     static class ATT {
