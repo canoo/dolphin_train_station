@@ -5,6 +5,7 @@ import javafx.scene.Parent
 import javafx.scene.control.TableColumnBuilder
 import javafx.scene.control.TableView
 import javafx.scene.control.TableViewBuilder
+import javafx.scene.text.TextBuilder
 import javafx.util.Callback
 import org.opendolphin.core.client.ClientAttributeWrapper
 import org.opendolphin.core.client.ClientDolphin
@@ -22,14 +23,14 @@ class DepartureBoardViewFactory {
 		def departuresOnBoard = FXCollections.observableArrayList()
 		departuresOnBoard.addAll(clientDolphin.findAllPresentationModelsByType(BOARD_ITEM))
 
-		TableViewBuilder.create()
+        TableViewBuilder.create()
 				.items(departuresOnBoard)
 				.columns(
-					createColumn(DEPARTURE_TIME, "Uhrzeit"),
-					createColumn(TRAIN_NUMBER,   "Fahrt"),
-					createColumn(DESTINATION,    "Richtung"),
+					createColumn(DEPARTURE_TIME, "Time"),
+					createColumn(TRAIN_NUMBER,   "Train Number"),
+					createColumn(DESTINATION,    "Destination"),
 					createColumn(STATUS,         "Status"),
-					createColumn(TRACK,          "Gleis"),
+					createColumn(TRACK,          "Track"),
 				 )
 				.columnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY)
 				.build()

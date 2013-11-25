@@ -19,7 +19,7 @@
 07:20,ICN 1511,St. Gallen,Olten  07:20 - Aarau  07:28 - Zürich HB  07:56 - Zürich Flughafen  08:20 - Winterthur  08:35 - Wil SG  08:52 - Gossau SG  09:06 - St. Gallen  09:15,7
 07:29,IC 959,Interlaken Ost,Olten  07:29 - Bern  07:56 - Thun  08:21 - Spiez  08:31 - Interlaken West  08:51 - Interlaken Ost  08:57,11
 07:30,EC 153,Milano Centrale,Olten  07:30 - Luzern  08:05 - Arth-Goldau  08:44 - Bellinzona  10:23 - Lugano  10:46 - Chiasso  11:08 - Como S. Giovanni  11:15 - Milano Centrale  11:50,12
-07:32,ICE 1178,Berlin Hbf (Tief),Olten  07:32 - Liestal  07:47 - Basel SBB  07:59 - Basel Bad Bf  08:18 • Karlsruhe Hbf  09:58 - Mannheim Hbf  10:22 - Frankfurt (Main) Hbf  11:08 - Kassel-Wilhelmshöhe  12:41 - Berlin-Spandau  15:11 - Berlin Hbf (Tief)  15:22,7
+07:32,ICE 1178,Berlin Hbf (Tief),Olten  07:32 - Liestal  07:47 - Basel SBB  07:59 - Basel Bad Bf  08:18 - Karlsruhe Hbf  09:58 - Mannheim Hbf  10:22 - Frankfurt (Main) Hbf  11:08 - Kassel-Wilhelmshöhe  12:41 - Berlin-Spandau  15:11 - Berlin Hbf (Tief)  15:22,7
 07:40,ICN 1510,Lausanne,Olten  07:40 - Solothurn  07:56 - Biel/Bienne  08:13 - Neuchâtel  08:32 - Yverdon-les-Bains  08:51 - Lausanne  09:15,8
 07:59,ICE 1061,Interlaken Ost,Olten  07:59 - Bern  08:27 - Thun  08:52 - Spiez  09:02 - Interlaken West  09:22 - Interlaken Ost  09:28,12
 08:05,IC 1060,Basel SBB,Olten  08:05 - Basel SBB  08:29,3
@@ -32,7 +32,7 @@
 09:20,ICN 1517,St. Gallen,Olten  09:20 - Aarau  09:28 - Zürich HB  09:56 - Zürich Flughafen  10:20 - Winterthur  10:35 - Wil SG  10:52 - Gossau SG  11:06 - St. Gallen  11:15,7
 09:29,ICE 5,Interlaken Ost,Olten  09:29 - Bern  09:56 - Thun  10:21 - Spiez  10:31 - Interlaken West  10:51 - Interlaken Ost  10:57, ,
 09:30,ICN 669,Lugano,Olten  09:30 - Luzern  10:05 - Arth-Goldau  10:44 - Bellinzona  12:23 - Lugano  12:46, ,
-09:32,ICE 276,Berlin-Ostbahnhof,Olten  09:32 - Liestal  09:47 - Basel SBB  09:59 - Basel Bad Bf  10:18 • Karlsruhe Hbf  11:58 - Mannheim Hbf  12:23 - Frankfurt (Main) Hbf  13:08 - Kassel-Wilhelmshöhe  14:41 - Berlin-Spandau  17:11 - Berlin-Ostbahnhof  17:37,7
+09:32,ICE 276,Berlin-Ostbahnhof,Olten  09:32 - Liestal  09:47 - Basel SBB  09:59 - Basel Bad Bf  10:18 - Karlsruhe Hbf  11:58 - Mannheim Hbf  12:23 - Frankfurt (Main) Hbf  13:08 - Kassel-Wilhelmshöhe  14:41 - Berlin-Spandau  17:11 - Berlin-Ostbahnhof  17:37,7
 09:40,ICN 1516,Lausanne,Olten  09:40 - Solothurn  09:56 - Biel/Bienne  10:13 - Neuchâtel  10:32 - Yverdon-les-Bains  10:51 - Lausanne  11:15,8
 09:59,IC 1067,Interlaken Ost,Olten  09:59 - Bern  10:27 - Thun  10:52 - Spiez  11:02 - Interlaken West  11:22 - Interlaken Ost  11:28,12
 10:05,IC 1066,Basel SBB,Olten  10:05 - Basel SBB  10:29,3
@@ -45,7 +45,7 @@
 11:20,ICN 1521,St. Gallen,Olten  11:20 - Aarau  11:28 - Zürich HB  11:56 - Zürich Flughafen  12:20 - Winterthur  12:35 - Wil SG  12:52 - Gossau SG  13:06 - St. Gallen  13:15,7
 11:29,IC 969,Interlaken Ost,Olten  11:29 - Bern  11:56 - Thun  12:21 - Spiez  12:31 - Interlaken West  12:51 - Interlaken Ost  12:57,11
 11:30,ICN 675,Lugano,Olten  11:30 - Luzern  12:05 - Arth-Goldau  12:44 - Bellinzona  14:23 - Lugano  14:46,12
-11:32,ICE 374,Berlin-Ostbahnhof,Olten  11:32 - Liestal  11:47 - Basel SBB  11:59 - Basel Bad Bf  12:18 • Karlsruhe Hbf  13:58 - Mannheim Hbf  14:22 - Frankfurt (Main) Hbf  15:08 - Kassel-Wilhelmshöhe  16:41 - Berlin-Spandau  19:11 - Berlin-Ostbahnhof  19:37,7
+11:32,ICE 374,Berlin-Ostbahnhof,Olten  11:32 - Liestal  11:47 - Basel SBB  11:59 - Basel Bad Bf  12:18 - Karlsruhe Hbf  13:58 - Mannheim Hbf  14:22 - Frankfurt (Main) Hbf  15:08 - Kassel-Wilhelmshöhe  16:41 - Berlin-Spandau  19:11 - Berlin-Ostbahnhof  19:37,7
 11:40,ICN 1520,Lausanne,Olten  11:40 - Solothurn  11:56 - Biel/Bienne  12:13 - Neuchâtel  12:32 - Yverdon-les-Bains  12:51 - Lausanne  13:15,8
 11:59,IC 1071,Interlaken Ost,Olten  11:59 - Bern  12:27 - Thun  12:52 - Spiez  13:02 - Interlaken West  13:22 - Interlaken Ost  13:28,12
 12:05,IC 1070,Basel SBB,Olten  12:05 - Basel SBB  12:29,3
@@ -59,7 +59,7 @@
 13:20,ICN 1525,St. Gallen,Olten  13:20 - Aarau  13:28 - Zürich HB  13:56 - Zürich Flughafen  14:20 - Winterthur  14:35 - Wil SG  14:52 - Gossau SG  15:06 - St. Gallen  15:15,7
 13:29,IC 973,Interlaken Ost,Olten  13:29 - Bern  13:56 - Thun  14:21 - Spiez  14:31 - Interlaken West  14:51 - Interlaken Ost  14:57, ,
 13:30,ICN 679,Lugano,Olten  13:30 - Luzern  14:05 - Arth-Goldau  14:44 - Bellinzona  16:23 - Lugano  16:46,12
-13:32,ICE 370,Berlin-Ostbahnhof,Olten  13:32 - Liestal  13:47 - Basel SBB  13:59 - Basel Bad Bf  14:18 • Karlsruhe Hbf  15:58 - Mannheim Hbf  16:22 - Frankfurt (Main) Hbf  17:08 - Kassel-Wilhelmshöhe  18:41 - Berlin-Spandau  21:11 - Berlin-Ostbahnhof  21:37,7
+13:32,ICE 370,Berlin-Ostbahnhof,Olten  13:32 - Liestal  13:47 - Basel SBB  13:59 - Basel Bad Bf  14:18 - Karlsruhe Hbf  15:58 - Mannheim Hbf  16:22 - Frankfurt (Main) Hbf  17:08 - Kassel-Wilhelmshöhe  18:41 - Berlin-Spandau  21:11 - Berlin-Ostbahnhof  21:37,7
 13:40,ICN 1524,Lausanne,Olten  13:40 - Solothurn  13:56 - Biel/Bienne  14:13 - Neuchâtel  14:32 - Yverdon-les-Bains  14:51 - Lausanne  15:15,8
 13:59,IC 1075,Interlaken Ost,Olten  13:59 - Bern  14:27 - Thun  14:52 - Spiez  15:02 - Interlaken West  15:22 - Interlaken Ost  15:28,12
 14:05,IC 1074,Basel SBB,Olten  14:05 - Basel SBB  14:29,3
@@ -79,7 +79,7 @@
 16:20,ICN 531,St. Gallen,Olten  16:20 - Aarau  16:28 - Zürich HB  16:56 - Zürich Flughafen  17:20 - Winterthur  17:35 - Wil SG  17:52 - Gossau SG  18:06 - St. Gallen  18:15,7
 16:29,IC 979,Interlaken Ost,Olten  16:29 - Bern  16:56 - Thun  17:21 - Spiez  17:31 - Interlaken West  17:51 - Interlaken Ost  17:57, ,
 16:30,ICN 670,Basel SBB,Olten  16:30 - Basel SBB  16:55, ,
-16:32,ICE 376,Hamburg-Altona,Olten  16:32 - Liestal  16:47 - Basel SBB  16:59 - Basel Bad Bf  17:10 • Karlsruhe Hbf  18:49 - Mannheim Hbf  19:14 - Frankfurt (Main) Hbf  19:53 - Hannover Hbf  22:17 - Hamburg Hbf  23:51 - Hamburg-Altona  00:06,7
+16:32,ICE 376,Hamburg-Altona,Olten  16:32 - Liestal  16:47 - Basel SBB  16:59 - Basel Bad Bf  17:10 - Karlsruhe Hbf  18:49 - Mannheim Hbf  19:14 - Frankfurt (Main) Hbf  19:53 - Hannover Hbf  22:17 - Hamburg Hbf  23:51 - Hamburg-Altona  00:06,7
 16:40,ICN 530,Genf-Flughafen,Olten  16:40 - Solothurn  16:56 - Biel/Bienne  17:13 - Neuchâtel  17:35 - Yverdon-les-Bains  17:54 - Morges  18:18 - Nyon  18:32 - Genf  18:46 - Genf-Flughafen  18:56,8
 16:59,IC 1081,Brig,Olten  16:59 - Bern  17:27 - Thun  17:52 - Spiez  18:02 - Visp  18:31 - Brig  18:40,12
 17:05,IC 1080,Basel SBB,Olten  17:05 - Basel SBB  17:29, ,
@@ -118,7 +118,7 @@
 21:40,ICN 1542,Lausanne,Olten  21:40 - Solothurn  21:56 - Biel/Bienne  22:13 - Neuchâtel  22:32 - Yverdon-les-Bains  22:51 - Lausanne  23:15,8
 22:00,IC 743,Zürich HB,Olten  22:00 - Zürich HB  22:31,7
 22:00,IC 1093,Bern,Olten  22:00 - Bern  22:27,12
-22:20,ICN 545,St. Gallen,Olten  22:20 - Aarau  22:29 - Zürich HB  22:56 - Zürich Flughafen  23:20 • Winterthur  23:35 - Wil SG  23:52 - Uzwil  00:00 - Flawil  00:05 - Gossau SG  00:10 - St. Gallen  00:18,7
+22:20,ICN 545,St. Gallen,Olten  22:20 - Aarau  22:29 - Zürich HB  22:56 - Zürich Flughafen  23:20 - Winterthur  23:35 - Wil SG  23:52 - Uzwil  00:00 - Flawil  00:05 - Gossau SG  00:10 - St. Gallen  00:18,7
 22:29,IC 993,Interlaken Ost,Olten  22:29 - Bern  22:56 - Thun  23:25 - Spiez  23:35 - Interlaken West  23:54 - Interlaken Ost  23:59, ,
 22:30,ICN 682,Basel SBB,Olten  22:30 - Basel SBB  22:55, ,
 22:30,IC 845,Romanshorn,Olten  22:30 - Zürich HB  23:01 - Zürich Flughafen  23:16 - Winterthur  23:33 - Frauenfeld  23:46 - Weinfelden  23:58 - Amriswil  00:10 - Romanshorn  00:18,7
@@ -130,5 +130,5 @@
 23:29,IC 995,Bern,Olten  23:29 - Bern  23:56, ,
 23:32,ICE 996,Basel SBB,Olten  23:32 - Liestal  23:47 - Basel SBB  23:59, ,
 23:35,IC 846,Bern,Olten  23:35 - Bern  00:02, ,
-23:35,ICN 1547,St. Gallen,Olten  23:35 - Aarau  23:43 - Zürich HB  00:10 - Zürich Flughafen  00:27 • Winterthur  00:42 - Wil SG  00:59 - Uzwil  01:06 - Flawil  01:12 - Gossau SG  01:17 - St. Gallen  01:25,2
+23:35,ICN 1547,St. Gallen,Olten  23:35 - Aarau  23:43 - Zürich HB  00:10 - Zürich Flughafen  00:27 - Winterthur  00:42 - Wil SG  00:59 - Uzwil  01:06 - Flawil  01:12 - Gossau SG  01:17 - St. Gallen  01:25,2
 23:40,ICN 1546,Biel/Bienne,Olten  23:40 - Oensingen  23:52 - Solothurn  00:04 - Grenchen Süd  00:11 - Biel/Bienne, ,
