@@ -215,9 +215,9 @@ class AdminActions extends DolphinServerAction {
         @Override
         void handleCommand() {
             PresentationModel PMS = getServerDolphin()[PRESENTATION_STATE]
+            def bundle = ResourceBundle.getBundle(BOARD_RESOURCES, new Locale(PMS[LANGUAGE].value))
             if (prevLang==null)prevLang = PMS[LANGUAGE].value;
 
-            def bundle = ResourceBundle.getBundle(BOARD_RESOURCES, new Locale(PMS[LANGUAGE].value))
             def formerbundle = ResourceBundle.getBundle(BOARD_RESOURCES, new Locale(prevLang))
             changeValue getServerDolphin()[SELECTED_DEPARTURE][DEPARTURE_TIME, Tag.LABEL], bundle.getString("DEPARTURE_TIME")
             changeValue getServerDolphin()[SELECTED_DEPARTURE][DESTINATION, Tag.LABEL], bundle.getString("DESTINATION")
@@ -268,6 +268,8 @@ class AdminActions extends DolphinServerAction {
             def changedAttribute = getServerDolphin().serverModelStore.findAttributeById(command.attributeId)
             if (!changedAttribute?.qualifier?.startsWith(DEPARTURE)) return
             if (changedAttribute.tag != Tag.VALUE) return
+            PresentationModel PMS = getServerDolphin()[PRESENTATION_STATE]
+            def bundle = ResourceBundle.getBundle(BOARD_RESOURCES, new Locale(PMS[LANGUAGE].value))
 
             String pmId = pmIdFromQualifier(changedAttribute.qualifier)
 

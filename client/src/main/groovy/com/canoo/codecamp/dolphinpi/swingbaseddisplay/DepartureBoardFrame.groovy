@@ -62,7 +62,7 @@ public class DepartureBoardFrame extends JFrame {
 									  })
 			bind pm[DESTINATION],    { row.destination  = it.newValue as String }
 			bind pm[TRACK],          { row.setTrack       it.newValue as String }
-			bind pm[STATUS],         { row.blinking     = it.newValue == IN_STATION_STRING }
+			bind pm[STATUS],         { row.blinking     = IN_STATION_STRING.contains(it.newValue.toString()) }
 		}
 	}
 
