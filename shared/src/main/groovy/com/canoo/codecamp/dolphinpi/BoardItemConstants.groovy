@@ -45,11 +45,9 @@ class BoardItemConstants {
 
 	static class STATUS {
 
-       static ResourceBundle bundle = ResourceBundle.getBundle("BoardResources")
-
-		public static final String APPROACHING     = bundle.getString("APPROACHING")
-        public static final String IN_STATION      = bundle.getString("IN_STATION")
-        public static final String HAS_LEFT        = bundle.getString("HAS_LEFT")
+        public static final String APPROACHING             = 'approaching'
+        public static final String IN_STATION              = 'inStation'
+        public static final String HAS_LEFT                = 'hasLeft'
 	}
 
 	static class CMD {

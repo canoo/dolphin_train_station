@@ -93,13 +93,16 @@ class DetailViewFactory {
 		incoming.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				selectedDeparture.getAt(STATUS).setValue(buttonsPM[IN_STATION].value)
-
+                selectedDeparture.getAt(STATUS).setValue(buttonsPM[IN_STATION].value)
+                leaving.setDisable(false)
             }
 		});
-		bind STATUS of selectedDeparture to 'disabled' of incoming, {
-			!buttonsPM[APPROACHING].value.equals(it)                                     //if anything but approaching than disable
-		}
+        bind STATUS of selectedDeparture to 'disabled' of leaving, {
+            !buttonsPM[IN_STATION].value.equals(it)                                     //if anything but approaching than disable
+        }
+        bind STATUS of selectedDeparture to 'disabled' of incoming, {
+            !buttonsPM[APPROACHING].value.equals(it)                                     //if anything but approaching than disable
+        }
 
 		leaving.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -107,9 +110,7 @@ class DetailViewFactory {
 				selectedDeparture.getAt(STATUS).setValue(buttonsPM[HAS_LEFT].value)
 			}
 		});
-		bind STATUS of selectedDeparture to 'disabled' of leaving, {   //if anything but in station than disable
-			!buttonsPM[IN_STATION].equals(it)
-		}
+
 
 		bind TOP_DEPARTURE_ON_BOARD of applicationState to 'disabled' of moveToTop, {
 			def selectedPosition = selectedDeparture.getAt(POSITION).value
