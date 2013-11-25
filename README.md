@@ -12,6 +12,9 @@ Such a departure board will be displayed in this demo in form of a window which 
 In addition this application contains a so called admin GUI to maintain information about trains and
 simulate arrival and departures of trains.
 
+For a more extensive description of the concepts, please see this blog post:
+http://www.canoo.com/blog/2013/04/17/dolphin-train-station/
+
 ##Build and run from commandline
 * ./gradlew build
 * ./gradlew :client:installApp
