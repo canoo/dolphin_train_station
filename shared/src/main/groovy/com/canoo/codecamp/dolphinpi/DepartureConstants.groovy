@@ -48,6 +48,7 @@ public class DepartureConstants {
 		public static final String EMPTY_DEPARTURE         = DepartureConstants.unique 'emptyDeparture'
 		public static final String BUTTONS         = DepartureConstants.unique 'buttonsPM'
         public static final String DEPARTURES              = 'Departures.txt'
+        public static final String IN_STATION_STRING              = 'In Station'
 	}
 
     static String unique(String s) { DepartureConstants.class.name + '.'+ s }

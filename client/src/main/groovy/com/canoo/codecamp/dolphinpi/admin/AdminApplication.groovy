@@ -172,8 +172,6 @@ public class AdminApplication extends Application {
 				.onAction({
 							if (command != null) {
 								clientDolphin.send(command)
-							} else {
-								println "not implemented yet"
 							}
 						} as EventHandler)
 				.build()

@@ -61,7 +61,7 @@ class AdminActions extends DolphinServerAction {
     private final Deque<ValueChangedCommand> undoStack = new ArrayDeque<>();
     private final Deque<ValueChangedCommand> redoStack = new ArrayDeque<>();
     private final List<Integer> positionsOnBoard = [-1, -1, -1, -1, -1]
-    ResourceBundle bundle = ResourceBundle.getBundle("BoardResources")
+    private static ResourceBundle bundle = ResourceBundle.getBundle("BoardResources")
 
 
     // needed for proper undo/redo handling
@@ -181,7 +181,6 @@ class AdminActions extends DolphinServerAction {
             PresentationModel emptyPM = getServerDolphin()[EMPTY_DEPARTURE]
             def attributeAffected = getServerDolphin().getModelStore().findAttributeById(command.getAttributeId());
             if (statePM != null) {
-                println attributeAffected
                 def undoId = statePM[UNDO_DISABLED].getId()
                 def redoId = statePM[REDO_DISABLED].getId()
                 def saveId = statePM[SAVE_DISABLED].getId()
@@ -362,7 +361,6 @@ class AdminActions extends DolphinServerAction {
         }
     }
 
-    static ResourceBundle bundle2 = ResourceBundle.getBundle("BoardResources")
 
     private static DTO createDeparture(id, departureTime, trainNumber, destination, stopOvers, track) {
         new DTO(
@@ -374,7 +372,7 @@ class AdminActions extends DolphinServerAction {
                 createSlot(DESTINATION, destination, id),
                 createSlot(TRACK, track, id),
                 createSlot(STOPOVERS, stopOvers, id),
-                createSlot(STATUS, bundle2.getString("APPROACHING"), id))
+                createSlot(STATUS, bundle.getString("APPROACHING"), id))
     }
 
     private static Slot createSlot(String propertyName, Object value, int id) {

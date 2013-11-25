@@ -17,11 +17,12 @@ import static com.canoo.codecamp.dolphinpi.BoardItemConstants.ATT.TRACK
 import static com.canoo.codecamp.dolphinpi.BoardItemConstants.CMD.LONG_POLL
 import static com.canoo.codecamp.dolphinpi.BoardItemConstants.STATUS.IN_STATION
 import static com.canoo.codecamp.dolphinpi.BoardItemConstants.TYPE.BOARD_ITEM
+import static com.canoo.codecamp.dolphinpi.DepartureConstants.SPECIAL_ID.*
+
 
 public class DepartureBoardFrame extends JFrame {
 	private final ClientDolphin clientDolphin;
 	private final List departuresOnBoard
-
 	private DepartureBoard board
 
 	public DepartureBoardFrame(ClientDolphin clientDolphin) {
@@ -61,7 +62,7 @@ public class DepartureBoardFrame extends JFrame {
 									  })
 			bind pm[DESTINATION],    { row.destination  = it.newValue as String }
 			bind pm[TRACK],          { row.setTrack       it.newValue as String }
-			bind pm[STATUS],         { row.blinking     = it.newValue == IN_STATION }
+			bind pm[STATUS],         { row.blinking     = it.newValue == IN_STATION_STRING }
 		}
 	}
 
