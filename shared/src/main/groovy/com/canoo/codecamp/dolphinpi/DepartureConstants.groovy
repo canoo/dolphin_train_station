@@ -24,14 +24,10 @@ public class DepartureConstants {
         public static final String IN_STATION              = 'inStation'
         public static final String HAS_LEFT                = 'hasLeft'
 
-	    static final List<String> ALL                      = [POSITION, DEPARTURE_TIME, DESTINATION, STOPOVERS, TRACK, TRAIN_NUMBER, this.STATUS]
+	    static final List<String> ALL                      = [POSITION, DEPARTURE_TIME, DESTINATION, STOPOVERS, TRACK, TRAIN_NUMBER, STATUS]
 	   public static final List<String> ALLBUTTONS               = [DRIVE_IN, DRIVE_OUT, FIRST_ONE, APPROACHING, IN_STATION, HAS_LEFT]
      }
 
-    static class STATUS {
-
-
-    }
 
     static class CMD {
 		public static final String PULL                    = DepartureConstants.unique 'pull'

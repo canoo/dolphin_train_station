@@ -24,7 +24,9 @@ import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.ALLBUTTONS
+import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.APPROACHING
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.POSITION
+import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.STATUS_INDICATOR
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.getALL
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.INIT_SELECTED_DEPARTURE
 import static com.canoo.codecamp.dolphinpi.DepartureConstants.CMD.PULL
