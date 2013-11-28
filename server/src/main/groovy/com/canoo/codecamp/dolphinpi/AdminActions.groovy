@@ -96,12 +96,11 @@ class AdminActions extends DolphinServerAction {
     private final CommandHandler getAllDeparturesAction = new SimpleCommandHandler() {
         @Override
         void handleCommand() {
-            loadDepartureDTOs().eachWithIndex { dto, index ->
+			loadDepartureDTOs().eachWithIndex { dto, index ->
                 presentationModel pmId(DEPARTURE, index), DEPARTURE, dto
             }
         }
     }
-
 
 
     private final CommandHandler moveToTopAction = new SimpleCommandHandler() {
@@ -129,7 +128,6 @@ class AdminActions extends DolphinServerAction {
                 changeValue(getServerDolphin()[PRESENTATION_STATE][UNDO_DISABLED], true)
                 changeValue(getServerDolphin()[PRESENTATION_STATE][SAVE_DISABLED], true)
             }
-
         }
     }
 
@@ -167,7 +165,6 @@ class AdminActions extends DolphinServerAction {
                 writer.flush()
 
             }
-
         }
     }
 
@@ -204,10 +201,7 @@ class AdminActions extends DolphinServerAction {
 
                     }
                 }
-
             }
-
-
         }
     }
 
@@ -254,7 +248,6 @@ class AdminActions extends DolphinServerAction {
                 prevLang = PMS[LANGUAGE].value
             }
         }
-
     }
 
 
@@ -305,7 +298,6 @@ class AdminActions extends DolphinServerAction {
         registry.register(UNDO, undoAction)
         registry.register(REDO, redoAction)
         registry.register(SAVE, saveAction)
-
     }
 
     private static DTO createEmptyDepartureDTO(int positionOnBoard) {
@@ -384,10 +376,7 @@ class AdminActions extends DolphinServerAction {
 
 
     private static DTO createDeparture(id, departureTime, trainNumber, destination, stopOvers, track) {
-        new DTO(
-
-
-                createSlot(POSITION, id, id),
+        new DTO(createSlot(POSITION, id, id),
                 createSlot(DEPARTURE_TIME, departureTime, id),
                 createSlot(TRAIN_NUMBER, trainNumber, id),
                 createSlot(DESTINATION, destination, id),
@@ -406,7 +395,6 @@ class AdminActions extends DolphinServerAction {
     }
 
     class DTOS {
-
         String DepartureTime
         String TrainNumber
         String Destination
@@ -416,8 +404,6 @@ class AdminActions extends DolphinServerAction {
     }
 
     static List<DTO> loadDepartureDTOs() {
-
-
         List<DTO> dtos = []
         def file = new File(System.getProperty("java.io.tmpdir") + DEPARTURES)
         if (file.canExecute()) {
@@ -445,14 +431,14 @@ class AdminActions extends DolphinServerAction {
                 String[] data = it.split(",")
 
                 def Departure = DTOS.newInstance()
-                Departure.DepartureTime = data[0]
-                Departure.TrainNumber = data[1]
-                Departure.Destination = data[2]
-                Departure.Track = data[3]
-                Departure.StopOvers = data[4]
+                Departure.DepartureTime = data[0].trim()
+                Departure.TrainNumber   = data[1].trim()
+                Departure.Destination   = data[2].trim()
+				Departure.StopOvers     = data[3].trim()
+				Departure.Track         = data[4].trim()
 
 
-                dtos.add(createDeparture(i++, Departure.DepartureTime, Departure.TrainNumber, Departure.Destination, Departure.Track, Departure.StopOvers))
+                dtos.add(createDeparture(i++, Departure.DepartureTime, Departure.TrainNumber, Departure.Destination, Departure.StopOvers, Departure.Track))
             }
             dtos
 

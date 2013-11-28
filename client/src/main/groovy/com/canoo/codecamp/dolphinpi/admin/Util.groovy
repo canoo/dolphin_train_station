@@ -1,6 +1,5 @@
 package com.canoo.codecamp.dolphinpi.admin
 
-import com.canoo.codecamp.dolphinpi.DepartureConstants
 import javafx.animation.KeyFrame
 import javafx.animation.KeyValue
 import javafx.animation.Timeline

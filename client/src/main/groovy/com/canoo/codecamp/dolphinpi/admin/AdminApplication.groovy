@@ -57,19 +57,20 @@ public class AdminApplication extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		initializePresentationModels()
-        clientDolphin.send PULL
 		clientDolphin.send INIT_SELECTED_DEPARTURE, {
 			stage.title = "Abfahrten ab Olten";
 
 			Scene scene = new Scene(createStageRoot(), 1000, 460)
 			//scene.stylesheets << 'demo.css'
 			//scene.stylesheets << 'dark.css'
+			scene.stylesheets << 'validation.css'
 			doAllBindings()
 			stage.setScene(scene);
 			stage.show();
 		}
-
-
+		clientDolphin.send PULL, {pms ->
+			clientDolphin[PRESENTATION_STATE][SELECTED_DEPARTURE_ID].value = pms[0].id
+		}
 	}
 
 	private static void initializePresentationModels () {

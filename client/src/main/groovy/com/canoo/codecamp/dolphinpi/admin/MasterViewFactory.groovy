@@ -45,16 +45,15 @@ class MasterViewFactory {
 
         TableView table = TableViewBuilder.create()
                 .items(data)
-                .columns(
-                createColumn(selectedDeparture, DEPARTURE_TIME),
-                createColumn(selectedDeparture, TRAIN_NUMBER),
-                createColumn(selectedDeparture, DESTINATION),
-                createColumn(selectedDeparture, STATUS, false),
-                createColumn(selectedDeparture, TRACK),
-        )
+                .columns(createColumn(selectedDeparture, DEPARTURE_TIME),
+				         createColumn(selectedDeparture, TRAIN_NUMBER),
+                         createColumn(selectedDeparture, DESTINATION),
+                         createColumn(selectedDeparture, STATUS, false),
+                         createColumn(selectedDeparture, TRACK),
+                        )
                 .columnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY)
                 .editable(true)
-                .build()
+		        .build()
 
         def selectedPMId = applicationState[SELECTED_DEPARTURE_ID]
         def selectedPMStops = selectedDeparture[STOPOVERS]
@@ -75,7 +74,6 @@ class MasterViewFactory {
             } else {
                 table.getSelectionModel().select(clientDolphin[pmId])
                 //table.scrollTo(table.getSelectionModel().getSelectedIndex())
-
             }
         })
 
