@@ -156,11 +156,11 @@ class AdminActions extends DolphinServerAction {
             departures.each {
                 writer.write(
                         it[DEPARTURE_TIME].value + "," +
-                                it[TRAIN_NUMBER].value + "," +
-                                it[DESTINATION].value + "," +
-                                it[STOPOVERS].value + "," +
-                                it[TRACK].value + "," +
-                                System.getProperty("line.separator")
+                        it[TRAIN_NUMBER].value + "," +
+                        it[DESTINATION].value + "," +
+                        it[STOPOVERS].value + "," +
+                        it[TRACK].value + " ," +
+                        System.getProperty("line.separator")
                 )
                 writer.flush()
 
@@ -406,9 +406,10 @@ class AdminActions extends DolphinServerAction {
     static List<DTO> loadDepartureDTOs() {
         List<DTO> dtos = []
         def file = new File(System.getProperty("java.io.tmpdir") + DEPARTURES)
-        if (file.canExecute()) {
+        if (file.exists()) {
             def i = 0
-            def reader = new FileReader(System.getProperty("java.io.tmpdir") + DEPARTURES)
+            //def reader = new FileReader(System.getProperty("java.io.tmpdir") + DEPARTURES)
+			def reader = file.newReader("UTF-8")
             reader.eachLine {
                 String[] data = it.split(",")
 
@@ -424,8 +425,8 @@ class AdminActions extends DolphinServerAction {
             }
             dtos
         } else {
-            InputStream stream = AdminActions.class.getClassLoader().getResourceAsStream(DEPARTURES)
-            def i = 0
+			InputStreamReader stream = new InputStreamReader(AdminActions.class.getClassLoader().getResourceAsStream(DEPARTURES), "UTF-8")
+			def i = 0
 
             stream.eachLine {
                 String[] data = it.split(",")
