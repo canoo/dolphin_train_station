@@ -62,7 +62,7 @@ class AdminActions extends DolphinServerAction {
     private final Deque<ValueChangedCommand> redoStack = new ArrayDeque<>();
     private final List<Integer> positionsOnBoard = [-1, -1, -1, -1, -1]
     private static ResourceBundle bundle = ResourceBundle.getBundle("BoardResources")
-
+    private String prevLang;
 
     // needed for proper undo/redo handling
     private ValueChangedCommand nextTripleToIgnore
@@ -215,15 +215,17 @@ class AdminActions extends DolphinServerAction {
         @Override
         void handleCommand() {
             PresentationModel PMS = getServerDolphin()[PRESENTATION_STATE]
-
-
             def bundle = ResourceBundle.getBundle(BOARD_RESOURCES, new Locale(PMS[LANGUAGE].value))
+            if (prevLang==null)prevLang = PMS[LANGUAGE].value;
+
+            def formerbundle = ResourceBundle.getBundle(BOARD_RESOURCES, new Locale(prevLang))
             changeValue getServerDolphin()[SELECTED_DEPARTURE][DEPARTURE_TIME, Tag.LABEL], bundle.getString("DEPARTURE_TIME")
             changeValue getServerDolphin()[SELECTED_DEPARTURE][DESTINATION, Tag.LABEL], bundle.getString("DESTINATION")
             changeValue getServerDolphin()[SELECTED_DEPARTURE][TRAIN_NUMBER, Tag.LABEL], bundle.getString("TRAIN_NUMBER")
             changeValue getServerDolphin()[SELECTED_DEPARTURE][TRACK, Tag.LABEL], bundle.getString("TRACK")
             changeValue getServerDolphin()[SELECTED_DEPARTURE][STOPOVERS, Tag.LABEL], bundle.getString("STOPOVERS")
             changeValue getServerDolphin()[SELECTED_DEPARTURE][STATUS, Tag.LABEL], bundle.getString("STATUS")
+
 
 
             changeValue getServerDolphin()[BUTTONS][DRIVE_IN], bundle.getString("DRIVE_IN")
@@ -234,6 +236,23 @@ class AdminActions extends DolphinServerAction {
             changeValue getServerDolphin()[BUTTONS][APPROACHING], bundle.getString("APPROACHING")
 
 
+            getServerDolphin().findAllPresentationModelsByType(DEPARTURE).each {
+                def status = it.findAttributeByPropertyName(STATUS)
+
+                switch (status.getValue().toString()){
+                    case formerbundle.getString("IN_STATION"):
+                        changeValue status, bundle.getString("IN_STATION")
+                        break;
+                    case formerbundle.getString("HAS_LEFT"):
+                        changeValue status, bundle.getString("HAS_LEFT")
+                        break;
+                    case formerbundle.getString("APPROACHING"):
+                        changeValue status, bundle.getString("APPROACHING")
+                        break;
+
+                }
+                prevLang = PMS[LANGUAGE].value
+            }
         }
 
     }
@@ -249,6 +268,8 @@ class AdminActions extends DolphinServerAction {
             def changedAttribute = getServerDolphin().serverModelStore.findAttributeById(command.attributeId)
             if (!changedAttribute?.qualifier?.startsWith(DEPARTURE)) return
             if (changedAttribute.tag != Tag.VALUE) return
+            PresentationModel PMS = getServerDolphin()[PRESENTATION_STATE]
+            def bundle = ResourceBundle.getBundle(BOARD_RESOURCES, new Locale(PMS[LANGUAGE].value))
 
             String pmId = pmIdFromQualifier(changedAttribute.qualifier)
 
@@ -256,9 +277,9 @@ class AdminActions extends DolphinServerAction {
             int modifiedPmPosition = modifiedPm[POSITION].value as int
 
             if (modifiedPmPosition in positionsOnBoard) {
-                if (changedAttribute.propertyName == STATUS && command.newValue == HAS_LEFT) {
+                if (changedAttribute.propertyName == STATUS && command.newValue == bundle.getString("HAS_LEFT")) {
                     int startOnBoard = positionsOnBoard.indexOf(modifiedPmPosition)
-                    updatePositionsOnBoard(modifiedPmPosition, startOnBoard)
+                    updatePositionsOnBoard(modifiedPmPosition + 1, startOnBoard)
                     sendDepartureBoardEntries(startOnBoard..4)
                 }
                 else {
