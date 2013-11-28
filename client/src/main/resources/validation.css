@@ -1,0 +1,13 @@
+
+
+.invalid {
+    -fx-text-fill:red;
+}
+
+.dirty {
+    -fx-text-fill:yellow;
+}
+.toolbar-button {
+    -fx-padding: 1
+}
+

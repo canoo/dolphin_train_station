@@ -149,10 +149,10 @@ class DetailViewFactory {
 	}
 
 	private static void putStyle(node, boolean addOrRemove, String styleClassName) {
+		// don't want to add it twice
+		node.styleClass.remove(styleClassName)
 		if (addOrRemove) {
 			node.styleClass.add(styleClassName)
-		} else {
-			node.styleClass.remove(styleClassName)
 		}
 	}
 
