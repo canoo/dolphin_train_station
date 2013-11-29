@@ -57,7 +57,8 @@ import static com.canoo.codecamp.dolphinpi.PresentationStateConstants.TYPE.PRESE
 class AdminActions extends DolphinServerAction {
 
     private static final String BOARD_RESOURCES = "BoardResources"
-    private final DataflowQueue valueQueue
+	private static final String CHAR_SET = "UTF-8"
+	private final DataflowQueue valueQueue
     private final Deque<ValueChangedCommand> undoStack = new ArrayDeque<>();
     private final Deque<ValueChangedCommand> redoStack = new ArrayDeque<>();
     private final List<Integer> positionsOnBoard = [-1, -1, -1, -1, -1]
@@ -151,8 +152,9 @@ class AdminActions extends DolphinServerAction {
     private final CommandHandler saveAction = new SimpleCommandHandler() {
         @Override
         void handleCommand() {
-            def writer = new FileWriter(System.getProperty("java.io.tmpdir") + DEPARTURES)
-            def departures = getServerDolphin().serverModelStore.findAllPresentationModelsByType(DEPARTURE)
+			File file = new File(System.getProperty("java.io.tmpdir") + DEPARTURES)
+			def writer = file.newWriter(CHAR_SET)
+			def departures = getServerDolphin().serverModelStore.findAllPresentationModelsByType(DEPARTURE)
             departures.each {
                 writer.write(
                         it[DEPARTURE_TIME].value + "," +
@@ -409,23 +411,22 @@ class AdminActions extends DolphinServerAction {
         if (file.exists()) {
             def i = 0
             //def reader = new FileReader(System.getProperty("java.io.tmpdir") + DEPARTURES)
-			def reader = file.newReader("UTF-8")
+			def reader = file.newReader(CHAR_SET)
             reader.eachLine {
                 String[] data = it.split(",")
 
                 def Departure = DTOS.newInstance()
-                Departure.DepartureTime = data[0]
-                Departure.TrainNumber = data[1]
-                Departure.Destination = data[2]
-                Departure.Track = data[3]
-                Departure.StopOvers = data[4]
-
+                Departure.DepartureTime = data[0].trim()
+                Departure.TrainNumber   = data[1].trim()
+                Departure.Destination   = data[2].trim()
+                Departure.Track         = data[3].trim()
+                Departure.StopOvers     = data[4].trim()
 
                 dtos.add(createDeparture(i++, Departure.DepartureTime, Departure.TrainNumber, Departure.Destination, Departure.Track, Departure.StopOvers))
             }
             dtos
         } else {
-			InputStreamReader stream = new InputStreamReader(AdminActions.class.getClassLoader().getResourceAsStream(DEPARTURES), "UTF-8")
+			InputStreamReader stream = new InputStreamReader(AdminActions.class.getClassLoader().getResourceAsStream(DEPARTURES), CHAR_SET)
 			def i = 0
 
             stream.eachLine {
