@@ -1,7 +1,10 @@
+include 'client_fxmap'
+include 'client_admin'
+include 'client_fxboard'
+include 'client_swingboard'
 include 'shared'
 include 'server'
 include 'server-app'
-include 'client'
 include 'combined'
 
-rootProject.name = 'DolphinPiApp'
+rootProject.name = 'Dolphin Train Station'

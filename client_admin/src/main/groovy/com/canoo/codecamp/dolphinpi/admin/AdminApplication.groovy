@@ -74,9 +74,9 @@ public class AdminApplication extends Application {
 	}
 
 	private static void initializePresentationModels () {
-		clientDolphin.presentationModel(SELECTED_DEPARTURE, ALL)
+		clientDolphin.presentationModel(SELECTED_DEPARTURE, com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.ALL)
 		clientDolphin.presentationModel(BUTTONS, ALLBUTTONS)
-		clientDolphin.presentationModel(EMPTY_DEPARTURE, ALL)[POSITION].value = -1
+		clientDolphin.presentationModel(EMPTY_DEPARTURE, com.canoo.codecamp.dolphinpi.DepartureConstants.ATT.ALL)[POSITION].value = -1
 		Map attributeValueMap = [:]
 		attributeValueMap.put(SELECTED_DEPARTURE_ID, EMPTY_DEPARTURE)
 		attributeValueMap.put(TOP_DEPARTURE_ON_BOARD, EMPTY_DEPARTURE)

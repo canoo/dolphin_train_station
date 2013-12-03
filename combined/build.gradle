@@ -1,7 +1,7 @@
 apply plugin: 'application'
 
 dependencies {
-    compile project(':client')
+    compile project(':client_admin')
     compile project(':server')
     compile "org.open-dolphin:dolphin-combined:$dolphinVersion"
     testCompile "junit:junit:4.11"
