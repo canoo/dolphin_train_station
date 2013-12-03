@@ -12,7 +12,7 @@ dependencies {
 	compile project.files('../_localrepository/jfxtras-labs.jar')
 }
 
-mainClassName = 'com.canoo.codecamp.dolphinpi.admin.AdminApplicationStarter'
+mainClassName = 'com.canoo.codecamp.dolphinpi.fxbaseddisplay.FXBoardStarter'
 
 gradle.taskGraph.whenReady { tg ->
 	run {
