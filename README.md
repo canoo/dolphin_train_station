@@ -29,14 +29,14 @@ http://www.canoo.com/blog/2013/04/17/dolphin-train-station/
 
 
 ##Build and run from commandline  LINUX OS
+* ./gradlew clean
 * ./gradlew build
-* ./gradlew :client:installApp
-* cd client/build/install/client/bin
-* cp client startadmin
-* cp client startboard
-* change classname in the last line in startboard script from 'admin.AdminApplicationStarter' to '﻿swingbaseddisplay.SwingBoardStarter'
-* open a second terminal in the project directory and start the server by invoking: ./gradlew jettyRun
-* in the first terminal start one instance (as background process so that you can reuse the terminal) of the board client by invoking: ./startboard &
+* ./gradlew :client_fxboard:install
+* ./gradlew :client_fxmap:install
+* ./gradlew :client_swingboard:install
+* open a terminal in the project directory and start the server by invoking: ./gradlew jettyRun
+* open a second terminal in the project directory and cd to client_fxboard/build/install/client_fxboard/bin
+  and start the board client by invoking: ./client_fxboard &
   which should bring up a GUI with an empty table
 * start a second instance of the board in the same way to simulate 2 boards on the station's platform
 * now start the admin GUI: ./startadmin &
