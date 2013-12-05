@@ -1,6 +1,8 @@
 apply plugin: 'eclipse'
 apply plugin: 'application'
 
+applicationName = 'Dolphin Train Station'
+
 repositories {
     mavenCentral()
     mavenLocal()

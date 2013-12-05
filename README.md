@@ -16,30 +16,15 @@ For a more extensive description of the concepts, please see this blog post:
 http://www.canoo.com/blog/2013/04/17/dolphin-train-station/
 
 ##Build and run from commandline  WINDOWS OS
-* gradlew build
-* gradlew :client:installApp
-* cd client/build/install/client/bin
-* copy client.bat admin.bat
-* copy client.bat board.bat
-* change classname at the end of board.bat script from 'admin.AdminApplicationStarter' to '﻿swingbaseddisplay.SwingBoardStarter'
-* open a second terminal in the project directory and start the server by invoking: 'gradlew jettyRun'
-* in the first terminal start an instance of the board client by invoking: 'start client'
-  which should bring up a GUI with an empty departure board
-* now start the admin GUI: 'start admin'
+* gradlew clean build install
+* open a terminal in the project directory and start the server by invoking: 'gradlew jettyRun'
+* open a second terminal in the project directory and start all clients at once by invoking: 'startclients.cmd'
 
 
 ##Build and run from commandline  LINUX OS
-* ./gradlew clean
-* ./gradlew build
-* ./gradlew :client_fxboard:install
-* ./gradlew :client_fxmap:install
-* ./gradlew :client_swingboard:install
+* ./gradlew clean build install
 * open a terminal in the project directory and start the server by invoking: ./gradlew jettyRun
-* open a second terminal in the project directory and cd to client_fxboard/build/install/client_fxboard/bin
-  and start the board client by invoking: ./client_fxboard &
-  which should bring up a GUI with an empty table
-* start a second instance of the board in the same way to simulate 2 boards on the station's platform
-* now start the admin GUI: ./startadmin &
+* open a second terminal in the project directory and start all clients at once by invoking: './startclients.sh'
 
 The admin GUI is a master/detail view which displays all trains in a table. Selecting one entry shows the details
 of it in an editor in the right part of the window. When editing details not how the data in the table changes as well.
