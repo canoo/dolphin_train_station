@@ -1,4 +1,3 @@
-apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'application'
 
@@ -14,9 +13,6 @@ subprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-//		flatDir {
-//			dirs '/home/sven/canoo/codecamp_2013_1/dolphin_pi/_localrepository'
-//		}
     }
 	dependencies {
 		compile "org.codehaus.groovy:groovy-all:$groovyAllVersion"
@@ -26,6 +22,9 @@ subprojects {
 
 dependencies {
     compile project(':combined')
+}
+
+task install(dependsOn: [':client_admin:installApp', ':client_fxboard:installApp', ':client_fxmap:installApp', ':client_swingboard:installApp']) << {
 }
 
 task 'runWithGroovy' (dependsOn: ':combined:run') {

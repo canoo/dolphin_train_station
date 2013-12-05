@@ -19,3 +19,4 @@ mainClassName = 'com.canoo.codecamp.dolphinpi.admin.AdminApplicationStarter'
 //		systemProperties=['javafx.platform':'eglfb']
 //	}
 //}
+
